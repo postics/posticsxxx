@@ -284,3 +284,55 @@
   transition: background-color 160ms;
   &:hover { background: var(--color-surface-sunken); }
 }
+
+/* ── Modern depth + surface tokens ── */
+:root {
+  --shadow-sm: 0 1px 0 rgba(20,24,31,0.04), 0 1px 2px rgba(20,24,31,0.04);
+  --shadow-md: 0 1px 0 rgba(20,24,31,0.04), 0 10px 24px -12px rgba(20,24,31,0.12);
+  --shadow-pop: 0 1px 0 rgba(20,24,31,0.04), 0 24px 60px -24px rgba(20,24,31,0.22);
+}
+.dark {
+  --shadow-sm: 0 1px 0 rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 1px 0 rgba(0,0,0,0.4), 0 12px 28px -14px rgba(0,0,0,0.55);
+  --shadow-pop: 0 1px 0 rgba(0,0,0,0.5), 0 30px 80px -30px rgba(0,0,0,0.7);
+}
+
+@utility shadow-elev-sm { box-shadow: var(--shadow-sm); }
+@utility shadow-elev-md { box-shadow: var(--shadow-md); }
+@utility shadow-elev-pop { box-shadow: var(--shadow-pop); }
+
+/* Glass surface — translucent + blurred + hairline. Standard property only;
+   Lightning CSS adds the -webkit- prefix. */
+@utility glass {
+  background: color-mix(in oklab, var(--color-paper) 70%, transparent);
+  backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid color-mix(in oklab, var(--color-line) 80%, transparent);
+}
+
+/* Subtle hover-lift for cards (respects reduced motion). */
+@utility hover-lift {
+  transition: transform 220ms cubic-bezier(.2,.6,.2,1), box-shadow 220ms;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Stronger, brand-tinted focus ring used across interactive elements. */
+@layer base {
+  :where(a, button, [role="button"], input, textarea, select, summary):focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .hover-lift:hover { transform: none; }
+}

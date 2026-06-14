@@ -43,9 +43,28 @@ export function Landing() {
 /* ─────────────── Nav ─────────────── */
 
 function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
-    <header className="sticky top-0 z-30 border-b border-line/70 bg-paper/85 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
+    <header
+      data-scrolled={scrolled || undefined}
+      className={cn(
+        "sticky top-0 z-30 glass transition-[height,box-shadow] duration-200",
+        scrolled && "shadow-elev-sm",
+      )}
+    >
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-6xl items-center justify-between px-6 transition-[height] duration-200",
+          scrolled ? "h-14" : "h-16",
+        )}
+      >
         <Link to="/" className="flex items-center gap-2.5">
           <div className="grid size-7 place-items-center rounded-md bg-brand-700 text-[color:var(--primary-foreground)]">
             <span className="font-display text-sm leading-none">P</span>
@@ -59,6 +78,14 @@ function Nav() {
           <a href="#faq" className="hover:text-ink-900">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="Open command menu"
+            className="hidden items-center gap-2 rounded-lg border border-line bg-surface/70 px-2.5 py-1.5 text-xs text-muted-foreground hover:border-ink-700/30 md:inline-flex"
+          >
+            <span>Search</span>
+            <kbd className="font-mono-num rounded bg-surface-sunken px-1.5 py-0.5 text-[10px]">⌘K</kbd>
+          </button>
           <LanguageButton />
           <ThemeToggle />
           <Link to="/dashboard" className="postics-btn-ghost hidden sm:inline-flex">
@@ -123,6 +150,14 @@ function Hero() {
       </div>
       <div className="relative mx-auto grid w-full max-w-6xl gap-14 px-6 pt-8 pb-24 lg:grid-cols-[1.05fr_1fr] lg:items-center">
         <div key={audience} className="space-y-7 animate-rise">
+          <Link
+            to="/marketplace"
+            className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/40 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--accent-gold)] transition-colors hover:bg-[color:var(--accent-gold-soft)]/70"
+          >
+            <span className="rounded-full bg-[color:var(--accent-gold)] px-1.5 py-0.5 text-[9px] text-white">New</span>
+            Freelancer marketplace
+            <ArrowRight className="size-3" strokeWidth={2} />
+          </Link>
           <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-ink-700">
             <span className="size-1.5 rounded-full bg-[color:var(--success)]" />
             {copy.eyebrow}
@@ -362,7 +397,7 @@ function Pillars() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {PILLARS.map((p) => (
-            <Card key={p.title} className="p-6">
+            <Card key={p.title} className="p-6 hover-lift shadow-elev-sm">
               <span className="grid size-9 place-items-center rounded-lg bg-brand-100 text-brand-700">
                 <p.icon className="size-4" strokeWidth={1.5} />
               </span>
@@ -558,6 +593,14 @@ const PLANS = [
 ];
 
 function Pricing() {
+  const [cycle, setCycle] = useState<"monthly" | "yearly">("monthly");
+  const yearlyFactor = 0.8; // -20%
+  const fmtPrice = (p: string) => {
+    if (cycle === "monthly") return p;
+    const n = parseInt(p.replace(/\D/g, ""), 10);
+    if (!n) return p;
+    return `$${Math.round((n * yearlyFactor))}`;
+  };
   return (
     <section id="pricing" className="mx-auto w-full max-w-6xl px-6 py-24">
       <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
@@ -573,17 +616,41 @@ function Pricing() {
             site with you.
           </p>
         </div>
-        <div className="inline-flex rounded-lg border border-line bg-surface p-1 text-sm">
-          <button className="rounded-md bg-brand-700 px-3 py-1.5 text-[color:var(--primary-foreground)]">
+        <div role="tablist" aria-label="Billing cycle" className="inline-flex rounded-lg border border-line bg-surface p-1 text-sm shadow-elev-sm">
+          <button
+            role="tab"
+            aria-selected={cycle === "monthly"}
+            onClick={() => setCycle("monthly")}
+            className={cn(
+              "rounded-md px-3 py-1.5 transition-colors",
+              cycle === "monthly" ? "bg-brand-700 text-[color:var(--primary-foreground)]" : "text-ink-700 hover:text-ink-900",
+            )}
+          >
             Monthly
           </button>
-          <button className="px-3 py-1.5 text-ink-700">
-            Yearly <span className="font-mono-num text-xs text-muted-foreground">−20%</span>
+          <button
+            role="tab"
+            aria-selected={cycle === "yearly"}
+            onClick={() => setCycle("yearly")}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors",
+              cycle === "yearly" ? "bg-brand-700 text-[color:var(--primary-foreground)]" : "text-ink-700 hover:text-ink-900",
+            )}
+          >
+            Yearly
+            <span className={cn(
+              "font-mono-num rounded px-1.5 py-0.5 text-[10px]",
+              cycle === "yearly"
+                ? "bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
+                : "bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]",
+            )}>
+              Save 20%
+            </span>
           </button>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 xl:items-stretch">
         {PLANS.map((p) => {
           const featured = p.tone === "featured";
           const premium = p.tone === "premium";
@@ -591,8 +658,8 @@ function Pricing() {
             <Card
               key={p.name}
               className={cn(
-                "flex flex-col p-7",
-                featured && "border-brand-700 ring-2 ring-brand-100",
+                "flex flex-col p-7 hover-lift shadow-elev-sm",
+                featured && "border-brand-700 ring-2 ring-brand-100 shadow-elev-pop xl:-translate-y-2 xl:scale-[1.02]",
                 premium && "border-[color:var(--accent-gold)] ring-2 ring-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/15",
               )}
             >
@@ -602,11 +669,13 @@ function Pricing() {
                 {premium && <StatusChip tone="gold">Premium</StatusChip>}
               </div>
               <div className="mt-4 flex items-baseline gap-1.5">
-                <span className="font-display text-4xl text-ink-900">{p.price}</span>
-                <span className="text-sm text-muted-foreground">/ {p.cadence}</span>
+                <span className="font-display text-4xl text-ink-900">{fmtPrice(p.price)}</span>
+                <span className="text-sm text-muted-foreground">
+                  / {cycle === "yearly" ? "mo · billed yearly" : p.cadence}
+                </span>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">{p.blurb}</p>
-              <ul className="mt-6 space-y-2.5 text-sm">
+              <ul className="mt-6 flex-1 space-y-2.5 text-sm">
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-ink-700">
                     <Check className={cn("mt-0.5 size-4", premium ? "text-[color:var(--accent-gold)]" : "text-[color:var(--success)]")} strokeWidth={2} />
