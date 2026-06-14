@@ -35,6 +35,7 @@ type Expert = {
   available: "now" | "soon" | "busy";
   samples: string[];
   bio: string;
+  trend?: number[]; // last-30d jobs micro-trend
 };
 
 const EXPERTS: Expert[] = [
@@ -56,6 +57,7 @@ const EXPERTS: Expert[] = [
     available: "now",
     samples: ["Origin spotlight series — Vellum & Bean", "Wholesale buyer's guide — Northwall"],
     bio: "Eight years editing food and lifestyle long-form. Calm pen, strong on voice and structure.",
+    trend: [3, 4, 2, 5, 6, 5, 7, 6, 8, 7, 9, 8],
   },
   {
     id: "e2",
@@ -75,6 +77,7 @@ const EXPERTS: Expert[] = [
     available: "now",
     samples: ["Engineering blog refresh — Lattice", "API reference rewrite — Plaid"],
     bio: "Engineer-turned-writer. Comfortable with code samples, sequence diagrams, and changelogs.",
+    trend: [4, 3, 5, 4, 4, 6, 5, 7, 6, 5, 7, 6],
   },
   {
     id: "e3",
@@ -95,6 +98,7 @@ const EXPERTS: Expert[] = [
     available: "soon",
     samples: ["Cedar & Sumac brand voice playbook", "Quill & Quire holiday campaign"],
     bio: "LetoLab senior editor. Lead on premium accounts; sets QA bar across the network.",
+    trend: [6, 7, 8, 7, 9, 8, 10, 9, 11, 10, 12, 11],
   },
   {
     id: "e4",
@@ -114,6 +118,7 @@ const EXPERTS: Expert[] = [
     available: "now",
     samples: ["Cluster strategy — Northwall Roasters", "Topical map — Cedar & Sumac"],
     bio: "Strategy-first writer. Builds cluster plans before drafting a single sentence.",
+    trend: [2, 3, 2, 4, 3, 5, 4, 4, 5, 4, 6, 5],
   },
   {
     id: "e5",
@@ -133,6 +138,7 @@ const EXPERTS: Expert[] = [
     available: "now",
     samples: ["Launch copy — Maren Skincare", "Holiday landing — Holt Goods"],
     bio: "Punchy short-form. Best for landings and product narratives.",
+    trend: [1, 2, 1, 3, 2, 2, 3, 2, 4, 3, 3, 4],
   },
   {
     id: "e6",
@@ -152,6 +158,7 @@ const EXPERTS: Expert[] = [
     available: "busy",
     samples: ["Risk model whitepaper — Verity Capital", "Edge compute series — Northbeam"],
     bio: "Editor for hard-to-explain products. Strong on accuracy and tone calibration.",
+    trend: [5, 6, 5, 7, 6, 8, 7, 9, 8, 9, 8, 10],
   },
 ];
 
