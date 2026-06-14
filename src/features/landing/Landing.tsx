@@ -593,6 +593,14 @@ const PLANS = [
 ];
 
 function Pricing() {
+  const [cycle, setCycle] = useState<"monthly" | "yearly">("monthly");
+  const yearlyFactor = 0.8; // -20%
+  const fmtPrice = (p: string) => {
+    if (cycle === "monthly") return p;
+    const n = parseInt(p.replace(/\D/g, ""), 10);
+    if (!n) return p;
+    return `$${Math.round((n * yearlyFactor))}`;
+  };
   return (
     <section id="pricing" className="mx-auto w-full max-w-6xl px-6 py-24">
       <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
@@ -608,17 +616,41 @@ function Pricing() {
             site with you.
           </p>
         </div>
-        <div className="inline-flex rounded-lg border border-line bg-surface p-1 text-sm">
-          <button className="rounded-md bg-brand-700 px-3 py-1.5 text-[color:var(--primary-foreground)]">
+        <div role="tablist" aria-label="Billing cycle" className="inline-flex rounded-lg border border-line bg-surface p-1 text-sm shadow-elev-sm">
+          <button
+            role="tab"
+            aria-selected={cycle === "monthly"}
+            onClick={() => setCycle("monthly")}
+            className={cn(
+              "rounded-md px-3 py-1.5 transition-colors",
+              cycle === "monthly" ? "bg-brand-700 text-[color:var(--primary-foreground)]" : "text-ink-700 hover:text-ink-900",
+            )}
+          >
             Monthly
           </button>
-          <button className="px-3 py-1.5 text-ink-700">
-            Yearly <span className="font-mono-num text-xs text-muted-foreground">−20%</span>
+          <button
+            role="tab"
+            aria-selected={cycle === "yearly"}
+            onClick={() => setCycle("yearly")}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors",
+              cycle === "yearly" ? "bg-brand-700 text-[color:var(--primary-foreground)]" : "text-ink-700 hover:text-ink-900",
+            )}
+          >
+            Yearly
+            <span className={cn(
+              "font-mono-num rounded px-1.5 py-0.5 text-[10px]",
+              cycle === "yearly"
+                ? "bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
+                : "bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]",
+            )}>
+              Save 20%
+            </span>
           </button>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 xl:items-stretch">
         {PLANS.map((p) => {
           const featured = p.tone === "featured";
           const premium = p.tone === "premium";
@@ -626,8 +658,8 @@ function Pricing() {
             <Card
               key={p.name}
               className={cn(
-                "flex flex-col p-7",
-                featured && "border-brand-700 ring-2 ring-brand-100",
+                "flex flex-col p-7 hover-lift shadow-elev-sm",
+                featured && "border-brand-700 ring-2 ring-brand-100 shadow-elev-pop xl:-translate-y-2 xl:scale-[1.02]",
                 premium && "border-[color:var(--accent-gold)] ring-2 ring-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/15",
               )}
             >
@@ -637,11 +669,13 @@ function Pricing() {
                 {premium && <StatusChip tone="gold">Premium</StatusChip>}
               </div>
               <div className="mt-4 flex items-baseline gap-1.5">
-                <span className="font-display text-4xl text-ink-900">{p.price}</span>
-                <span className="text-sm text-muted-foreground">/ {p.cadence}</span>
+                <span className="font-display text-4xl text-ink-900">{fmtPrice(p.price)}</span>
+                <span className="text-sm text-muted-foreground">
+                  / {cycle === "yearly" ? "mo · billed yearly" : p.cadence}
+                </span>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">{p.blurb}</p>
-              <ul className="mt-6 space-y-2.5 text-sm">
+              <ul className="mt-6 flex-1 space-y-2.5 text-sm">
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-ink-700">
                     <Check className={cn("mt-0.5 size-4", premium ? "text-[color:var(--accent-gold)]" : "text-[color:var(--success)]")} strokeWidth={2} />
