@@ -35,6 +35,7 @@ type Expert = {
   available: "now" | "soon" | "busy";
   samples: string[];
   bio: string;
+  trend?: number[]; // last-30d jobs micro-trend
 };
 
 const EXPERTS: Expert[] = [
@@ -56,6 +57,7 @@ const EXPERTS: Expert[] = [
     available: "now",
     samples: ["Origin spotlight series — Vellum & Bean", "Wholesale buyer's guide — Northwall"],
     bio: "Eight years editing food and lifestyle long-form. Calm pen, strong on voice and structure.",
+    trend: [3, 4, 2, 5, 6, 5, 7, 6, 8, 7, 9, 8],
   },
   {
     id: "e2",
@@ -75,6 +77,7 @@ const EXPERTS: Expert[] = [
     available: "now",
     samples: ["Engineering blog refresh — Lattice", "API reference rewrite — Plaid"],
     bio: "Engineer-turned-writer. Comfortable with code samples, sequence diagrams, and changelogs.",
+    trend: [4, 3, 5, 4, 4, 6, 5, 7, 6, 5, 7, 6],
   },
   {
     id: "e3",
@@ -95,6 +98,7 @@ const EXPERTS: Expert[] = [
     available: "soon",
     samples: ["Cedar & Sumac brand voice playbook", "Quill & Quire holiday campaign"],
     bio: "LetoLab senior editor. Lead on premium accounts; sets QA bar across the network.",
+    trend: [6, 7, 8, 7, 9, 8, 10, 9, 11, 10, 12, 11],
   },
   {
     id: "e4",
@@ -114,6 +118,7 @@ const EXPERTS: Expert[] = [
     available: "now",
     samples: ["Cluster strategy — Northwall Roasters", "Topical map — Cedar & Sumac"],
     bio: "Strategy-first writer. Builds cluster plans before drafting a single sentence.",
+    trend: [2, 3, 2, 4, 3, 5, 4, 4, 5, 4, 6, 5],
   },
   {
     id: "e5",
@@ -133,6 +138,7 @@ const EXPERTS: Expert[] = [
     available: "now",
     samples: ["Launch copy — Maren Skincare", "Holiday landing — Holt Goods"],
     bio: "Punchy short-form. Best for landings and product narratives.",
+    trend: [1, 2, 1, 3, 2, 2, 3, 2, 4, 3, 3, 4],
   },
   {
     id: "e6",
@@ -152,6 +158,7 @@ const EXPERTS: Expert[] = [
     available: "busy",
     samples: ["Risk model whitepaper — Verity Capital", "Edge compute series — Northbeam"],
     bio: "Editor for hard-to-explain products. Strong on accuracy and tone calibration.",
+    trend: [5, 6, 5, 7, 6, 8, 7, 9, 8, 9, 8, 10],
   },
 ];
 
@@ -329,7 +336,7 @@ function Select({
 
 function ExpertCard({ e, onOpen }: { e: Expert; onOpen: () => void }) {
   return (
-    <Card className="flex flex-col p-5 transition-colors hover:border-ink-700/30">
+    <Card className="flex flex-col p-5 hover-lift shadow-elev-sm hover:border-ink-700/30">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
           <div className="relative">
@@ -348,10 +355,15 @@ function ExpertCard({ e, onOpen }: { e: Expert; onOpen: () => void }) {
             <div className="flex items-center gap-1.5">
               <span className="font-display text-base text-ink-900">{e.name}</span>
               {e.verified && !e.letolab ? (
-                <ShieldCheck
-                  className="size-3.5 fill-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
-                  strokeWidth={1.75}
-                />
+                <span
+                  title="Vetted by LetoLab — identity, portfolio, and SLA confirmed"
+                  className="inline-flex"
+                >
+                  <ShieldCheck
+                    className="size-3.5 fill-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
+                    strokeWidth={1.75}
+                  />
+                </span>
               ) : null}
             </div>
             <div className="text-xs text-muted-foreground">{e.title}</div>
@@ -364,15 +376,23 @@ function ExpertCard({ e, onOpen }: { e: Expert; onOpen: () => void }) {
         )}
       </div>
 
-      <div className="mt-4 flex items-center gap-3 border-y border-line py-3">
-        <div className="flex items-center gap-1">
-          <Star className="size-3.5 fill-current text-[color:var(--accent-gold)]" strokeWidth={0} />
-          <span className="font-mono-num text-sm text-ink-900">{e.rating}</span>
-          <span className="font-mono-num text-xs text-muted-foreground">· {e.jobs} jobs</span>
+      <div className="mt-4 flex items-center justify-between gap-3 border-y border-line py-3">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1">
+            <Star className="size-3.5 fill-current text-[color:var(--accent-gold)]" strokeWidth={0} />
+            <span className="font-mono-num text-sm text-ink-900">{e.rating}</span>
+            <span className="font-mono-num text-xs text-muted-foreground">· {e.jobs} jobs</span>
+          </div>
+          <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <Clock className="size-3" strokeWidth={1.5} /> {e.sla}
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Clock className="size-3" strokeWidth={1.5} /> {e.sla}
-        </div>
+        {e.trend ? (
+          <div className="flex flex-col items-end">
+            <Sparkline data={e.trend} />
+            <span className="font-mono-num text-[10px] text-muted-foreground">last 30d</span>
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
@@ -409,6 +429,34 @@ function ExpertCard({ e, onOpen }: { e: Expert; onOpen: () => void }) {
         </button>
       </div>
     </Card>
+  );
+}
+
+function Sparkline({ data }: { data: number[] }) {
+  const w = 64;
+  const h = 18;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const step = w / (data.length - 1);
+  const pts = data
+    .map((v, i) => `${(i * step).toFixed(1)},${(h - ((v - min) / range) * h).toFixed(1)}`)
+    .join(" ");
+  const last = data[data.length - 1];
+  const lastX = w;
+  const lastY = h - ((last - min) / range) * h;
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
+      <polyline
+        points={pts}
+        fill="none"
+        stroke="var(--color-brand-500)"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx={lastX} cy={lastY} r="1.75" fill="var(--color-brand-700)" />
+    </svg>
   );
 }
 

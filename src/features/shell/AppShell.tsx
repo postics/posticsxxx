@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -12,6 +12,7 @@ import {
   Search,
   Settings2,
   ChevronRight,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CreditMeter, StatusChip } from "@/features/shared/primitives";
@@ -156,19 +157,15 @@ function TopBar({ breadcrumb, topRight }: { breadcrumb: string[]; topRight?: Rea
 
       <div className="ml-auto flex items-center gap-3">
         {topRight}
-        <div className="hidden items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm text-muted-foreground md:flex">
+        <button className="hidden items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm text-muted-foreground hover:border-ink-700/30 md:flex">
           <Search className="size-3.5" strokeWidth={1.5} />
           <span>Search…</span>
           <kbd className="font-mono-num rounded bg-surface-sunken px-1.5 py-0.5 text-[10px]">⌘K</kbd>
-        </div>
+        </button>
         <LanguageButton />
         <ThemeToggle />
-        <button className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 hover:border-ink-700/30">
-          <CreditCard className="size-3.5 text-muted-foreground" strokeWidth={1.5} />
-          <CreditMeter used={3240} total={10000} compact />
-        </button>
-        <StatusChip tone="info">2 generating</StatusChip>
-        <button className="grid size-9 place-items-center rounded-lg border border-line bg-surface hover:border-ink-700/30">
+        <StatusPopover />
+        <button aria-label="Notifications" className="grid size-9 place-items-center rounded-lg border border-line bg-surface hover:border-ink-700/30">
           <Bell className="size-4 text-ink-700" strokeWidth={1.5} />
         </button>
         <div className="flex items-center gap-2 rounded-lg border border-line bg-surface px-2 py-1">
@@ -182,5 +179,53 @@ function TopBar({ breadcrumb, topRight }: { breadcrumb: string[]; topRight?: Rea
         </div>
       </div>
     </header>
+  );
+}
+
+function StatusPopover() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [open]);
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs hover:border-ink-700/30"
+      >
+        <span className="relative grid size-4 place-items-center">
+          <Activity className="size-3.5 text-[color:var(--info)]" strokeWidth={1.75} />
+          <span className="absolute -right-1 -top-1 size-2 rounded-full bg-[color:var(--info)] ring-2 ring-paper" />
+        </span>
+        <CreditMeter used={3240} total={10000} compact />
+      </button>
+      {open ? (
+        <div className="absolute right-0 top-[calc(100%+8px)] z-40 w-72 rounded-xl border border-line bg-surface p-4 shadow-elev-pop">
+          <div className="space-y-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Credits</div>
+              <div className="mt-1 flex items-center justify-between">
+                <CreditCard className="size-3.5 text-muted-foreground" strokeWidth={1.5} />
+                <CreditMeter used={3240} total={10000} />
+              </div>
+            </div>
+            <div className="border-t border-line pt-3">
+              <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Activity</div>
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <StatusChip tone="info">2 generating</StatusChip>
+                <Link to="/review" className="text-brand-700 hover:underline">Open queue</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
