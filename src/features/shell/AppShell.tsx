@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CreditMeter, StatusChip } from "@/features/shared/primitives";
+import { ThemeToggle, LanguageButton } from "@/features/shared/PreferencesControls";
 
 type NavId =
   | "overview"
@@ -160,6 +161,8 @@ function TopBar({ breadcrumb, topRight }: { breadcrumb: string[]; topRight?: Rea
           <span>Search…</span>
           <kbd className="font-mono-num rounded bg-surface-sunken px-1.5 py-0.5 text-[10px]">⌘K</kbd>
         </div>
+        <LanguageButton />
+        <ThemeToggle />
         <button className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 hover:border-ink-700/30">
           <CreditCard className="size-3.5 text-muted-foreground" strokeWidth={1.5} />
           <CreditMeter used={3240} total={10000} compact />
