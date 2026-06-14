@@ -159,7 +159,7 @@
   --secondary: var(--surface-sunken);
   --secondary-foreground: var(--ink-900);
   --muted: var(--surface-sunken);
-  --muted-foreground: #8A8E96;
+  --muted-foreground: #9AA0A8;
   --accent: var(--brand-100);
   --accent-foreground: var(--brand-700);
   --destructive: var(--danger);
@@ -221,6 +221,17 @@
 }
 @utility animate-rise {
   animation: postics-rise 320ms cubic-bezier(.2,.6,.2,1) both;
+}
+
+/* Scroll-reveal: hidden until [data-revealed] is set by IntersectionObserver */
+@utility reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 520ms cubic-bezier(.2,.6,.2,1), transform 520ms cubic-bezier(.2,.6,.2,1);
+  &[data-revealed="true"] {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @utility postics-input {
