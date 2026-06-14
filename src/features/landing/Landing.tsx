@@ -43,9 +43,28 @@ export function Landing() {
 /* ─────────────── Nav ─────────────── */
 
 function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
-    <header className="sticky top-0 z-30 border-b border-line/70 bg-paper/85 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
+    <header
+      data-scrolled={scrolled || undefined}
+      className={cn(
+        "sticky top-0 z-30 glass transition-[height,box-shadow] duration-200",
+        scrolled && "shadow-elev-sm",
+      )}
+    >
+      <div
+        className={cn(
+          "mx-auto flex w-full max-w-6xl items-center justify-between px-6 transition-[height] duration-200",
+          scrolled ? "h-14" : "h-16",
+        )}
+      >
         <Link to="/" className="flex items-center gap-2.5">
           <div className="grid size-7 place-items-center rounded-md bg-brand-700 text-[color:var(--primary-foreground)]">
             <span className="font-display text-sm leading-none">P</span>
@@ -59,6 +78,14 @@ function Nav() {
           <a href="#faq" className="hover:text-ink-900">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="Open command menu"
+            className="hidden items-center gap-2 rounded-lg border border-line bg-surface/70 px-2.5 py-1.5 text-xs text-muted-foreground hover:border-ink-700/30 md:inline-flex"
+          >
+            <span>Search</span>
+            <kbd className="font-mono-num rounded bg-surface-sunken px-1.5 py-0.5 text-[10px]">⌘K</kbd>
+          </button>
           <LanguageButton />
           <ThemeToggle />
           <Link to="/dashboard" className="postics-btn-ghost hidden sm:inline-flex">
