@@ -336,7 +336,7 @@ function Select({
 
 function ExpertCard({ e, onOpen }: { e: Expert; onOpen: () => void }) {
   return (
-    <Card className="flex flex-col p-5 transition-colors hover:border-ink-700/30">
+    <Card className="flex flex-col p-5 hover-lift shadow-elev-sm hover:border-ink-700/30">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
           <div className="relative">
@@ -355,10 +355,15 @@ function ExpertCard({ e, onOpen }: { e: Expert; onOpen: () => void }) {
             <div className="flex items-center gap-1.5">
               <span className="font-display text-base text-ink-900">{e.name}</span>
               {e.verified && !e.letolab ? (
-                <ShieldCheck
-                  className="size-3.5 fill-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
-                  strokeWidth={1.75}
-                />
+                <span
+                  title="Vetted by LetoLab — identity, portfolio, and SLA confirmed"
+                  className="inline-flex"
+                >
+                  <ShieldCheck
+                    className="size-3.5 fill-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
+                    strokeWidth={1.75}
+                  />
+                </span>
               ) : null}
             </div>
             <div className="text-xs text-muted-foreground">{e.title}</div>
@@ -371,15 +376,23 @@ function ExpertCard({ e, onOpen }: { e: Expert; onOpen: () => void }) {
         )}
       </div>
 
-      <div className="mt-4 flex items-center gap-3 border-y border-line py-3">
-        <div className="flex items-center gap-1">
-          <Star className="size-3.5 fill-current text-[color:var(--accent-gold)]" strokeWidth={0} />
-          <span className="font-mono-num text-sm text-ink-900">{e.rating}</span>
-          <span className="font-mono-num text-xs text-muted-foreground">· {e.jobs} jobs</span>
+      <div className="mt-4 flex items-center justify-between gap-3 border-y border-line py-3">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1">
+            <Star className="size-3.5 fill-current text-[color:var(--accent-gold)]" strokeWidth={0} />
+            <span className="font-mono-num text-sm text-ink-900">{e.rating}</span>
+            <span className="font-mono-num text-xs text-muted-foreground">· {e.jobs} jobs</span>
+          </div>
+          <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <Clock className="size-3" strokeWidth={1.5} /> {e.sla}
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Clock className="size-3" strokeWidth={1.5} /> {e.sla}
-        </div>
+        {e.trend ? (
+          <div className="flex flex-col items-end">
+            <Sparkline data={e.trend} />
+            <span className="font-mono-num text-[10px] text-muted-foreground">last 30d</span>
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-3 flex flex-wrap gap-1.5">
