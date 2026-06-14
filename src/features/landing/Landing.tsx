@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
   Sparkle,
@@ -27,15 +27,41 @@ export function Landing() {
     <div className="min-h-screen bg-paper">
       <Nav />
       <Hero />
-      <ProofStrip />
-      <LogoStrip />
-      <Pillars />
-      <Workflow />
-      <Differentiation />
-      <Pricing />
-      <Faq />
-      <CtaBand />
+      <Reveal><ProofStrip /></Reveal>
+      <Reveal><LogoStrip /></Reveal>
+      <Reveal><Pillars /></Reveal>
+      <Reveal><Workflow /></Reveal>
+      <Reveal><Differentiation /></Reveal>
+      <Reveal><Pricing /></Reveal>
+      <Reveal><Faq /></Reveal>
+      <Reveal><CtaBand /></Reveal>
       <Footer />
+    </div>
+  );
+}
+
+function Reveal({ children }: { children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            (entry.target as HTMLElement).dataset.revealed = "true";
+            io.unobserve(entry.target);
+          }
+        }
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.08 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className="reveal">
+      {children}
     </div>
   );
 }
