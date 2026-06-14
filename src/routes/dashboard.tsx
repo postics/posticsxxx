@@ -70,7 +70,7 @@ function Sidebar({
         collapsed ? "w-[68px]" : "w-[240px]",
       )}
     >
-      <div className="flex h-16 items-center gap-2.5 border-b border-line px-4">
+      <Link to="/" className="flex h-16 items-center gap-2.5 border-b border-line px-4 hover:opacity-80 transition-opacity">
         <div className="grid size-8 place-items-center rounded-md bg-brand-700 text-[color:var(--primary-foreground)]">
           <span className="font-display text-base leading-none">P</span>
         </div>
@@ -82,7 +82,7 @@ function Sidebar({
             </div>
           </div>
         )}
-      </div>
+      </Link>
 
       <nav className="flex-1 space-y-0.5 px-2 py-4">
         {NAV.map((n) => (
