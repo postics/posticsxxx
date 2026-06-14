@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Moon, Sun, Globe, X, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -136,7 +137,10 @@ export function LanguageButton({ compact = false }: { compact?: boolean }) {
 
 function LanguageDialog({ onClose }: { onClose: () => void }) {
   const [lang, setLang] = useLanguage();
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
@@ -146,7 +150,7 @@ function LanguageDialog({ onClose }: { onClose: () => void }) {
     };
   }, [onClose]);
 
-  return (
+  const dialog = (
     <div
       role="dialog"
       aria-modal="true"
@@ -201,4 +205,7 @@ function LanguageDialog({ onClose }: { onClose: () => void }) {
       </div>
     </div>
   );
+
+  if (!mounted || typeof document === "undefined") return null;
+  return createPortal(dialog, document.body);
 }
