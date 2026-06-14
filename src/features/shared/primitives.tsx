@@ -43,11 +43,12 @@ export function CreditMeter({
   compact?: boolean;
 }) {
   const pct = Math.min(100, Math.round((used / total) * 100));
+  const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return (
     <div className={cn("flex items-center gap-2.5", compact ? "" : "min-w-[180px]")}>
       <span className="font-mono-num text-xs text-ink-700">
-        {used.toLocaleString()}
-        <span className="text-muted-foreground">/{total.toLocaleString()}</span>
+        {fmt(used)}
+        <span className="text-muted-foreground">/{fmt(total)}</span>
       </span>
       <div className="h-1.5 w-24 overflow-hidden rounded-full bg-surface-sunken">
         <div
