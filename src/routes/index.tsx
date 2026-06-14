@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { OnboardingWizard } from "@/features/onboarding/OnboardingWizard";
+import { Landing } from "@/features/landing/Landing";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,5 +17,5 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: () => <OnboardingWizard />,
+  component: Landing,
 });

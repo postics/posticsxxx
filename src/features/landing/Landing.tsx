@@ -1,0 +1,678 @@
+import { Link } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  Sparkle,
+  Check,
+  ShieldCheck,
+  Globe2,
+  PenLine,
+  CalendarDays,
+  BarChart3,
+  LayoutDashboard,
+  Coffee,
+  Quote,
+  ExternalLink,
+  ChevronRight,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { BrowserFrame, Card, StatusChip } from "@/features/shared/primitives";
+
+export function Landing() {
+  return (
+    <div className="min-h-screen bg-paper">
+      <Nav />
+      <Hero />
+      <LogoStrip />
+      <Pillars />
+      <Workflow />
+      <Pricing />
+      <Faq />
+      <CtaBand />
+      <Footer />
+    </div>
+  );
+}
+
+/* ─────────────── Nav ─────────────── */
+
+function Nav() {
+  return (
+    <header className="sticky top-0 z-30 border-b border-line/70 bg-paper/85 backdrop-blur">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="grid size-7 place-items-center rounded-md bg-brand-700 text-[color:var(--primary-foreground)]">
+            <span className="font-display text-sm leading-none">P</span>
+          </div>
+          <span className="font-display text-lg text-ink-900">Postics</span>
+        </Link>
+        <nav className="hidden items-center gap-7 text-sm text-ink-700 md:flex">
+          <a href="#how" className="hover:text-ink-900">How it works</a>
+          <a href="#pillars" className="hover:text-ink-900">Platform</a>
+          <a href="#pricing" className="hover:text-ink-900">Pricing</a>
+          <a href="#faq" className="hover:text-ink-900">FAQ</a>
+        </nav>
+        <div className="flex items-center gap-2">
+          <Link to="/dashboard" className="postics-btn-ghost hidden sm:inline-flex">
+            Sign in
+          </Link>
+          <Link to="/onboarding" className="postics-btn-primary">
+            Start free <ArrowRight className="size-4" strokeWidth={1.75} />
+          </Link>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ─────────────── Hero ─────────────── */
+
+function Hero() {
+  return (
+    <section className="relative overflow-hidden">
+      {/* warm paper grain */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-[0.5]"
+        style={{
+          backgroundImage:
+            "radial-gradient(1200px 500px at 50% -10%, color-mix(in oklab, var(--color-brand-100) 70%, transparent), transparent 70%)",
+        }}
+      />
+      <div className="relative mx-auto grid w-full max-w-6xl gap-14 px-6 pt-20 pb-24 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:pt-28">
+        <div className="space-y-7 animate-rise">
+          <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-ink-700">
+            <span className="size-1.5 rounded-full bg-[color:var(--success)]" />
+            New · Quarterly content plans, generated in minutes
+          </div>
+          <h1 className="font-display text-[44px] leading-[1.05] tracking-tight text-ink-900 sm:text-[64px]">
+            The content engine
+            <br />
+            that <span className="italic text-brand-700">actually ships.</span>
+          </h1>
+          <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">
+            Postics provisions your site, plans the quarter, writes the drafts, and publishes on
+            schedule — under your editorial control. Built for operators and agencies who care about
+            craft.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link to="/onboarding" className="postics-btn-primary">
+              Generate a demo site <Sparkle className="size-4" strokeWidth={1.5} />
+            </Link>
+            <a href="#how" className="postics-btn-secondary">
+              See how it works
+            </a>
+          </div>
+          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-muted-foreground">
+            {[
+              "Live preview in ~40 seconds",
+              "No credit card",
+              "Private noindex by default",
+            ].map((t) => (
+              <li key={t} className="inline-flex items-center gap-1.5">
+                <Check className="size-3.5 text-[color:var(--success)]" strokeWidth={2} /> {t}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="relative">
+          <BrowserFrame url="https://vellumandbean.postics.site" className="lg:ml-auto">
+            <HeroSitePreview />
+          </BrowserFrame>
+
+          {/* Floating callouts */}
+          <div className="absolute -left-4 top-10 hidden rounded-xl border border-line bg-surface p-3 shadow-[0_24px_60px_-30px_rgba(20,24,31,0.25)] sm:flex sm:items-center sm:gap-2.5">
+            <span className="grid size-7 place-items-center rounded-md bg-brand-100 text-brand-700">
+              <PenLine className="size-3.5" strokeWidth={1.75} />
+            </span>
+            <div className="text-xs">
+              <div className="text-ink-900">Draft ready</div>
+              <div className="font-mono-num text-muted-foreground">+3 articles</div>
+            </div>
+          </div>
+          <div className="absolute -right-3 bottom-10 hidden rounded-xl border border-line bg-surface p-3 shadow-[0_24px_60px_-30px_rgba(20,24,31,0.25)] sm:flex sm:items-center sm:gap-2.5">
+            <span className="grid size-7 place-items-center rounded-md bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]">
+              <BarChart3 className="size-3.5" strokeWidth={1.75} />
+            </span>
+            <div className="text-xs">
+              <div className="text-ink-900">Avg. position</div>
+              <div className="font-mono-num text-[color:var(--success)]">↑ 3.1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HeroSitePreview() {
+  return (
+    <div className="space-y-5 bg-surface p-6">
+      <div className="flex items-center justify-between border-b border-line pb-3">
+        <div className="font-display text-base text-ink-900">Vellum & Bean</div>
+        <div className="flex gap-3 text-[11px] text-muted-foreground">
+          <span>Journal</span><span>Wholesale</span><span>Shop</span><span>About</span>
+        </div>
+      </div>
+      <div>
+        <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          Quarterly journal · Autumn 2026
+        </div>
+        <h3 className="mt-1 font-display text-2xl leading-tight text-ink-900">
+          On provenance, patience, and the quiet economics of small-batch coffee.
+        </h3>
+      </div>
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          "Roast curves explained",
+          "Decaf, reconsidered",
+          "A working cupping protocol",
+        ].map((t) => (
+          <div key={t} className="space-y-1.5">
+            <div className="aspect-[4/3] rounded-md border border-line bg-surface-sunken" />
+            <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+              Essay · 4 min
+            </div>
+            <div className="font-display text-sm leading-snug text-ink-900">{t}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────── Logo strip ─────────────── */
+
+function LogoStrip() {
+  const logos = ["Field Notes", "Atelier Co.", "North Light", "Harbor Studio", "Ledger & Co."];
+  return (
+    <section className="border-y border-line bg-surface/60">
+      <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-6 py-10 md:flex-row md:justify-between">
+        <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          Trusted by operators & agencies
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3 font-display text-base text-ink-700/70">
+          {logos.map((l) => (
+            <span key={l}>{l}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── Pillars ─────────────── */
+
+const PILLARS = [
+  {
+    icon: Globe2,
+    title: "Site, provisioned",
+    blurb:
+      "A premium, template-backed site spun up on a private subdomain — yours to keep, connect, or acquire.",
+  },
+  {
+    icon: CalendarDays,
+    title: "Plans, not posts",
+    blurb:
+      "Quarterly content plans grounded in your audience and goals. Approve or rewrite — never a black box.",
+  },
+  {
+    icon: PenLine,
+    title: "Drafts with a voice",
+    blurb:
+      "Editorial drafts in your tone. Human review built-in. Inline rewrites, citations, and image direction.",
+  },
+  {
+    icon: BarChart3,
+    title: "SEO that compounds",
+    blurb:
+      "Schema, internal links, sitemaps and rank tracking — wired in from day one, not bolted on later.",
+  },
+];
+
+function Pillars() {
+  return (
+    <section id="pillars" className="mx-auto w-full max-w-6xl px-6 py-24">
+      <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr] lg:items-start">
+        <div className="space-y-3">
+          <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            The platform
+          </div>
+          <h2 className="font-display text-4xl leading-[1.1] text-ink-900">
+            One workspace for the full content cycle.
+          </h2>
+          <p className="text-muted-foreground">
+            Postics replaces a stack of brittle tools with a single editorial control panel — built
+            so a small team can publish like a studio of ten.
+          </p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {PILLARS.map((p) => (
+            <Card key={p.title} className="p-6">
+              <span className="grid size-9 place-items-center rounded-lg bg-brand-100 text-brand-700">
+                <p.icon className="size-4" strokeWidth={1.5} />
+              </span>
+              <h3 className="mt-4 font-display text-lg text-ink-900">{p.title}</h3>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{p.blurb}</p>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── Workflow ─────────────── */
+
+const STEPS = [
+  {
+    n: "01",
+    title: "Describe the business",
+    blurb: "A few honest sentences. Or paste a URL and we'll learn the rest.",
+  },
+  {
+    n: "02",
+    title: "Pick a look & topics",
+    blurb: "Four editorial templates. AI-suggested topics you can edit, swap or veto.",
+  },
+  {
+    n: "03",
+    title: "Watch Postics build",
+    blurb: "Provisioning, layout, three articles, SEO — assembled live in front of you.",
+  },
+  {
+    n: "04",
+    title: "Keep, connect, or acquire",
+    blurb: "Subscribe, point your own domain, or buy the site outright.",
+  },
+];
+
+function Workflow() {
+  return (
+    <section id="how" className="border-y border-line bg-surface/50">
+      <div className="mx-auto w-full max-w-6xl px-6 py-24">
+        <div className="mb-12 max-w-2xl space-y-3">
+          <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            How it works
+          </div>
+          <h2 className="font-display text-4xl leading-[1.1] text-ink-900">
+            From empty browser to live editorial site in under a minute.
+          </h2>
+        </div>
+
+        <ol className="grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-4">
+          {STEPS.map((s) => (
+            <li key={s.n} className="bg-surface p-6">
+              <div className="font-mono-num text-xs text-[color:var(--accent-gold)]">{s.n}</div>
+              <div className="mt-3 font-display text-lg text-ink-900">{s.title}</div>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{s.blurb}</p>
+            </li>
+          ))}
+        </ol>
+
+        <div className="mt-12 grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
+          <Card className="overflow-hidden p-0">
+            <div className="flex items-center justify-between border-b border-line bg-surface-sunken px-5 py-3">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <LayoutDashboard className="size-3.5" strokeWidth={1.5} />
+                Project dashboard
+              </div>
+              <StatusChip tone="live">Live</StatusChip>
+            </div>
+            <div className="space-y-5 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-display text-xl text-ink-900">Vellum & Bean</div>
+                  <div className="font-mono-num text-xs text-muted-foreground">
+                    vellumandbean.postics.site
+                  </div>
+                </div>
+                <StatusChip tone="gold">Pro</StatusChip>
+              </div>
+              <div className="grid grid-cols-5 gap-2">
+                {[
+                  ["Idea", 8],
+                  ["Draft", 4],
+                  ["Review", 2],
+                  ["Approved", 3],
+                  ["Live", 11],
+                ].map(([l, n], i) => (
+                  <div key={l as string} className="rounded-md border border-line bg-surface-sunken/40 p-2.5">
+                    <div className="text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+                      {l}
+                    </div>
+                    <div className="font-mono-num mt-1 text-base text-ink-900">{n}</div>
+                    <div className={cn("mt-1.5 h-1 rounded", i === 4 ? "bg-brand-700/70" : "bg-ink-900/15")} />
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center justify-between border-t border-line pt-4 text-xs text-muted-foreground">
+                <span>Next publish · Tue 10:00</span>
+                <Link to="/dashboard" className="inline-flex items-center gap-1 text-brand-700 hover:text-brand-500">
+                  Open dashboard <ChevronRight className="size-3.5" strokeWidth={1.75} />
+                </Link>
+              </div>
+            </div>
+          </Card>
+
+          <div className="space-y-5">
+            <h3 className="font-display text-2xl text-ink-900">
+              A control panel, not a chatbox.
+            </h3>
+            <p className="text-muted-foreground">
+              Every project gets a real pipeline — idea, draft, review, approved, published — with
+              human checkpoints where they matter. Approvals, retries, and rollbacks are first-class.
+            </p>
+            <ul className="space-y-2.5 text-sm">
+              {[
+                "Per-project credits & roles",
+                "Inline editor with revision history",
+                "Scheduled publishing with rollback",
+                "Agency mode: clients, white-label, billing",
+              ].map((t) => (
+                <li key={t} className="flex items-start gap-2.5 text-ink-700">
+                  <Check className="mt-0.5 size-4 text-[color:var(--success)]" strokeWidth={2} />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── Pricing ─────────────── */
+
+const PLANS = [
+  {
+    name: "Starter",
+    price: "$0",
+    cadence: "free preview",
+    blurb: "Generate a private demo site and explore the pipeline.",
+    features: ["1 project", "Private noindex preview", "3 starter articles", "Community support"],
+    cta: "Generate a demo",
+    href: "/onboarding",
+    tone: "default" as const,
+  },
+  {
+    name: "Pro",
+    price: "$39",
+    cadence: "per month",
+    blurb: "For operators publishing weekly. Connect your own domain.",
+    features: [
+      "Up to 5 projects",
+      "Custom domain & SSL",
+      "10,000 monthly credits",
+      "Scheduled publishing",
+      "Inline editor & roles",
+    ],
+    cta: "Start Pro",
+    href: "/onboarding",
+    tone: "featured" as const,
+  },
+  {
+    name: "Agency",
+    price: "Custom",
+    cadence: "white-label",
+    blurb: "For studios running content for many clients.",
+    features: [
+      "Unlimited projects",
+      "Client workspaces",
+      "Per-tenant billing",
+      "White-label dashboard",
+      "Priority generation",
+    ],
+    cta: "Talk to sales",
+    href: "/onboarding",
+    tone: "default" as const,
+  },
+];
+
+function Pricing() {
+  return (
+    <section id="pricing" className="mx-auto w-full max-w-6xl px-6 py-24">
+      <div className="mb-12 flex flex-wrap items-end justify-between gap-6">
+        <div className="max-w-xl space-y-3">
+          <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Pricing
+          </div>
+          <h2 className="font-display text-4xl leading-[1.1] text-ink-900">
+            Honest pricing. No per-seat tax.
+          </h2>
+          <p className="text-muted-foreground">
+            Try the engine free. Upgrade when you're ready to publish — cancel anytime, take your
+            site with you.
+          </p>
+        </div>
+        <div className="inline-flex rounded-lg border border-line bg-surface p-1 text-sm">
+          <button className="rounded-md bg-brand-700 px-3 py-1.5 text-[color:var(--primary-foreground)]">
+            Monthly
+          </button>
+          <button className="px-3 py-1.5 text-ink-700">
+            Yearly <span className="font-mono-num text-xs text-muted-foreground">−20%</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        {PLANS.map((p) => {
+          const featured = p.tone === "featured";
+          return (
+            <Card
+              key={p.name}
+              className={cn(
+                "flex flex-col p-7",
+                featured && "border-brand-700 ring-2 ring-brand-100",
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="font-display text-xl text-ink-900">{p.name}</div>
+                {featured && <StatusChip tone="live">Most chosen</StatusChip>}
+              </div>
+              <div className="mt-4 flex items-baseline gap-1.5">
+                <span className="font-display text-4xl text-ink-900">{p.price}</span>
+                <span className="text-sm text-muted-foreground">/ {p.cadence}</span>
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground">{p.blurb}</p>
+              <ul className="mt-6 space-y-2.5 text-sm">
+                {p.features.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5 text-ink-700">
+                    <Check className="mt-0.5 size-4 text-[color:var(--success)]" strokeWidth={2} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to={p.href}
+                className={cn(
+                  "mt-8 inline-flex items-center justify-center gap-2 rounded-[10px] px-4 py-2.5 text-sm font-medium transition-colors",
+                  featured
+                    ? "bg-brand-700 text-[color:var(--primary-foreground)] hover:bg-brand-500"
+                    : "border border-line bg-surface text-ink-900 hover:border-ink-700/30",
+                )}
+              >
+                {p.cta} <ArrowRight className="size-4" strokeWidth={1.75} />
+              </Link>
+            </Card>
+          );
+        })}
+      </div>
+
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <ShieldCheck className="size-3.5" strokeWidth={1.5} /> Cancel anytime
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <Coffee className="size-3.5" strokeWidth={1.5} /> No setup fees
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <ExternalLink className="size-3.5" strokeWidth={1.5} /> Export your site at any time
+        </span>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── FAQ ─────────────── */
+
+const FAQ = [
+  {
+    q: "Is the writing actually any good?",
+    a: "Drafts land in your tone, with citations and an editorial structure. Every draft passes through review — you keep final cut. Most operators ship after light edits.",
+  },
+  {
+    q: "Will this hurt my SEO?",
+    a: "Postics ships schema, sitemaps, internal linking and rank tracking from day one. Previews are private and noindexed until you connect a domain and approve.",
+  },
+  {
+    q: "Can I bring my own domain?",
+    a: "Yes — Pro and Agency plans support custom domains with managed SSL and email-safe DNS. We never lock you in.",
+  },
+  {
+    q: "What if I want to leave?",
+    a: "Export your site any time — code, content, and SEO foundation. Or acquire it outright as a one-time purchase.",
+  },
+];
+
+function Faq() {
+  return (
+    <section id="faq" className="border-y border-line bg-surface/50">
+      <div className="mx-auto w-full max-w-4xl px-6 py-24">
+        <div className="mb-10 space-y-3 text-center">
+          <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Frequently asked
+          </div>
+          <h2 className="font-display text-4xl leading-[1.1] text-ink-900">
+            The honest questions.
+          </h2>
+        </div>
+        <div className="divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+          {FAQ.map((f) => (
+            <details key={f.q} className="group">
+              <summary className="flex cursor-pointer list-none items-start justify-between gap-6 px-6 py-5 text-left">
+                <span className="font-display text-lg text-ink-900">{f.q}</span>
+                <span className="mt-1 grid size-6 shrink-0 place-items-center rounded-full border border-line text-muted-foreground transition-transform group-open:rotate-45">
+                  <Plus />
+                </span>
+              </summary>
+              <div className="px-6 pb-5 text-sm leading-relaxed text-muted-foreground">{f.a}</div>
+            </details>
+          ))}
+        </div>
+
+        <figure className="mt-12 rounded-xl border border-line bg-surface p-7">
+          <Quote className="size-5 text-[color:var(--accent-gold)]" strokeWidth={1.5} />
+          <blockquote className="mt-3 font-display text-xl leading-snug text-ink-900">
+            “Postics replaced three tools and half a freelancer. Our journal ships on Tuesdays — and
+            actually reads like us.”
+          </blockquote>
+          <figcaption className="mt-4 text-sm text-muted-foreground">
+            Eliza M. — Founder, Vellum & Bean
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+  );
+}
+
+function Plus() {
+  return (
+    <svg viewBox="0 0 16 16" className="size-3" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
+      <path d="M8 3v10M3 8h10" />
+    </svg>
+  );
+}
+
+/* ─────────────── CTA band ─────────────── */
+
+function CtaBand() {
+  return (
+    <section className="mx-auto w-full max-w-6xl px-6 py-24">
+      <div className="relative overflow-hidden rounded-2xl border border-line bg-brand-700 px-8 py-16 text-[color:var(--primary-foreground)] sm:px-14">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              "radial-gradient(600px 240px at 90% 0%, color-mix(in oklab, var(--color-accent-gold) 50%, transparent), transparent 70%)",
+          }}
+        />
+        <div className="relative grid items-end gap-8 md:grid-cols-[1.4fr_1fr]">
+          <div>
+            <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-[color:var(--accent-gold-soft)]">
+              Ready when you are
+            </div>
+            <h2 className="mt-3 font-display text-4xl leading-[1.1] sm:text-5xl">
+              See your site assemble itself.
+            </h2>
+            <p className="mt-3 max-w-xl text-base text-[color:var(--primary-foreground)]/75">
+              Generate a private preview in about 40 seconds — no credit card, no commitment.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 md:justify-end">
+            <Link
+              to="/onboarding"
+              className="inline-flex items-center gap-2 rounded-[10px] bg-[color:var(--accent-gold)] px-5 py-3 text-sm font-medium text-white hover:brightness-95"
+            >
+              Generate a demo site <Sparkle className="size-4" strokeWidth={1.5} />
+            </Link>
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center gap-2 rounded-[10px] border border-white/20 px-5 py-3 text-sm font-medium text-[color:var(--primary-foreground)] hover:bg-white/5"
+            >
+              Tour the dashboard <ArrowRight className="size-4" strokeWidth={1.75} />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── Footer ─────────────── */
+
+function Footer() {
+  return (
+    <footer className="border-t border-line bg-surface">
+      <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+        <div className="space-y-3">
+          <Link to="/" className="flex items-center gap-2.5">
+            <div className="grid size-7 place-items-center rounded-md bg-brand-700 text-[color:var(--primary-foreground)]">
+              <span className="font-display text-sm leading-none">P</span>
+            </div>
+            <span className="font-display text-lg text-ink-900">Postics</span>
+          </Link>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            Editorial studio meets engineering control panel. Built for operators and agencies who
+            care about craft.
+          </p>
+          <div className="font-mono-num text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Postics Labs
+          </div>
+        </div>
+        <FooterCol title="Product" links={["Onboarding", "Dashboard", "Editor", "Pricing"]} />
+        <FooterCol title="Company" links={["About", "Studio mode", "Careers", "Contact"]} />
+        <FooterCol title="Resources" links={["Changelog", "Status", "Privacy", "Terms"]} />
+      </div>
+    </footer>
+  );
+}
+
+function FooterCol({ title, links }: { title: string; links: string[] }) {
+  return (
+    <div>
+      <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+        {title}
+      </div>
+      <ul className="mt-4 space-y-2.5 text-sm">
+        {links.map((l) => (
+          <li key={l}>
+            <a href="#" className="text-ink-700 hover:text-ink-900">{l}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
