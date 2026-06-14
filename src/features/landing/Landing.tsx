@@ -150,6 +150,14 @@ function Hero() {
       </div>
       <div className="relative mx-auto grid w-full max-w-6xl gap-14 px-6 pt-8 pb-24 lg:grid-cols-[1.05fr_1fr] lg:items-center">
         <div key={audience} className="space-y-7 animate-rise">
+          <Link
+            to="/marketplace"
+            className="inline-flex items-center gap-2 rounded-full border border-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/40 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-[color:var(--accent-gold)] transition-colors hover:bg-[color:var(--accent-gold-soft)]/70"
+          >
+            <span className="rounded-full bg-[color:var(--accent-gold)] px-1.5 py-0.5 text-[9px] text-white">New</span>
+            Freelancer marketplace
+            <ArrowRight className="size-3" strokeWidth={2} />
+          </Link>
           <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-ink-700">
             <span className="size-1.5 rounded-full bg-[color:var(--success)]" />
             {copy.eyebrow}
