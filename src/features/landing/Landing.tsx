@@ -888,6 +888,10 @@ function Footer() {
     { label: "Dashboard", to: "/dashboard", icon: BarChart3 },
     { label: "Content Plan", to: "/plan", icon: CalendarDays },
     { label: "Editor", to: "/editor", icon: PenLine },
+    { label: "Human Review", to: "/review", icon: ChevronRight },
+    { label: "Analytics", to: "/analytics", icon: BarChart3 },
+    { label: "Billing & Credits", to: "/billing", icon: ArrowRight },
+    { label: "Agency Console", to: "/agency", icon: Globe2 },
     { label: "Onboarding", to: "/onboarding", icon: ArrowRight },
   ];
 

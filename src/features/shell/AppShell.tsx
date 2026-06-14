@@ -16,15 +16,25 @@ import {
 import { cn } from "@/lib/utils";
 import { CreditMeter, StatusChip } from "@/features/shared/primitives";
 
-type NavId = "overview" | "plan" | "editor" | "site" | "analytics" | "billing";
+type NavId =
+  | "overview"
+  | "plan"
+  | "editor"
+  | "review"
+  | "site"
+  | "analytics"
+  | "billing"
+  | "agency";
 
 const NAV: { id: NavId; label: string; icon: any; to: string; badge?: number }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard, to: "/dashboard" },
   { id: "plan", label: "Content Plan", icon: CalendarDays, to: "/plan", badge: 4 },
   { id: "editor", label: "Editor", icon: PenLine, to: "/editor" },
+  { id: "review", label: "Human Review", icon: Bell, to: "/review", badge: 7 },
   { id: "site", label: "Site", icon: Globe2, to: "/dashboard" },
-  { id: "analytics", label: "Analytics", icon: BarChart3, to: "/dashboard" },
-  { id: "billing", label: "Billing & Credits", icon: CreditCard, to: "/dashboard" },
+  { id: "analytics", label: "Analytics", icon: BarChart3, to: "/analytics" },
+  { id: "billing", label: "Billing & Credits", icon: CreditCard, to: "/billing" },
+  { id: "agency", label: "Agency Console", icon: Settings2, to: "/agency" },
 ];
 
 export function AppShell({
