@@ -432,6 +432,34 @@ function ExpertCard({ e, onOpen }: { e: Expert; onOpen: () => void }) {
   );
 }
 
+function Sparkline({ data }: { data: number[] }) {
+  const w = 64;
+  const h = 18;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const step = w / (data.length - 1);
+  const pts = data
+    .map((v, i) => `${(i * step).toFixed(1)},${(h - ((v - min) / range) * h).toFixed(1)}`)
+    .join(" ");
+  const last = data[data.length - 1];
+  const lastX = w;
+  const lastY = h - ((last - min) / range) * h;
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
+      <polyline
+        points={pts}
+        fill="none"
+        stroke="var(--color-brand-500)"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx={lastX} cy={lastY} r="1.75" fill="var(--color-brand-700)" />
+    </svg>
+  );
+}
+
 function Drawer({ e, onClose }: { e: Expert; onClose: () => void }) {
   const [assigned, setAssigned] = useState(false);
   return (
