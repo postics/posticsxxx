@@ -579,7 +579,7 @@ function Pricing() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {PLANS.map((p) => {
           const featured = p.tone === "featured";
           const premium = p.tone === "premium";
