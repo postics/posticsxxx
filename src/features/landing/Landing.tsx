@@ -25,9 +25,11 @@ export function Landing() {
     <div className="min-h-screen bg-paper">
       <Nav />
       <Hero />
+      <ProofStrip />
       <LogoStrip />
       <Pillars />
       <Workflow />
+      <Differentiation />
       <Pricing />
       <Faq />
       <CtaBand />
@@ -496,45 +498,58 @@ function Workflow() {
 const PLANS = [
   {
     name: "Starter",
-    price: "$0",
-    cadence: "free preview",
-    blurb: "Generate a private demo site and explore the pipeline.",
-    features: ["1 project", "Private noindex preview", "3 starter articles", "Community support"],
-    cta: "Generate a demo",
+    price: "$199",
+    cadence: "per month",
+    blurb: "Solo operators getting their first cadence to ship.",
+    features: ["1 project", "4 articles / month", "Custom domain", "Email support"],
+    cta: "Start Starter",
     href: "/onboarding",
     tone: "default" as const,
   },
   {
-    name: "Pro",
-    price: "$39",
+    name: "Growth",
+    price: "$449",
     cadence: "per month",
-    blurb: "For operators publishing weekly. Connect your own domain.",
+    blurb: "For operators publishing weekly with real SEO ambition.",
     features: [
-      "Up to 5 projects",
-      "Custom domain & SSL",
-      "10,000 monthly credits",
+      "10 articles / month",
       "Scheduled publishing",
+      "SEO clusters & internal linking",
       "Inline editor & roles",
     ],
-    cta: "Start Pro",
+    cta: "Start Growth",
     href: "/onboarding",
     tone: "featured" as const,
   },
   {
-    name: "Agency",
-    price: "Custom",
-    cadence: "white-label",
-    blurb: "For studios running content for many clients.",
+    name: "Advanced",
+    price: "$899",
+    cadence: "per month",
+    blurb: "Multi-channel publishing with expert checkpoints.",
     features: [
-      "Unlimited projects",
-      "Client workspaces",
-      "Per-tenant billing",
-      "White-label dashboard",
+      "20 articles / month",
+      "Human expert review",
+      "Social drafts (when unlocked)",
       "Priority generation",
     ],
-    cta: "Talk to sales",
+    cta: "Start Advanced",
     href: "/onboarding",
     tone: "default" as const,
+  },
+  {
+    name: "Premium",
+    price: "$999",
+    cadence: "per month",
+    blurb: "Verified LetoLab editors, hands-on across the cycle.",
+    features: [
+      "Unlimited drafts",
+      "Named senior editor",
+      "GEO-ready structured data",
+      "First-line support",
+    ],
+    cta: "Apply for Premium",
+    href: "/onboarding",
+    tone: "premium" as const,
   },
 ];
 
@@ -567,17 +582,20 @@ function Pricing() {
       <div className="grid gap-4 md:grid-cols-3">
         {PLANS.map((p) => {
           const featured = p.tone === "featured";
+          const premium = p.tone === "premium";
           return (
             <Card
               key={p.name}
               className={cn(
                 "flex flex-col p-7",
                 featured && "border-brand-700 ring-2 ring-brand-100",
+                premium && "border-[color:var(--accent-gold)] ring-2 ring-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/15",
               )}
             >
               <div className="flex items-center justify-between">
                 <div className="font-display text-xl text-ink-900">{p.name}</div>
                 {featured && <StatusChip tone="live">Most chosen</StatusChip>}
+                {premium && <StatusChip tone="gold">Premium</StatusChip>}
               </div>
               <div className="mt-4 flex items-baseline gap-1.5">
                 <span className="font-display text-4xl text-ink-900">{p.price}</span>
@@ -587,7 +605,7 @@ function Pricing() {
               <ul className="mt-6 space-y-2.5 text-sm">
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-ink-700">
-                    <Check className="mt-0.5 size-4 text-[color:var(--success)]" strokeWidth={2} />
+                    <Check className={cn("mt-0.5 size-4", premium ? "text-[color:var(--accent-gold)]" : "text-[color:var(--success)]")} strokeWidth={2} />
                     {f}
                   </li>
                 ))}
@@ -598,6 +616,8 @@ function Pricing() {
                   "mt-8 inline-flex items-center justify-center gap-2 rounded-[10px] px-4 py-2.5 text-sm font-medium transition-colors",
                   featured
                     ? "bg-brand-700 text-[color:var(--primary-foreground)] hover:bg-brand-500"
+                    : premium
+                    ? "bg-[color:var(--accent-gold)] text-white hover:brightness-95"
                     : "border border-line bg-surface text-ink-900 hover:border-ink-700/30",
                 )}
               >
@@ -606,6 +626,10 @@ function Pricing() {
             </Card>
           );
         })}
+      </div>
+
+      <div className="mt-6">
+        <AgencyBlock />
       </div>
 
       <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-muted-foreground">
