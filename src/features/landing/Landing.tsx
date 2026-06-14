@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrowserFrame, Card, StatusChip } from "@/features/shared/primitives";
+import { ThemeToggle, LanguageButton } from "@/features/shared/PreferencesControls";
 
 type Audience = "business" | "agency";
 
@@ -58,6 +59,8 @@ function Nav() {
           <a href="#faq" className="hover:text-ink-900">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
+          <LanguageButton />
+          <ThemeToggle />
           <Link to="/dashboard" className="postics-btn-ghost hidden sm:inline-flex">
             Sign in
           </Link>
