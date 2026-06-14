@@ -9,12 +9,36 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ReviewRouteImport } from './routes/review'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as BillingRouteImport } from './routes/billing'
+import { Route as AgencyRouteImport } from './routes/agency'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as EditorRouteImport } from './routes/editor'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 
+const ReviewRoute = ReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillingRoute = BillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgencyRoute = AgencyRouteImport.update({
+  id: '/agency',
+  path: '/agency',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlanRoute = PlanRouteImport.update({
   id: '/plan',
   path: '/plan',
@@ -47,6 +71,10 @@ export interface FileRoutesByFullPath {
   '/editor': typeof EditorRoute
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
+  '/review': typeof ReviewRoute
+  '/analytics': typeof AnalyticsRoute
+  '/billing': typeof BillingRoute
+  '/agency': typeof AgencyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +82,10 @@ export interface FileRoutesByTo {
   '/editor': typeof EditorRoute
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
+  '/review': typeof ReviewRoute
+  '/analytics': typeof AnalyticsRoute
+  '/billing': typeof BillingRoute
+  '/agency': typeof AgencyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +94,17 @@ export interface FileRoutesById {
   '/editor': typeof EditorRoute
   '/onboarding': typeof OnboardingRoute
   '/plan': typeof PlanRoute
+  '/review': typeof ReviewRoute
+  '/analytics': typeof AnalyticsRoute
+  '/billing': typeof BillingRoute
+  '/agency': typeof AgencyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/editor' | '/onboarding' | '/plan'
+  fullPaths: '/' | '/dashboard' | '/editor' | '/onboarding' | '/plan' | '/review' | '/analytics' | '/billing' | '/agency'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/editor' | '/onboarding' | '/plan'
-  id: '__root__' | '/' | '/dashboard' | '/editor' | '/onboarding' | '/plan'
+  to: '/' | '/dashboard' | '/editor' | '/onboarding' | '/plan' | '/review' | '/analytics' | '/billing' | '/agency'
+  id: '__root__' | '/' | '/dashboard' | '/editor' | '/onboarding' | '/plan' | '/review' | '/analytics' | '/billing' | '/agency'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,10 +113,42 @@ export interface RootRouteChildren {
   EditorRoute: typeof EditorRoute
   OnboardingRoute: typeof OnboardingRoute
   PlanRoute: typeof PlanRoute
+  ReviewRoute: typeof ReviewRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  BillingRoute: typeof BillingRoute
+  AgencyRoute: typeof AgencyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/review': {
+      id: '/review'
+      path: '/review'
+      fullPath: '/review'
+      preLoaderRoute: typeof ReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/billing': {
+      id: '/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof BillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agency': {
+      id: '/agency'
+      path: '/agency'
+      fullPath: '/agency'
+      preLoaderRoute: typeof AgencyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/plan': {
       id: '/plan'
       path: '/plan'
@@ -125,6 +193,10 @@ const rootRouteChildren: RootRouteChildren = {
   EditorRoute: EditorRoute,
   OnboardingRoute: OnboardingRoute,
   PlanRoute: PlanRoute,
+  ReviewRoute: ReviewRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  BillingRoute: BillingRoute,
+  AgencyRoute: AgencyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
