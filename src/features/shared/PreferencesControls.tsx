@@ -123,17 +123,11 @@ export function LanguageButton({ compact = false }: { compact?: boolean }) {
         onClick={() => setOpen(true)}
         aria-label="Select language"
         className={cn(
-          "inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm text-ink-700 transition-colors hover:border-ink-700/30 hover:text-ink-900",
+          "inline-flex h-9 items-center justify-center rounded-lg border border-line bg-surface px-3 text-sm font-medium uppercase tracking-wider text-ink-700 transition-colors hover:border-ink-700/30 hover:text-ink-900",
           compact && "px-2",
         )}
       >
-        <Globe className="size-3.5" strokeWidth={1.5} />
-        {!compact && (
-          <>
-            <span className="text-base leading-none">{current.flag}</span>
-            <span className="font-mono-num text-[11px] uppercase tracking-wider">{current.code}</span>
-          </>
-        )}
+        {current.code}
       </button>
       {open && <LanguageDialog onClose={() => setOpen(false)} />}
     </>
@@ -157,7 +151,7 @@ function LanguageDialog({ onClose }: { onClose: () => void }) {
       role="dialog"
       aria-modal="true"
       aria-label="Select language"
-      className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-ink-900/60 px-4 py-12 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-start justify-center overflow-y-auto bg-ink-900/60 px-4 py-12 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
