@@ -397,7 +397,7 @@ function Pillars() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {PILLARS.map((p) => (
-            <Card key={p.title} className="p-6">
+            <Card key={p.title} className="p-6 hover-lift shadow-elev-sm">
               <span className="grid size-9 place-items-center rounded-lg bg-brand-100 text-brand-700">
                 <p.icon className="size-4" strokeWidth={1.5} />
               </span>
