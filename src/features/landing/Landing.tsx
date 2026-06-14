@@ -881,6 +881,16 @@ function CtaBand() {
 /* ─────────────── Footer ─────────────── */
 
 function Footer() {
+  const [open, setOpen] = useState(false);
+
+  const pages = [
+    { label: "Home", to: "/", icon: LayoutDashboard },
+    { label: "Dashboard", to: "/dashboard", icon: BarChart3 },
+    { label: "Content Plan", to: "/plan", icon: CalendarDays },
+    { label: "Editor", to: "/editor", icon: PenLine },
+    { label: "Onboarding", to: "/onboarding", icon: ArrowRight },
+  ];
+
   return (
     <footer className="border-t border-line bg-surface">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-14 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
@@ -902,6 +912,55 @@ function Footer() {
         <FooterCol title="Product" links={["Onboarding", "Dashboard", "Editor", "Pricing"]} />
         <FooterCol title="Company" links={["About", "Studio mode", "Careers", "Contact"]} />
         <FooterCol title="Resources" links={["Changelog", "Status", "Privacy", "Terms"]} />
+      </div>
+
+      {/* Quick page navigator */}
+      <div className="mx-auto max-w-6xl px-6 pb-10">
+        <div className="rounded-xl border border-line bg-paper">
+          <button
+            onClick={() => setOpen(!open)}
+            className="flex w-full items-center justify-between px-5 py-4 text-left"
+          >
+            <div className="flex items-center gap-2.5">
+              <Globe2 className="size-4 text-brand-700" strokeWidth={1.5} />
+              <span className="text-sm font-medium text-ink-900">Quick page navigator</span>
+              <span className="font-mono-num rounded-md bg-surface px-1.5 py-0.5 text-[10px] text-muted-foreground ring-1 ring-line">
+                {pages.length}
+              </span>
+            </div>
+            <ChevronDown
+              className={cn(
+                "size-4 text-muted-foreground transition-transform duration-200",
+                open && "rotate-180",
+              )}
+              strokeWidth={1.5}
+            />
+          </button>
+          <div
+            className={cn(
+              "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-[cubic-bezier(.2,.6,.2,1)]",
+              open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+            )}
+          >
+            <div className="min-h-0">
+              <div className="border-t border-line px-5 py-4">
+                <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+                  {pages.map((p) => (
+                    <Link
+                      key={p.to}
+                      to={p.to}
+                      className="group flex items-center gap-2.5 rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink-700 transition-colors hover:border-brand-700/30 hover:text-brand-700"
+                    >
+                      <p.icon className="size-3.5 text-muted-foreground group-hover:text-brand-700" strokeWidth={1.5} />
+                      <span>{p.label}</span>
+                      <ArrowRight className="ml-auto size-3 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" strokeWidth={1.5} />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );
