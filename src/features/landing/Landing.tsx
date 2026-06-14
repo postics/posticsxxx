@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Sparkle,
@@ -17,14 +18,18 @@ import {
 import { cn } from "@/lib/utils";
 import { BrowserFrame, Card, StatusChip } from "@/features/shared/primitives";
 
+type Audience = "business" | "agency";
+
 export function Landing() {
   return (
     <div className="min-h-screen bg-paper">
       <Nav />
       <Hero />
+      <ProofStrip />
       <LogoStrip />
       <Pillars />
       <Workflow />
+      <Differentiation />
       <Pricing />
       <Faq />
       <CtaBand />
@@ -67,6 +72,37 @@ function Nav() {
 /* ─────────────── Hero ─────────────── */
 
 function Hero() {
+  const [audience, setAudience] = useState<Audience>("business");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = window.localStorage.getItem("postics:audience") as Audience | null;
+    if (saved === "business" || saved === "agency") setAudience(saved);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem("postics:audience", audience);
+  }, [audience]);
+
+  const copy = audience === "business"
+    ? {
+        eyebrow: "New · Live demo site in under 3 minutes",
+        h1a: "Your business, fully published —",
+        h1b: "in minutes.",
+        sub: "A live demo site with real content, no WordPress needed. An optional human expert quietly checks the quality before you publish.",
+        cta: "Build my free demo site",
+        sec: "See a live demo site",
+      }
+    : {
+        eyebrow: "For agencies · White-label, multi-project",
+        h1a: "Run content for every client",
+        h1b: "from one console.",
+        sub: "Multi-project workspaces, your brand on every report, real margin on every retainer. Built with senior agencies, not consumer SaaS.",
+        cta: "Build my free demo site",
+        sec: "Talk to the team",
+      };
+
   return (
     <section className="relative overflow-hidden">
       {/* warm paper grain */}
@@ -78,36 +114,34 @@ function Hero() {
             "radial-gradient(1200px 500px at 50% -10%, color-mix(in oklab, var(--color-brand-100) 70%, transparent), transparent 70%)",
         }}
       />
-      <div className="relative mx-auto grid w-full max-w-6xl gap-14 px-6 pt-20 pb-24 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:pt-28">
-        <div className="space-y-7 animate-rise">
+      <div className="relative mx-auto w-full max-w-6xl px-6 pt-16 lg:pt-20">
+        <AudienceSegmented value={audience} onChange={setAudience} />
+      </div>
+      <div className="relative mx-auto grid w-full max-w-6xl gap-14 px-6 pt-8 pb-24 lg:grid-cols-[1.05fr_1fr] lg:items-center">
+        <div key={audience} className="space-y-7 animate-rise">
           <div className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-ink-700">
             <span className="size-1.5 rounded-full bg-[color:var(--success)]" />
-            New · Quarterly content plans, generated in minutes
+            {copy.eyebrow}
           </div>
           <h1 className="font-display text-[44px] leading-[1.05] tracking-tight text-ink-900 sm:text-[64px]">
-            The content engine
+            {copy.h1a}
             <br />
-            that <span className="italic text-brand-700">actually ships.</span>
+            <span className="italic text-brand-700">{copy.h1b}</span>
           </h1>
-          <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">
-            Postics provisions your site, plans the quarter, writes the drafts, and publishes on
-            schedule — under your editorial control. Built for operators and agencies who care about
-            craft.
-          </p>
+          <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">{copy.sub}</p>
           <div className="flex flex-wrap items-center gap-3">
             <Link to="/onboarding" className="postics-btn-primary">
-              Generate a demo site <Sparkle className="size-4" strokeWidth={1.5} />
+              {copy.cta} <ArrowRight className="size-4" strokeWidth={1.75} />
             </Link>
-            <a href="#how" className="postics-btn-secondary">
-              See how it works
+            <a href="#proof" className="postics-btn-secondary">
+              {copy.sec}
             </a>
           </div>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-muted-foreground">
-            {[
-              "Live preview in ~40 seconds",
-              "No credit card",
-              "Private noindex by default",
-            ].map((t) => (
+            {(audience === "business"
+              ? ["Live preview in ~3 min", "No credit card", "Private noindex by default"]
+              : ["White-label dashboard", "Per-client billing", "Bulk content ops"]
+            ).map((t) => (
               <li key={t} className="inline-flex items-center gap-1.5">
                 <Check className="size-3.5 text-[color:var(--success)]" strokeWidth={2} /> {t}
               </li>
@@ -116,8 +150,12 @@ function Hero() {
         </div>
 
         <div className="relative">
-          <BrowserFrame url="https://vellumandbean.postics.site" className="lg:ml-auto">
-            <HeroSitePreview />
+          <BrowserFrame
+            key={audience}
+            url={audience === "business" ? "https://vellumandbean.postics.site" : "https://app.postics.io/agency"}
+            className="lg:ml-auto animate-rise"
+          >
+            {audience === "business" ? <HeroSitePreview /> : <HeroAgencyPreview />}
           </BrowserFrame>
 
           {/* Floating callouts */}
@@ -126,8 +164,8 @@ function Hero() {
               <PenLine className="size-3.5" strokeWidth={1.75} />
             </span>
             <div className="text-xs">
-              <div className="text-ink-900">Draft ready</div>
-              <div className="font-mono-num text-muted-foreground">+3 articles</div>
+              <div className="text-ink-900">{audience === "business" ? "Draft ready" : "Client onboarded"}</div>
+              <div className="font-mono-num text-muted-foreground">{audience === "business" ? "+3 articles" : "Northwind Co."}</div>
             </div>
           </div>
           <div className="absolute -right-3 bottom-10 hidden rounded-xl border border-line bg-surface p-3 shadow-[0_24px_60px_-30px_rgba(20,24,31,0.25)] sm:flex sm:items-center sm:gap-2.5">
@@ -135,13 +173,85 @@ function Hero() {
               <BarChart3 className="size-3.5" strokeWidth={1.75} />
             </span>
             <div className="text-xs">
-              <div className="text-ink-900">Avg. position</div>
-              <div className="font-mono-num text-[color:var(--success)]">↑ 3.1</div>
+              <div className="text-ink-900">{audience === "business" ? "Avg. position" : "Margin / retainer"}</div>
+              <div className="font-mono-num text-[color:var(--success)]">{audience === "business" ? "↑ 3.1" : "+62%"}</div>
             </div>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function AudienceSegmented({ value, onChange }: { value: Audience; onChange: (a: Audience) => void }) {
+  return (
+    <div className="flex justify-center">
+      <div role="tablist" aria-label="Audience" className="relative inline-flex items-center rounded-full border border-line bg-surface p-1 shadow-[0_1px_0_rgba(20,24,31,0.04)]">
+        {([
+          { id: "business" as Audience, label: "For Businesses" },
+          { id: "agency" as Audience, label: "For Agencies" },
+        ]).map((o) => {
+          const active = value === o.id;
+          return (
+            <button
+              key={o.id}
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(o.id)}
+              className={cn(
+                "relative z-10 rounded-full px-5 py-1.5 text-sm font-medium transition-colors",
+                active ? "text-[color:var(--primary-foreground)]" : "text-ink-700 hover:text-ink-900",
+              )}
+            >
+              {active && (
+                <span className="absolute inset-0 -z-10 rounded-full bg-brand-700 transition-transform" />
+              )}
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function HeroAgencyPreview() {
+  const clients = [
+    { name: "Northwind Co.", status: "Live", credits: 64, tone: "live" as const },
+    { name: "Atelier Rouge", status: "Drafting", credits: 28, tone: "info" as const },
+    { name: "Harbor Studio", status: "Review", credits: 41, tone: "warn" as const },
+    { name: "Field Notes", status: "Live", credits: 82, tone: "live" as const },
+  ];
+  return (
+    <div className="space-y-4 bg-surface p-5">
+      <div className="flex items-center justify-between border-b border-line pb-2.5">
+        <div className="flex items-center gap-2">
+          <div className="grid size-6 place-items-center rounded bg-brand-700 text-[10px] text-[color:var(--primary-foreground)] font-display">A</div>
+          <div className="font-display text-sm text-ink-900">Acme Studio · agency console</div>
+        </div>
+        <span className="font-mono-num text-[10px] text-muted-foreground">12 clients</span>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {clients.map((c) => (
+          <div key={c.name} className="rounded-lg border border-line bg-surface p-3">
+            <div className="flex items-center justify-between">
+              <div className="font-display text-xs text-ink-900">{c.name}</div>
+              <StatusChip tone={c.tone} className="!px-1.5 !py-0 !text-[9px]">{c.status}</StatusChip>
+            </div>
+            <div className="mt-2 h-1 overflow-hidden rounded-full bg-surface-sunken">
+              <div className="h-full rounded-full bg-brand-700" style={{ width: `${c.credits}%` }} />
+            </div>
+            <div className="font-mono-num mt-1.5 flex items-center justify-between text-[10px] text-muted-foreground">
+              <span>credits</span><span>{c.credits}%</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-between rounded-lg bg-surface-sunken/50 px-3 py-2 text-[10px] text-muted-foreground">
+        <span>This month · 47 articles published</span>
+        <span className="font-mono-num text-[color:var(--success)]">+62% margin</span>
+      </div>
+    </div>
   );
 }
 
@@ -388,45 +498,58 @@ function Workflow() {
 const PLANS = [
   {
     name: "Starter",
-    price: "$0",
-    cadence: "free preview",
-    blurb: "Generate a private demo site and explore the pipeline.",
-    features: ["1 project", "Private noindex preview", "3 starter articles", "Community support"],
-    cta: "Generate a demo",
+    price: "$199",
+    cadence: "per month",
+    blurb: "Solo operators getting their first cadence to ship.",
+    features: ["1 project", "4 articles / month", "Custom domain", "Email support"],
+    cta: "Start Starter",
     href: "/onboarding",
     tone: "default" as const,
   },
   {
-    name: "Pro",
-    price: "$39",
+    name: "Growth",
+    price: "$449",
     cadence: "per month",
-    blurb: "For operators publishing weekly. Connect your own domain.",
+    blurb: "For operators publishing weekly with real SEO ambition.",
     features: [
-      "Up to 5 projects",
-      "Custom domain & SSL",
-      "10,000 monthly credits",
+      "10 articles / month",
       "Scheduled publishing",
+      "SEO clusters & internal linking",
       "Inline editor & roles",
     ],
-    cta: "Start Pro",
+    cta: "Start Growth",
     href: "/onboarding",
     tone: "featured" as const,
   },
   {
-    name: "Agency",
-    price: "Custom",
-    cadence: "white-label",
-    blurb: "For studios running content for many clients.",
+    name: "Advanced",
+    price: "$899",
+    cadence: "per month",
+    blurb: "Multi-channel publishing with expert checkpoints.",
     features: [
-      "Unlimited projects",
-      "Client workspaces",
-      "Per-tenant billing",
-      "White-label dashboard",
+      "20 articles / month",
+      "Human expert review",
+      "Social drafts (when unlocked)",
       "Priority generation",
     ],
-    cta: "Talk to sales",
+    cta: "Start Advanced",
     href: "/onboarding",
     tone: "default" as const,
+  },
+  {
+    name: "Premium",
+    price: "$999",
+    cadence: "per month",
+    blurb: "Verified LetoLab editors, hands-on across the cycle.",
+    features: [
+      "Unlimited drafts",
+      "Named senior editor",
+      "GEO-ready structured data",
+      "First-line support",
+    ],
+    cta: "Apply for Premium",
+    href: "/onboarding",
+    tone: "premium" as const,
   },
 ];
 
@@ -456,20 +579,23 @@ function Pricing() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {PLANS.map((p) => {
           const featured = p.tone === "featured";
+          const premium = p.tone === "premium";
           return (
             <Card
               key={p.name}
               className={cn(
                 "flex flex-col p-7",
                 featured && "border-brand-700 ring-2 ring-brand-100",
+                premium && "border-[color:var(--accent-gold)] ring-2 ring-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/15",
               )}
             >
               <div className="flex items-center justify-between">
                 <div className="font-display text-xl text-ink-900">{p.name}</div>
                 {featured && <StatusChip tone="live">Most chosen</StatusChip>}
+                {premium && <StatusChip tone="gold">Premium</StatusChip>}
               </div>
               <div className="mt-4 flex items-baseline gap-1.5">
                 <span className="font-display text-4xl text-ink-900">{p.price}</span>
@@ -479,7 +605,7 @@ function Pricing() {
               <ul className="mt-6 space-y-2.5 text-sm">
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-ink-700">
-                    <Check className="mt-0.5 size-4 text-[color:var(--success)]" strokeWidth={2} />
+                    <Check className={cn("mt-0.5 size-4", premium ? "text-[color:var(--accent-gold)]" : "text-[color:var(--success)]")} strokeWidth={2} />
                     {f}
                   </li>
                 ))}
@@ -490,6 +616,8 @@ function Pricing() {
                   "mt-8 inline-flex items-center justify-center gap-2 rounded-[10px] px-4 py-2.5 text-sm font-medium transition-colors",
                   featured
                     ? "bg-brand-700 text-[color:var(--primary-foreground)] hover:bg-brand-500"
+                    : premium
+                    ? "bg-[color:var(--accent-gold)] text-white hover:brightness-95"
                     : "border border-line bg-surface text-ink-900 hover:border-ink-700/30",
                 )}
               >
@@ -498,6 +626,10 @@ function Pricing() {
             </Card>
           );
         })}
+      </div>
+
+      <div className="mt-6">
+        <AgencyBlock />
       </div>
 
       <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-muted-foreground">
@@ -582,6 +714,120 @@ function Plus() {
     <svg viewBox="0 0 16 16" className="size-3" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round">
       <path d="M8 3v10M3 8h10" />
     </svg>
+  );
+}
+
+/* ─────────────── Proof strip ─────────────── */
+
+function ProofStrip() {
+  return (
+    <section id="proof" className="mx-auto w-full max-w-6xl px-6 pb-16">
+      <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
+        <div className="max-w-md space-y-2">
+          <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Live demo · generated by Postics
+          </div>
+          <h2 className="font-display text-2xl leading-tight text-ink-900">
+            A real site, on a real subdomain — assembled while you watch.
+          </h2>
+        </div>
+        <Link to="/onboarding" className="postics-btn-ghost text-sm">
+          Generate your own <ArrowRight className="size-4" strokeWidth={1.75} />
+        </Link>
+      </div>
+      <div className="relative mt-6">
+        <BrowserFrame url="https://vellumandbean.postics.site">
+          <HeroSitePreview />
+        </BrowserFrame>
+        <div className="absolute -top-3 left-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-[11px] shadow-[0_4px_14px_-6px_rgba(20,24,31,0.18)]">
+          <span className="size-1.5 rounded-full bg-[color:var(--success)]" />
+          Generated by Postics <span className="font-mono-num text-muted-foreground">in 3 min</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── Differentiation ─────────────── */
+
+function Differentiation() {
+  const rows = [
+    { label: "Editorial voice", postics: "Trained on your brand, edited by senior writers", others: "Generic AI tone" },
+    { label: "Quality control", postics: "Verified experts review when it matters", others: "Trust the model" },
+    { label: "Publishing", postics: "Pushed to your site via RankMath endpoint", others: "Copy-paste workflow" },
+    { label: "SEO foundation", postics: "Schema, internal links, GEO-ready", others: "Add-ons, plugins" },
+  ];
+  return (
+    <section className="mx-auto w-full max-w-6xl px-6 py-24">
+      <div className="mb-10 grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:items-end">
+        <div className="space-y-3">
+          <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+            Why Postics
+          </div>
+          <h2 className="font-display text-4xl leading-[1.1] text-ink-900">
+            AI <span className="italic text-brand-700">plus</span> real experts.
+          </h2>
+          <p className="text-muted-foreground">
+            We pair production-grade AI with the LetoLab editor network and a vetted bench of
+            freelancers. The result reads like a studio shipped it — because one did.
+          </p>
+        </div>
+        <Card className="overflow-hidden p-0">
+          <div className="grid grid-cols-3 border-b border-line bg-surface-sunken/60 px-5 py-3 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            <span></span>
+            <span className="text-brand-700">Postics</span>
+            <span>Plain AI tools</span>
+          </div>
+          <ul className="divide-y divide-line">
+            {rows.map((r) => (
+              <li key={r.label} className="grid grid-cols-3 items-start gap-3 px-5 py-4 text-sm">
+                <span className="text-ink-700">{r.label}</span>
+                <span className="flex items-start gap-2 text-ink-900">
+                  <Check className="mt-0.5 size-4 shrink-0 text-[color:var(--success)]" strokeWidth={2} />
+                  {r.postics}
+                </span>
+                <span className="text-muted-foreground">{r.others}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── Agency block ─────────────── */
+
+function AgencyBlock() {
+  return (
+    <Card className="grid gap-6 border-brand-700/30 bg-brand-100/30 p-7 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+      <div>
+        <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-brand-700">
+          For agencies
+        </div>
+        <h3 className="mt-2 font-display text-2xl text-ink-900">
+          Run content for every client from one console.
+        </h3>
+        <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+          White-label dashboard, per-tenant billing, bulk content ops, and the margin profile of a
+          retainer practice. Onboard a new client in an afternoon.
+        </p>
+        <ul className="mt-4 grid gap-2 text-sm text-ink-700 sm:grid-cols-2">
+          {["Unlimited client workspaces", "White-label reports", "Per-tenant billing", "Priority generation queue"].map((f) => (
+            <li key={f} className="flex items-start gap-2.5">
+              <Check className="mt-0.5 size-4 text-[color:var(--success)]" strokeWidth={2} /> {f}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="flex flex-col items-start gap-3 lg:items-end">
+        <div className="font-display text-3xl text-ink-900">Custom</div>
+        <div className="text-xs text-muted-foreground">from $1,499 / month</div>
+        <Link to="/onboarding" className="postics-btn-primary text-sm">
+          Talk to the team <ArrowRight className="size-4" strokeWidth={1.75} />
+        </Link>
+      </div>
+    </Card>
   );
 }
 
