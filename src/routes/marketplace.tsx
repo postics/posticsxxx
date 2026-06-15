@@ -11,10 +11,16 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AppShell } from "@/features/shell/AppShell";
+import { WorkspaceShell } from "@/features/shell/WorkspaceShell";
 import { Card, StatusChip } from "@/features/shared/primitives";
 
-export const Route = createFileRoute("/marketplace")({ component: MarketplacePage });
+export const Route = createFileRoute("/marketplace")({
+  component: MarketplacePage,
+  validateSearch: (s: Record<string, unknown>) => ({
+    brief: typeof s.brief === "string" ? s.brief : undefined,
+    niche: typeof s.niche === "string" ? s.niche : undefined,
+  }),
+});
 
 type Expert = {
   id: string;
@@ -166,8 +172,9 @@ const NICHES = ["All", "Food & beverage", "SaaS", "E-commerce", "Fintech", "DTC 
 const LANGS = ["Any", "EN", "ES", "DE", "FR", "JA", "ZH", "PL"];
 
 function MarketplacePage() {
+  const search = Route.useSearch();
   const [open, setOpen] = useState<Expert | null>(null);
-  const [niche, setNiche] = useState("All");
+  const [niche, setNiche] = useState(search.niche ?? "All");
   const [lang, setLang] = useState("Any");
   const [type, setType] = useState<"all" | "freelancer" | "letolab">("all");
   const [minRating, setMinRating] = useState(0);
@@ -182,8 +189,27 @@ function MarketplacePage() {
   });
 
   return (
-    <AppShell active="review" breadcrumb={["Workspace", "Marketplace"]}>
+    <WorkspaceShell active="marketplace" breadcrumb={["Marketplace"]}>
       <div className="mx-auto w-full max-w-7xl px-8 py-8 space-y-6">
+        {search.brief ? (
+          <div className="flex items-start justify-between gap-4 rounded-xl border border-brand-100 bg-brand-100/40 px-4 py-3">
+            <div className="flex items-start gap-2.5 text-sm">
+              <Sparkles className="mt-0.5 size-4 text-brand-700" strokeWidth={1.75} />
+              <div>
+                <div className="text-ink-900">
+                  Pre-filtered for brief · <span className="font-mono-num">{search.brief}</span>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Pick an expert; assignment returns you to the Review Queue.
+                </div>
+              </div>
+            </div>
+            <a href="/review" className="text-xs text-brand-700 hover:underline">
+              Back to Review →
+            </a>
+          </div>
+        ) : null}
+
         <header className="flex items-end justify-between gap-6">
           <div className="space-y-1.5">
             <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
@@ -303,7 +329,7 @@ function MarketplacePage() {
       </div>
 
       {open ? <Drawer e={open} onClose={() => setOpen(null)} /> : null}
-    </AppShell>
+    </WorkspaceShell>
   );
 }
 
