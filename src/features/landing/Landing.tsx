@@ -22,6 +22,7 @@ import {
   Rocket,
   FileText,
   ShoppingBag,
+  Plug,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrowserFrame, Card, StatusChip } from "@/features/shared/primitives";
@@ -591,24 +592,22 @@ function Pillars() {
 
 const STEPS = [
   {
-    n: "01",
+    icon: Plug,
     title: "Connect your site",
-    blurb: "Drop in your URL and link the socials you already publish to. No migration, no rebuild.",
+    blurb:
+      "You keep your own WordPress. Install the Postics connector — no migration, no rebuild.",
   },
   {
-    n: "02",
-    title: "Analyze & propose",
-    blurb: "Postics studies your site and top competitors, then proposes a monthly content plan.",
+    icon: Sparkle,
+    title: "AI plans & creates",
+    blurb:
+      "Analyzes your site + competitors → builds a content plan → generates articles, product photos & videos, and social posts.",
   },
   {
-    n: "03",
-    title: "Approve once",
-    blurb: "Articles, product descriptions, product photos, videos and social posts — approve the plan or rewrite any item.",
-  },
-  {
-    n: "04",
-    title: "Auto-publish",
-    blurb: "Postics ships to your site and socials on the cadence you set. Pause, edit, or rollback anytime.",
+    icon: Rocket,
+    title: "Auto-publish on your cadence",
+    blurb:
+      "Set N posts per month, plan up to a year ahead. Publishes automatically to your site (guaranteed) and socials (best-effort).",
   },
 ];
 
@@ -625,11 +624,13 @@ function Workflow() {
           </h2>
         </div>
 
-        <ol className="grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-4">
+        <ol className="grid gap-px overflow-hidden rounded-xl border border-line bg-line md:grid-cols-3">
           {STEPS.map((s) => (
-            <li key={s.n} className="bg-surface p-6">
-              <div className="font-mono-num text-xs text-[color:var(--accent-gold)]">{s.n}</div>
-              <div className="mt-3 font-display text-lg text-ink-900">{s.title}</div>
+            <li key={s.title} className="bg-surface p-6">
+              <span className="grid size-10 place-items-center rounded-lg bg-brand-100 text-brand-700">
+                <s.icon className="size-5" strokeWidth={1.5} />
+              </span>
+              <div className="mt-4 font-display text-lg text-ink-900">{s.title}</div>
               <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{s.blurb}</p>
             </li>
           ))}
