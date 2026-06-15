@@ -21,6 +21,7 @@ import { Route as EditorRouteImport } from './routes/editor'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as BrandKitRouteImport } from './routes/brand-kit'
+import { Route as BillingRouteImport } from './routes/billing'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AgencyRouteImport } from './routes/agency'
 import { Route as IndexRouteImport } from './routes/index'
@@ -85,6 +86,11 @@ const BrandKitRoute = BrandKitRouteImport.update({
   path: '/brand-kit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BillingRoute = BillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnalyticsRoute = AnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agency': typeof AgencyRoute
   '/analytics': typeof AnalyticsRoute
+  '/billing': typeof BillingRoute
   '/brand-kit': typeof BrandKitRoute
   '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
@@ -122,6 +129,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agency': typeof AgencyRoute
   '/analytics': typeof AnalyticsRoute
+  '/billing': typeof BillingRoute
   '/brand-kit': typeof BrandKitRoute
   '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/agency': typeof AgencyRoute
   '/analytics': typeof AnalyticsRoute
+  '/billing': typeof BillingRoute
   '/brand-kit': typeof BrandKitRoute
   '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agency'
     | '/analytics'
+    | '/billing'
     | '/brand-kit'
     | '/clients'
     | '/dashboard'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agency'
     | '/analytics'
+    | '/billing'
     | '/brand-kit'
     | '/clients'
     | '/dashboard'
@@ -193,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/agency'
     | '/analytics'
+    | '/billing'
     | '/brand-kit'
     | '/clients'
     | '/dashboard'
@@ -211,6 +223,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgencyRoute: typeof AgencyRoute
   AnalyticsRoute: typeof AnalyticsRoute
+  BillingRoute: typeof BillingRoute
   BrandKitRoute: typeof BrandKitRoute
   ClientsRoute: typeof ClientsRoute
   DashboardRoute: typeof DashboardRoute
@@ -311,6 +324,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrandKitRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/billing': {
+      id: '/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof BillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/analytics': {
       id: '/analytics'
       path: '/analytics'
@@ -339,6 +359,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgencyRoute: AgencyRoute,
   AnalyticsRoute: AnalyticsRoute,
+  BillingRoute: BillingRoute,
   BrandKitRoute: BrandKitRoute,
   ClientsRoute: ClientsRoute,
   DashboardRoute: DashboardRoute,
