@@ -156,6 +156,9 @@ function Hero() {
         sub: "Postics analyzes your site and competitors, builds a content plan, then generates articles, product photos & videos and social posts — and publishes them to your site and socials on your schedule. Add a human expert for quality whenever you want.",
         cta: "Analyze my site & get a content plan",
         sec: "See how it works",
+        ctaHref: "/onboarding",
+        ctaHint: "Opens your single-project dashboard",
+        ctaHintIcon: Briefcase,
       }
     : {
         eyebrow: "For agencies · White-label, multi-project",
@@ -164,6 +167,9 @@ function Hero() {
         sub: "White-label, multi-project, margin — one engine for all your clients' sites and socials.",
         cta: "Analyze my site & get a content plan",
         sec: "See how it works",
+        ctaHref: "/clients",
+        ctaHint: "Opens your multi-client workspace console",
+        ctaHintIcon: Users,
       };
 
   return (
@@ -201,12 +207,16 @@ function Hero() {
           </h1>
           <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">{copy.sub}</p>
           <div className="flex flex-wrap items-center gap-3">
-            <Link to="/onboarding" className="postics-btn-primary">
+            <Link to={copy.ctaHref} className="postics-btn-primary">
               {copy.cta} <ArrowRight className="size-4" strokeWidth={1.75} />
             </Link>
             <a href="#how" className="postics-btn-secondary">
               {copy.sec}
             </a>
+          </div>
+          <div className="-mt-1 inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <copy.ctaHintIcon className="size-3 text-brand-700" strokeWidth={1.75} />
+            {copy.ctaHint}
           </div>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-muted-foreground">
             {(audience === "business"
