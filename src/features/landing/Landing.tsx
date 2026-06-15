@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
-  Sparkle,
   Check,
   ShieldCheck,
   Globe2,
@@ -23,6 +22,10 @@ import {
   FileText,
   ShoppingBag,
   Plug,
+  Cpu,
+  TrendingUp,
+  Users,
+  Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrowserFrame, Card, StatusChip } from "@/features/shared/primitives";
