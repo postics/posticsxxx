@@ -1,32 +1,54 @@
-import { Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import {
-  LayoutDashboard,
-  CalendarDays,
-  PenLine,
-  Globe2,
-  BarChart3,
-  CreditCard,
-  Bell,
-  ChevronDown,
-  Search,
-  Settings2,
-  ChevronRight,
-  Activity,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { CreditMeter, StatusChip } from "@/features/shared/primitives";
-import { ThemeToggle, LanguageButton } from "@/features/shared/PreferencesControls";
+import type { ReactNode } from "react";
+import { ProjectShell, type ProjectNavId } from "./ProjectShell";
+import { WorkspaceShell, type WorkspaceNavId } from "./WorkspaceShell";
 
-type NavId =
-  | "overview"
-  | "plan"
-  | "editor"
-  | "review"
-  | "site"
-  | "analytics"
-  | "billing"
-  | "agency";
+/**
+ * Back-compat adapter. Prefer importing ProjectShell or WorkspaceShell directly
+ * in new code. This dispatches based on the legacy `active` id so existing route
+ * files keep working during the architecture migration.
+ */
+type LegacyNavId = ProjectNavId | WorkspaceNavId | "site" | "agency";
+
+const WORKSPACE_IDS = new Set<string>([
+  "clients",
+  "team",
+  "brand",
+  "marketplace",
+  "billing",
+  "partner",
+  "agency",
+]);
+
+export function AppShell({
+  active,
+  breadcrumb,
+  children,
+}: {
+  active: LegacyNavId;
+  breadcrumb: string[];
+  children: ReactNode;
+  topRight?: ReactNode;
+}) {
+  if (WORKSPACE_IDS.has(active)) {
+    const mapped: WorkspaceNavId = active === "agency" ? "clients" : (active as WorkspaceNavId);
+    // Drop the legacy "Workspace" prefix; WorkspaceShell adds the workspace name.
+    const tail = breadcrumb[0] === "Workspace" ? breadcrumb.slice(1) : breadcrumb;
+    return (
+      <WorkspaceShell active={mapped} breadcrumb={tail}>
+        {children}
+      </WorkspaceShell>
+    );
+  }
+  const mapped: ProjectNavId = active === "site" ? "overview" : (active as ProjectNavId);
+  // Drop the legacy ["Projects", "<Brand>"] prefix; ProjectShell rebuilds it from scope.
+  let tail = breadcrumb;
+  if (tail[0] === "Projects") tail = tail.slice(2);
+  return (
+    <ProjectShell active={mapped} breadcrumb={tail}>
+      {children}
+    </ProjectShell>
+  );
+}
 
 const NAV: { id: NavId; label: string; icon: any; to: string; badge?: number }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard, to: "/dashboard" },
