@@ -43,6 +43,7 @@ export function Landing() {
       <Reveal><Pillars /></Reveal>
       <Reveal><Workflow /></Reveal>
       <Reveal><Differentiation /></Reveal>
+      <Reveal><Results /></Reveal>
       <Reveal><Pricing /></Reveal>
       <Reveal><Faq /></Reveal>
       <Reveal><CtaBand /></Reveal>
