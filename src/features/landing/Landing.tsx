@@ -15,6 +15,13 @@ import {
   ExternalLink,
   ChevronRight,
   ChevronDown,
+  Search,
+  Camera,
+  Video,
+  Megaphone,
+  Rocket,
+  FileText,
+  ShoppingBag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrowserFrame, Card, StatusChip } from "@/features/shared/primitives";
@@ -144,20 +151,20 @@ function Hero() {
 
   const copy = audience === "business"
     ? {
-        eyebrow: "New · Live demo site in under 3 minutes",
-        h1a: "Your business, fully published —",
-        h1b: "in minutes.",
-        sub: "A live demo site with real content, no WordPress needed. An optional human expert quietly checks the quality before you publish.",
-        cta: "Build my free demo site",
-        sec: "See a live demo site",
+        eyebrow: "New · Plan + first content in 3 min",
+        h1a: "Your content, planned and published —",
+        h1b: "on autopilot.",
+        sub: "Postics analyzes your site and competitors, builds a content plan, then generates articles, product photos & videos and social posts — and publishes them to your site and socials on your schedule. Add a human expert for quality whenever you want.",
+        cta: "Analyze my site & get a content plan",
+        sec: "See how it works",
       }
     : {
         eyebrow: "For agencies · White-label, multi-project",
         h1a: "Run content for every client",
         h1b: "from one console.",
-        sub: "Multi-project workspaces, your brand on every report, real margin on every retainer. Built with senior agencies, not consumer SaaS.",
-        cta: "Build my free demo site",
-        sec: "Talk to the team",
+        sub: "White-label, multi-project, margin — one engine for all your clients' sites and socials.",
+        cta: "Analyze my site & get a content plan",
+        sec: "See how it works",
       };
 
   return (
@@ -198,13 +205,13 @@ function Hero() {
             <Link to="/onboarding" className="postics-btn-primary">
               {copy.cta} <ArrowRight className="size-4" strokeWidth={1.75} />
             </Link>
-            <a href="#proof" className="postics-btn-secondary">
+            <a href="#how" className="postics-btn-secondary">
               {copy.sec}
             </a>
           </div>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-muted-foreground">
             {(audience === "business"
-              ? ["Live preview in ~3 min", "No credit card", "Private noindex by default"]
+              ? ["Connect your existing site", "Auto-publish on your schedule", "Optional human expert"]
               : ["White-label dashboard", "Per-client billing", "Bulk content ops"]
             ).map((t) => (
               <li key={t} className="inline-flex items-center gap-1.5">
@@ -212,39 +219,182 @@ function Hero() {
               </li>
             ))}
           </ul>
+          <div className="pt-1 text-xs text-muted-foreground">
+            No website yet?{" "}
+            <Link to="/marketplace" className="underline decoration-dotted underline-offset-4 hover:text-ink-900">
+              Our team can build you a simple one
+            </Link>
+            .
+          </div>
         </div>
 
         <div className="relative">
           <BrowserFrame
             key={audience}
-            url={audience === "business" ? "https://vellumandbean.postics.site" : "https://app.postics.io/agency"}
+            url={audience === "business" ? "app.postics.io/plan · yourstore.com" : "app.postics.io/agency"}
             className="lg:ml-auto animate-rise"
           >
-            {audience === "business" ? <HeroSitePreview /> : <HeroAgencyPreview />}
+            {audience === "business" ? <HeroPlanPreview /> : <HeroAgencyPreview />}
           </BrowserFrame>
 
           {/* Floating callouts */}
           <div className="absolute -left-4 top-10 hidden rounded-xl border border-line bg-surface p-3 shadow-[0_24px_60px_-30px_rgba(20,24,31,0.25)] sm:flex sm:items-center sm:gap-2.5">
             <span className="grid size-7 place-items-center rounded-md bg-brand-100 text-brand-700">
-              <PenLine className="size-3.5" strokeWidth={1.75} />
+              <CalendarDays className="size-3.5" strokeWidth={1.75} />
             </span>
             <div className="text-xs">
-              <div className="text-ink-900">{audience === "business" ? "Draft ready" : "Client onboarded"}</div>
-              <div className="font-mono-num text-muted-foreground">{audience === "business" ? "+3 articles" : "Northwind Co."}</div>
+              <div className="text-ink-900">{audience === "business" ? "Plan approved" : "Client onboarded"}</div>
+              <div className="font-mono-num text-muted-foreground">{audience === "business" ? "24 items · Nov" : "Northwind Co."}</div>
             </div>
           </div>
           <div className="absolute -right-3 bottom-10 hidden rounded-xl border border-line bg-surface p-3 shadow-[0_24px_60px_-30px_rgba(20,24,31,0.25)] sm:flex sm:items-center sm:gap-2.5">
             <span className="grid size-7 place-items-center rounded-md bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]">
-              <BarChart3 className="size-3.5" strokeWidth={1.75} />
+              <Rocket className="size-3.5" strokeWidth={1.75} />
             </span>
             <div className="text-xs">
-              <div className="text-ink-900">{audience === "business" ? "Avg. position" : "Margin / retainer"}</div>
-              <div className="font-mono-num text-[color:var(--success)]">{audience === "business" ? "↑ 3.1" : "+62%"}</div>
+              <div className="text-ink-900">{audience === "business" ? "Auto-published" : "Margin / retainer"}</div>
+              <div className="font-mono-num text-[color:var(--success)]">{audience === "business" ? "Tue 10:00" : "+62%"}</div>
             </div>
           </div>
         </div>
       </div>
+      <FeatureRow />
     </section>
+  );
+}
+
+function FeatureRow() {
+  const items = [
+    { icon: Search, label: "Analyze" },
+    { icon: CalendarDays, label: "Plan" },
+    { icon: FileText, label: "Articles" },
+    { icon: ShoppingBag, label: "Product descriptions" },
+    { icon: Camera, label: "Product photos" },
+    { icon: Video, label: "Product videos" },
+    { icon: Megaphone, label: "Social posts" },
+    { icon: Rocket, label: "Auto-publish on your cadence" },
+  ];
+  return (
+    <div className="relative mx-auto w-full max-w-6xl px-6 pb-16">
+      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-2xl border border-line bg-surface/60 px-5 py-4 text-xs text-ink-700 shadow-elev-sm">
+        {items.map((it, i) => (
+          <span key={it.label} className="inline-flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5">
+              <it.icon className="size-3.5 text-brand-700" strokeWidth={1.5} />
+              {it.label}
+            </span>
+            {i < items.length - 1 && (
+              <span aria-hidden className="text-muted-foreground/60">·</span>
+            )}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HeroPlanPreview() {
+  // 5x4 calendar with scheduled content chips
+  const items: Record<number, { tone: "art" | "soc" | "prod"; label: string }> = {
+    3: { tone: "art", label: "Article" },
+    5: { tone: "soc", label: "IG post" },
+    8: { tone: "prod", label: "Product" },
+    11: { tone: "art", label: "Article" },
+    14: { tone: "soc", label: "TikTok" },
+    17: { tone: "art", label: "Article" },
+    19: { tone: "prod", label: "Product" },
+  };
+  const toneClass = (t: "art" | "soc" | "prod") =>
+    t === "art"
+      ? "bg-brand-100 text-brand-700"
+      : t === "soc"
+      ? "bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
+      : "bg-ink-900/8 text-ink-900";
+  return (
+    <div className="grid gap-4 bg-surface p-5 lg:grid-cols-[1.35fr_1fr]">
+      {/* Calendar */}
+      <div className="rounded-lg border border-line bg-surface p-3.5">
+        <div className="flex items-center justify-between pb-2">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="size-3.5 text-brand-700" strokeWidth={1.75} />
+            <span className="font-display text-sm text-ink-900">November · content plan</span>
+          </div>
+          <span className="font-mono-num text-[10px] text-muted-foreground">24 items</span>
+        </div>
+        <div className="grid grid-cols-5 gap-1 text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+          {["Mon","Tue","Wed","Thu","Fri"].map((d) => (
+            <div key={d} className="px-1">{d}</div>
+          ))}
+        </div>
+        <div className="mt-1 grid grid-cols-5 gap-1">
+          {Array.from({ length: 20 }).map((_, i) => {
+            const day = i + 1;
+            const it = items[day];
+            return (
+              <div key={day} className="aspect-[1.1/1] rounded-md border border-line bg-surface-sunken/40 p-1.5">
+                <div className="font-mono-num text-[9px] text-muted-foreground">{day}</div>
+                {it && (
+                  <div className={cn("mt-1 truncate rounded px-1 py-0.5 text-[8.5px] font-medium leading-tight", toneClass(it.tone))}>
+                    {it.label}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="mt-2.5 flex items-center gap-3 border-t border-line pt-2 text-[9px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1"><span className="size-2 rounded-sm bg-brand-100" />Article</span>
+          <span className="inline-flex items-center gap-1"><span className="size-2 rounded-sm bg-[color:var(--accent-gold-soft)]" />Social</span>
+          <span className="inline-flex items-center gap-1"><span className="size-2 rounded-sm bg-ink-900/8" />Product</span>
+          <span className="ml-auto inline-flex items-center gap-1 text-[color:var(--success)]">
+            <span className="size-1.5 rounded-full bg-[color:var(--success)]" /> auto-publish on
+          </span>
+        </div>
+      </div>
+      {/* Product card */}
+      <div className="rounded-lg border border-line bg-surface p-3.5">
+        <div className="flex items-center justify-between pb-2">
+          <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Generated product</span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-ink-900 px-1.5 py-0.5 text-[9px] font-medium text-[color:var(--primary-foreground)]">
+            <Video className="size-2.5" strokeWidth={2} /> video
+          </span>
+        </div>
+        <div
+          className="relative aspect-[4/5] overflow-hidden rounded-md border border-line"
+          style={{
+            backgroundImage:
+              "radial-gradient(120% 80% at 30% 20%, color-mix(in oklab, var(--color-brand-100) 70%, white) 0%, transparent 60%), linear-gradient(160deg, color-mix(in oklab, var(--color-accent-gold) 22%, white) 0%, color-mix(in oklab, var(--color-brand-700) 12%, white) 100%)",
+          }}
+        >
+          <div
+            aria-hidden
+            className="absolute left-1/2 top-1/2 size-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 35% 35%, color-mix(in oklab, var(--color-brand-700) 65%, white), color-mix(in oklab, var(--color-brand-700) 95%, black))",
+              boxShadow: "0 18px 40px -18px color-mix(in oklab, var(--color-brand-700) 60%, transparent)",
+            }}
+          />
+          <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-white/85 px-1.5 py-0.5 text-[9px] font-medium text-ink-900 backdrop-blur">
+            <Camera className="size-2.5" strokeWidth={2} /> AI photo
+          </span>
+        </div>
+        <div className="mt-2.5 space-y-1">
+          <div className="font-display text-[13px] leading-tight text-ink-900">Single-Origin Roast · 250g</div>
+          <div className="text-[10px] leading-snug text-muted-foreground">
+            Bright citrus, cocoa finish. Description &amp; photo generated, ready to publish.
+          </div>
+          <div className="flex items-center justify-between pt-1">
+            <span className="font-mono-num text-[11px] text-ink-900">$18.00</span>
+            <span className="text-[9px] text-[color:var(--success)]">queued · Tue</span>
+          </div>
+        </div>
+      </div>
+      <div className="lg:col-span-2 inline-flex items-center gap-2 self-start rounded-full border border-line bg-surface-sunken/60 px-2.5 py-1 text-[10px] text-muted-foreground w-fit">
+        <Sparkle className="size-3 text-[color:var(--accent-gold)]" strokeWidth={1.75} />
+        Plan + first content in 3 min
+      </div>
+    </div>
   );
 }
 
@@ -380,28 +530,28 @@ function LogoStrip() {
 
 const PILLARS = [
   {
-    icon: Globe2,
-    title: "Site, provisioned",
+    icon: Search,
+    title: "Analyze · you + competitors",
     blurb:
-      "A premium, template-backed site spun up on a private subdomain — yours to keep, connect, or acquire.",
+      "We crawl your existing site and your top competitors to surface gaps, intents and angles worth winning.",
   },
   {
     icon: CalendarDays,
     title: "Plans, not posts",
     blurb:
-      "Quarterly content plans grounded in your audience and goals. Approve or rewrite — never a black box.",
+      "A monthly content plan you approve once: articles, product copy, photos, videos and social posts.",
   },
   {
     icon: PenLine,
-    title: "Drafts with a voice",
+    title: "Production with a voice",
     blurb:
-      "Editorial drafts in your tone. Human review built-in. Inline rewrites, citations, and image direction.",
+      "Articles, product descriptions, AI-generated product photos and short videos — in your tone, with human review on tap.",
   },
   {
-    icon: BarChart3,
-    title: "SEO that compounds",
+    icon: Rocket,
+    title: "Auto-publish, your cadence",
     blurb:
-      "Schema, internal links, sitemaps and rank tracking — wired in from day one, not bolted on later.",
+      "Pushed straight to your site (WordPress, Shopify, Webflow, custom) and your socials on the schedule you set. Pause or rollback anytime.",
   },
 ];
 
@@ -442,23 +592,23 @@ function Pillars() {
 const STEPS = [
   {
     n: "01",
-    title: "Describe the business",
-    blurb: "A few honest sentences. Or paste a URL and we'll learn the rest.",
+    title: "Connect your site",
+    blurb: "Drop in your URL and link the socials you already publish to. No migration, no rebuild.",
   },
   {
     n: "02",
-    title: "Pick a look & topics",
-    blurb: "Four editorial templates. AI-suggested topics you can edit, swap or veto.",
+    title: "Analyze & propose",
+    blurb: "Postics studies your site and top competitors, then proposes a monthly content plan.",
   },
   {
     n: "03",
-    title: "Watch Postics build",
-    blurb: "Provisioning, layout, three articles, SEO — assembled live in front of you.",
+    title: "Approve once",
+    blurb: "Articles, product descriptions, product photos, videos and social posts — approve the plan or rewrite any item.",
   },
   {
     n: "04",
-    title: "Keep, connect, or acquire",
-    blurb: "Subscribe, point your own domain, or buy the site outright.",
+    title: "Auto-publish",
+    blurb: "Postics ships to your site and socials on the cadence you set. Pause, edit, or rollback anytime.",
   },
 ];
 
@@ -471,7 +621,7 @@ function Workflow() {
             How it works
           </div>
           <h2 className="font-display text-4xl leading-[1.1] text-ink-900">
-            From empty browser to live editorial site in under a minute.
+            From your URL to a full content engine — in one afternoon.
           </h2>
         </div>
 
@@ -499,7 +649,7 @@ function Workflow() {
                 <div>
                   <div className="font-display text-xl text-ink-900">Vellum & Bean</div>
                   <div className="font-mono-num text-xs text-muted-foreground">
-                    vellumandbean.postics.site
+                    vellumandbean.com · connected
                   </div>
                 </div>
                 <StatusChip tone="gold">Pro</StatusChip>
@@ -638,8 +788,8 @@ function Pricing() {
             Honest pricing. No per-seat tax.
           </h2>
           <p className="text-muted-foreground">
-            Try the engine free. Upgrade when you're ready to publish — cancel anytime, take your
-            site with you.
+            Try the engine free on your own site. Upgrade when you're ready to publish — cancel
+            anytime, your content stays with you.
           </p>
         </div>
         <div role="tablist" aria-label="Billing cycle" className="inline-flex rounded-lg border border-line bg-surface p-1 text-sm shadow-elev-sm">
@@ -739,7 +889,7 @@ function Pricing() {
           <Coffee className="size-3.5" strokeWidth={1.5} /> No setup fees
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <ExternalLink className="size-3.5" strokeWidth={1.5} /> Export your site at any time
+          <ExternalLink className="size-3.5" strokeWidth={1.5} /> Export your content at any time
         </span>
       </div>
     </section>
@@ -754,16 +904,16 @@ const FAQ = [
     a: "Drafts land in your tone, with citations and an editorial structure. Every draft passes through review — you keep final cut. Most operators ship after light edits.",
   },
   {
-    q: "Will this hurt my SEO?",
-    a: "Postics ships schema, sitemaps, internal linking and rank tracking from day one. Previews are private and noindexed until you connect a domain and approve.",
+    q: "How do you connect to my site?",
+    a: "We publish to WordPress, Shopify, Webflow and custom CMSes via official APIs, plus your connected socials (Instagram, TikTok, LinkedIn, X). Nothing publishes without your approval rules.",
   },
   {
-    q: "Can I bring my own domain?",
-    a: "Yes — Pro and Agency plans support custom domains with managed SSL and email-safe DNS. We never lock you in.",
+    q: "Do I need a website already?",
+    a: "Yes — Postics works on top of the site you already own. If you don't have one yet, our freelancer team can build you a simple one as an optional, one-off service.",
   },
   {
     q: "What if I want to leave?",
-    a: "Export your site any time — code, content, and SEO foundation. Or acquire it outright as a one-time purchase.",
+    a: "Pause or cancel anytime. Everything we've published lives on your site and your socials — you keep it. No lock-in.",
   },
 ];
 
@@ -824,23 +974,23 @@ function ProofStrip() {
       <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
         <div className="max-w-md space-y-2">
           <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-            Live demo · generated by Postics
+            Example · generated by Postics
           </div>
           <h2 className="font-display text-2xl leading-tight text-ink-900">
-            A real site, on a real subdomain — assembled while you watch.
+            A content plan, pushed to your site and socials — on the cadence you set.
           </h2>
         </div>
         <Link to="/onboarding" className="postics-btn-ghost text-sm">
-          Generate your own <ArrowRight className="size-4" strokeWidth={1.75} />
+          Analyze my site <ArrowRight className="size-4" strokeWidth={1.75} />
         </Link>
       </div>
       <div className="relative mt-6">
-        <BrowserFrame url="https://vellumandbean.postics.site">
-          <HeroSitePreview />
+        <BrowserFrame url="app.postics.io/plan · vellumandbean.com">
+          <HeroPlanPreview />
         </BrowserFrame>
         <div className="absolute -top-3 left-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1 text-[11px] shadow-[0_4px_14px_-6px_rgba(20,24,31,0.18)]">
           <span className="size-1.5 rounded-full bg-[color:var(--success)]" />
-          Generated by Postics <span className="font-mono-num text-muted-foreground">in 3 min</span>
+          Plan + first content <span className="font-mono-num text-muted-foreground">in 3 min</span>
         </div>
       </div>
     </section>
@@ -950,10 +1100,11 @@ function CtaBand() {
               Ready when you are
             </div>
             <h2 className="mt-3 font-display text-4xl leading-[1.1] sm:text-5xl">
-              See your site assemble itself.
+              See your first content plan in 3 minutes.
             </h2>
             <p className="mt-3 max-w-xl text-base text-[color:var(--primary-foreground)]/75">
-              Generate a private preview in about 40 seconds — no credit card, no commitment.
+              Drop in your URL — we'll analyze your site and competitors and return a content plan
+              you can publish today.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 md:justify-end">
@@ -961,13 +1112,13 @@ function CtaBand() {
               to="/onboarding"
               className="inline-flex items-center gap-2 rounded-[10px] bg-[color:var(--accent-gold)] px-5 py-3 text-sm font-medium text-white hover:brightness-95"
             >
-              Generate a demo site <Sparkle className="size-4" strokeWidth={1.5} />
+              Analyze my site & get a content plan <Sparkle className="size-4" strokeWidth={1.5} />
             </Link>
             <Link
               to="/dashboard"
               className="inline-flex items-center gap-2 rounded-[10px] border border-white/20 px-5 py-3 text-sm font-medium text-[color:var(--primary-foreground)] hover:bg-white/5"
             >
-              Tour the dashboard <ArrowRight className="size-4" strokeWidth={1.75} />
+              See how it works <ArrowRight className="size-4" strokeWidth={1.75} />
             </Link>
           </div>
         </div>
