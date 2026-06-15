@@ -901,16 +901,16 @@ function Pricing() {
 
 const FAQ = [
   {
-    q: "Is the writing actually any good?",
-    a: "Drafts land in your tone, with citations and an editorial structure. Every draft passes through review — you keep final cut. Most operators ship after light edits.",
+    q: "Do I need my own website?",
+    a: "Yes — Postics connects to the site you already own (WordPress, Shopify, Webflow, or custom). We do not build or host websites. If you don't have one yet, our team can build you a simple one as a separate, optional service.",
   },
   {
-    q: "How do you connect to my site?",
-    a: "We publish to WordPress, Shopify, Webflow and custom CMSes via official APIs, plus your connected socials (Instagram, TikTok, LinkedIn, X). Nothing publishes without your approval rules.",
+    q: "What gets published?",
+    a: "Articles, product descriptions, AI-generated product photos & videos, and social posts — all planned in a monthly calendar and published automatically to your site and socials on the cadence you set.",
   },
   {
-    q: "Do I need a website already?",
-    a: "Yes — Postics works on top of the site you already own. If you don't have one yet, our freelancer team can build you a simple one as an optional, one-off service.",
+    q: "Are credits tokens?",
+    a: "No. Credits are billed per action (article, image, video, social post) — not tokens. That means predictable costs, no surprise overruns, and full Terms-of-Service safety with content platforms.",
   },
   {
     q: "What if I want to leave?",
