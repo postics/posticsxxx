@@ -1071,8 +1071,8 @@ function AgencyBlock() {
         </ul>
       </div>
       <div className="flex flex-col items-start gap-3 lg:items-end">
-        <div className="font-display text-3xl text-ink-900">Custom</div>
-        <div className="text-xs text-muted-foreground">from $1,499 / month</div>
+        <div className="font-display text-3xl text-ink-900">Agency</div>
+        <div className="text-xs text-muted-foreground">from $999 / month</div>
         <Link to="/onboarding" className="postics-btn-primary text-sm">
           Talk to the team <ArrowRight className="size-4" strokeWidth={1.75} />
         </Link>
