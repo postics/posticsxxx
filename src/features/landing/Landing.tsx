@@ -15,6 +15,13 @@ import {
   ExternalLink,
   ChevronRight,
   ChevronDown,
+  Search,
+  Camera,
+  Video,
+  Megaphone,
+  Rocket,
+  FileText,
+  ShoppingBag,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrowserFrame, Card, StatusChip } from "@/features/shared/primitives";
@@ -144,20 +151,20 @@ function Hero() {
 
   const copy = audience === "business"
     ? {
-        eyebrow: "New · Live demo site in under 3 minutes",
-        h1a: "Your business, fully published —",
-        h1b: "in minutes.",
-        sub: "A live demo site with real content, no WordPress needed. An optional human expert quietly checks the quality before you publish.",
-        cta: "Build my free demo site",
-        sec: "See a live demo site",
+        eyebrow: "New · Plan + first content in 3 min",
+        h1a: "Your content, planned and published —",
+        h1b: "on autopilot.",
+        sub: "Postics analyzes your site and competitors, builds a content plan, then generates articles, product photos & videos and social posts — and publishes them to your site and socials on your schedule. Add a human expert for quality whenever you want.",
+        cta: "Analyze my site & get a content plan",
+        sec: "See how it works",
       }
     : {
         eyebrow: "For agencies · White-label, multi-project",
         h1a: "Run content for every client",
         h1b: "from one console.",
-        sub: "Multi-project workspaces, your brand on every report, real margin on every retainer. Built with senior agencies, not consumer SaaS.",
-        cta: "Build my free demo site",
-        sec: "Talk to the team",
+        sub: "White-label, multi-project, margin — one engine for all your clients' sites and socials.",
+        cta: "Analyze my site & get a content plan",
+        sec: "See how it works",
       };
 
   return (
@@ -198,13 +205,13 @@ function Hero() {
             <Link to="/onboarding" className="postics-btn-primary">
               {copy.cta} <ArrowRight className="size-4" strokeWidth={1.75} />
             </Link>
-            <a href="#proof" className="postics-btn-secondary">
+            <a href="#how" className="postics-btn-secondary">
               {copy.sec}
             </a>
           </div>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-muted-foreground">
             {(audience === "business"
-              ? ["Live preview in ~3 min", "No credit card", "Private noindex by default"]
+              ? ["Connect your existing site", "Auto-publish on your schedule", "Optional human expert"]
               : ["White-label dashboard", "Per-client billing", "Bulk content ops"]
             ).map((t) => (
               <li key={t} className="inline-flex items-center gap-1.5">
@@ -212,39 +219,182 @@ function Hero() {
               </li>
             ))}
           </ul>
+          <div className="pt-1 text-xs text-muted-foreground">
+            No website yet?{" "}
+            <Link to="/marketplace" className="underline decoration-dotted underline-offset-4 hover:text-ink-900">
+              Our team can build you a simple one
+            </Link>
+            .
+          </div>
         </div>
 
         <div className="relative">
           <BrowserFrame
             key={audience}
-            url={audience === "business" ? "https://vellumandbean.postics.site" : "https://app.postics.io/agency"}
+            url={audience === "business" ? "app.postics.io/plan · yourstore.com" : "app.postics.io/agency"}
             className="lg:ml-auto animate-rise"
           >
-            {audience === "business" ? <HeroSitePreview /> : <HeroAgencyPreview />}
+            {audience === "business" ? <HeroPlanPreview /> : <HeroAgencyPreview />}
           </BrowserFrame>
 
           {/* Floating callouts */}
           <div className="absolute -left-4 top-10 hidden rounded-xl border border-line bg-surface p-3 shadow-[0_24px_60px_-30px_rgba(20,24,31,0.25)] sm:flex sm:items-center sm:gap-2.5">
             <span className="grid size-7 place-items-center rounded-md bg-brand-100 text-brand-700">
-              <PenLine className="size-3.5" strokeWidth={1.75} />
+              <CalendarDays className="size-3.5" strokeWidth={1.75} />
             </span>
             <div className="text-xs">
-              <div className="text-ink-900">{audience === "business" ? "Draft ready" : "Client onboarded"}</div>
-              <div className="font-mono-num text-muted-foreground">{audience === "business" ? "+3 articles" : "Northwind Co."}</div>
+              <div className="text-ink-900">{audience === "business" ? "Plan approved" : "Client onboarded"}</div>
+              <div className="font-mono-num text-muted-foreground">{audience === "business" ? "24 items · Nov" : "Northwind Co."}</div>
             </div>
           </div>
           <div className="absolute -right-3 bottom-10 hidden rounded-xl border border-line bg-surface p-3 shadow-[0_24px_60px_-30px_rgba(20,24,31,0.25)] sm:flex sm:items-center sm:gap-2.5">
             <span className="grid size-7 place-items-center rounded-md bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]">
-              <BarChart3 className="size-3.5" strokeWidth={1.75} />
+              <Rocket className="size-3.5" strokeWidth={1.75} />
             </span>
             <div className="text-xs">
-              <div className="text-ink-900">{audience === "business" ? "Avg. position" : "Margin / retainer"}</div>
-              <div className="font-mono-num text-[color:var(--success)]">{audience === "business" ? "↑ 3.1" : "+62%"}</div>
+              <div className="text-ink-900">{audience === "business" ? "Auto-published" : "Margin / retainer"}</div>
+              <div className="font-mono-num text-[color:var(--success)]">{audience === "business" ? "Tue 10:00" : "+62%"}</div>
             </div>
           </div>
         </div>
       </div>
+      <FeatureRow />
     </section>
+  );
+}
+
+function FeatureRow() {
+  const items = [
+    { icon: Search, label: "Analyze" },
+    { icon: CalendarDays, label: "Plan" },
+    { icon: FileText, label: "Articles" },
+    { icon: ShoppingBag, label: "Product descriptions" },
+    { icon: Camera, label: "Product photos" },
+    { icon: Video, label: "Product videos" },
+    { icon: Megaphone, label: "Social posts" },
+    { icon: Rocket, label: "Auto-publish on your cadence" },
+  ];
+  return (
+    <div className="relative mx-auto w-full max-w-6xl px-6 pb-16">
+      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 rounded-2xl border border-line bg-surface/60 px-5 py-4 text-xs text-ink-700 shadow-elev-sm">
+        {items.map((it, i) => (
+          <span key={it.label} className="inline-flex items-center gap-3">
+            <span className="inline-flex items-center gap-1.5">
+              <it.icon className="size-3.5 text-brand-700" strokeWidth={1.5} />
+              {it.label}
+            </span>
+            {i < items.length - 1 && (
+              <span aria-hidden className="text-muted-foreground/60">·</span>
+            )}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HeroPlanPreview() {
+  // 5x4 calendar with scheduled content chips
+  const items: Record<number, { tone: "art" | "soc" | "prod"; label: string }> = {
+    3: { tone: "art", label: "Article" },
+    5: { tone: "soc", label: "IG post" },
+    8: { tone: "prod", label: "Product" },
+    11: { tone: "art", label: "Article" },
+    14: { tone: "soc", label: "TikTok" },
+    17: { tone: "art", label: "Article" },
+    19: { tone: "prod", label: "Product" },
+  };
+  const toneClass = (t: "art" | "soc" | "prod") =>
+    t === "art"
+      ? "bg-brand-100 text-brand-700"
+      : t === "soc"
+      ? "bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
+      : "bg-ink-900/8 text-ink-900";
+  return (
+    <div className="grid gap-4 bg-surface p-5 lg:grid-cols-[1.35fr_1fr]">
+      {/* Calendar */}
+      <div className="rounded-lg border border-line bg-surface p-3.5">
+        <div className="flex items-center justify-between pb-2">
+          <div className="flex items-center gap-2">
+            <CalendarDays className="size-3.5 text-brand-700" strokeWidth={1.75} />
+            <span className="font-display text-sm text-ink-900">November · content plan</span>
+          </div>
+          <span className="font-mono-num text-[10px] text-muted-foreground">24 items</span>
+        </div>
+        <div className="grid grid-cols-5 gap-1 text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+          {["Mon","Tue","Wed","Thu","Fri"].map((d) => (
+            <div key={d} className="px-1">{d}</div>
+          ))}
+        </div>
+        <div className="mt-1 grid grid-cols-5 gap-1">
+          {Array.from({ length: 20 }).map((_, i) => {
+            const day = i + 1;
+            const it = items[day];
+            return (
+              <div key={day} className="aspect-[1.1/1] rounded-md border border-line bg-surface-sunken/40 p-1.5">
+                <div className="font-mono-num text-[9px] text-muted-foreground">{day}</div>
+                {it && (
+                  <div className={cn("mt-1 truncate rounded px-1 py-0.5 text-[8.5px] font-medium leading-tight", toneClass(it.tone))}>
+                    {it.label}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="mt-2.5 flex items-center gap-3 border-t border-line pt-2 text-[9px] text-muted-foreground">
+          <span className="inline-flex items-center gap-1"><span className="size-2 rounded-sm bg-brand-100" />Article</span>
+          <span className="inline-flex items-center gap-1"><span className="size-2 rounded-sm bg-[color:var(--accent-gold-soft)]" />Social</span>
+          <span className="inline-flex items-center gap-1"><span className="size-2 rounded-sm bg-ink-900/8" />Product</span>
+          <span className="ml-auto inline-flex items-center gap-1 text-[color:var(--success)]">
+            <span className="size-1.5 rounded-full bg-[color:var(--success)]" /> auto-publish on
+          </span>
+        </div>
+      </div>
+      {/* Product card */}
+      <div className="rounded-lg border border-line bg-surface p-3.5">
+        <div className="flex items-center justify-between pb-2">
+          <span className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Generated product</span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-ink-900 px-1.5 py-0.5 text-[9px] font-medium text-[color:var(--primary-foreground)]">
+            <Video className="size-2.5" strokeWidth={2} /> video
+          </span>
+        </div>
+        <div
+          className="relative aspect-[4/5] overflow-hidden rounded-md border border-line"
+          style={{
+            backgroundImage:
+              "radial-gradient(120% 80% at 30% 20%, color-mix(in oklab, var(--color-brand-100) 70%, white) 0%, transparent 60%), linear-gradient(160deg, color-mix(in oklab, var(--color-accent-gold) 22%, white) 0%, color-mix(in oklab, var(--color-brand-700) 12%, white) 100%)",
+          }}
+        >
+          <div
+            aria-hidden
+            className="absolute left-1/2 top-1/2 size-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 35% 35%, color-mix(in oklab, var(--color-brand-700) 65%, white), color-mix(in oklab, var(--color-brand-700) 95%, black))",
+              boxShadow: "0 18px 40px -18px color-mix(in oklab, var(--color-brand-700) 60%, transparent)",
+            }}
+          />
+          <span className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-white/85 px-1.5 py-0.5 text-[9px] font-medium text-ink-900 backdrop-blur">
+            <Camera className="size-2.5" strokeWidth={2} /> AI photo
+          </span>
+        </div>
+        <div className="mt-2.5 space-y-1">
+          <div className="font-display text-[13px] leading-tight text-ink-900">Single-Origin Roast · 250g</div>
+          <div className="text-[10px] leading-snug text-muted-foreground">
+            Bright citrus, cocoa finish. Description &amp; photo generated, ready to publish.
+          </div>
+          <div className="flex items-center justify-between pt-1">
+            <span className="font-mono-num text-[11px] text-ink-900">$18.00</span>
+            <span className="text-[9px] text-[color:var(--success)]">queued · Tue</span>
+          </div>
+        </div>
+      </div>
+      <div className="lg:col-span-2 inline-flex items-center gap-2 self-start rounded-full border border-line bg-surface-sunken/60 px-2.5 py-1 text-[10px] text-muted-foreground w-fit">
+        <Sparkle className="size-3 text-[color:var(--accent-gold)]" strokeWidth={1.75} />
+        Plan + first content in 3 min
+      </div>
+    </div>
   );
 }
 
