@@ -238,13 +238,19 @@ function Hero() {
         </div>
 
         <div className="relative">
+          {/* Desktop & tablet: single full preview */}
           <BrowserFrame
             key={audience}
             url={audience === "business" ? "app.postics.io/plan · yourstore.com" : "app.postics.io/agency"}
-            className="lg:ml-auto animate-rise"
+            className="hidden sm:block lg:ml-auto animate-rise"
           >
             {audience === "business" ? <HeroPlanPreview /> : <HeroAgencyPreview />}
           </BrowserFrame>
+
+          {/* Mobile: small swipeable carousel */}
+          <div className="sm:hidden">
+            <HeroMobileCarousel audience={audience} />
+          </div>
 
           {/* Floating callouts */}
           <div className="absolute -left-4 top-10 hidden rounded-xl border border-line bg-surface p-3 shadow-[0_24px_60px_-30px_rgba(20,24,31,0.25)] sm:flex sm:items-center sm:gap-2.5">
