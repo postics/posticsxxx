@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   TrendingUp,
   TrendingDown,
-  Sparkles,
+  Radar,
   Download,
   Zap,
   ExternalLink,
@@ -84,7 +84,7 @@ function AnalyticsPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="grid size-8 place-items-center rounded-md bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]">
-                <Sparkles className="size-4" strokeWidth={1.5} />
+                <Radar className="size-4" strokeWidth={1.5} />
               </div>
               <div>
                 <div className="text-sm font-medium text-ink-900">Where your content appears in AI answers</div>
