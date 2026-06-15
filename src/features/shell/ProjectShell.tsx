@@ -16,6 +16,8 @@ import {
   CreditsPill,
   SideBarShell,
   type SideItem,
+  useActiveFromRoute,
+  type Crumb,
 } from "./topbar-parts";
 
 export type ProjectNavId =
@@ -36,13 +38,28 @@ export function ProjectShell({
   breadcrumb,
   children,
 }: {
-  active: ProjectNavId;
+  /** Optional — when omitted the active id is derived from the current route. */
+  active?: ProjectNavId;
   /** Tail crumbs only — the scope prefix (agency / client) is added here. */
-  breadcrumb: string[];
+  breadcrumb: Crumb[];
   children: ReactNode;
 }) {
   const { role, workspace, currentProject } = useScope();
   const [collapsed, setCollapsed] = useState(false);
+
+  const derived = useActiveFromRoute<ProjectNavId>(
+    {
+      "/dashboard": "overview",
+      "/plan": "plan",
+      "/studio": "studio",
+      "/editor": "editor",
+      "/review": "review",
+      "/analytics": "analytics",
+      "/settings": "settings",
+    },
+    "overview",
+  );
+  const activeId: ProjectNavId = active ?? derived;
 
   const create: SideItem[] = [
     { id: "overview", label: "Overview", icon: LayoutDashboard, to: "/dashboard" },
@@ -60,7 +77,13 @@ export function ProjectShell({
     { id: "settings", label: "Settings", icon: Settings2, to: "/settings" },
   ];
 
-  const crumbPrefix = role === "agency" ? [workspace.name, currentProject.name] : [currentProject.name];
+  const crumbPrefix: Crumb[] =
+    role === "agency"
+      ? [
+          { label: workspace.name, to: "/clients" },
+          { label: currentProject.name, to: "/dashboard" },
+        ]
+      : [{ label: currentProject.name, to: "/dashboard" }];
 
   return (
     <div className="flex min-h-screen w-full bg-paper">
@@ -70,7 +93,7 @@ export function ProjectShell({
           { label: "Create", items: create },
           { label: "Measure & manage", items: measure },
         ]}
-        active={active}
+        active={activeId}
         collapsed={collapsed}
         setCollapsed={setCollapsed}
       />
@@ -78,7 +101,7 @@ export function ProjectShell({
         <TopBar
           left={<ScopeSwitcher mode="project" />}
           breadcrumb={[...crumbPrefix, ...breadcrumb]}
-          right={<CreditsPill />}
+          right={<CreditsPill mode="project" />}
         />
         <main className="flex-1">{children}</main>
       </div>
@@ -87,8 +110,11 @@ export function ProjectShell({
 }
 
 function BrandMark() {
+  const { role } = useScope();
+  // Logo → console (agency) / Overview (solo). Landing is reachable from the avatar / sign-out.
+  const to = role === "agency" ? "/clients" : "/dashboard";
   return (
-    <Link to="/" className="flex items-center gap-2.5 hover:opacity-80">
+    <Link to={to} className="flex items-center gap-2.5 hover:opacity-80">
       <div className="grid size-8 place-items-center rounded-md bg-brand-700 text-[color:var(--primary-foreground)]">
         <span className="font-display text-base leading-none">P</span>
       </div>
