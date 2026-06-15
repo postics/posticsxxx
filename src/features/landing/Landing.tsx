@@ -390,7 +390,7 @@ function HeroPlanPreview() {
         </div>
       </div>
       <div className="lg:col-span-2 inline-flex items-center gap-2 self-start rounded-full border border-line bg-surface-sunken/60 px-2.5 py-1 text-[10px] text-muted-foreground w-fit">
-        <Sparkle className="size-3 text-[color:var(--accent-gold)]" strokeWidth={1.75} />
+        <span className="size-1.5 rounded-full bg-[color:var(--accent-gold)]" />
         Plan + first content in 3 min
       </div>
     </div>
@@ -596,7 +596,7 @@ const STEPS = [
       "You keep your own WordPress. Install the Postics connector — no migration, no rebuild.",
   },
   {
-    icon: Sparkle,
+    icon: Cpu,
     title: "AI plans & creates",
     blurb:
       "Analyzes your site + competitors → builds a content plan → generates articles, product photos & videos, and social posts.",
@@ -1111,7 +1111,7 @@ function CtaBand() {
               to="/onboarding"
               className="inline-flex items-center gap-2 rounded-[10px] bg-[color:var(--accent-gold)] px-5 py-3 text-sm font-medium text-white hover:brightness-95"
             >
-              Analyze my site & get a content plan <Sparkle className="size-4" strokeWidth={1.5} />
+              Analyze my site & get a content plan <ArrowRight className="size-4" strokeWidth={1.75} />
             </Link>
             <Link
               to="/dashboard"
