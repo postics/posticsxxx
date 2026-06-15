@@ -128,6 +128,7 @@ export function LanguageButton({ compact = false }: { compact?: boolean }) {
           compact && "px-2",
         )}
       >
+        <span className="mr-1.5 text-base leading-none">{current.flag}</span>
         {current.code}
       </button>
       {open && <LanguageDialog onClose={() => setOpen(false)} />}
