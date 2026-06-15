@@ -22,6 +22,7 @@ import {
   Rocket,
   FileText,
   ShoppingBag,
+  Plug,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrowserFrame, Card, StatusChip } from "@/features/shared/primitives";
