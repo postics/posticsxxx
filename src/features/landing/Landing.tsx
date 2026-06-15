@@ -89,16 +89,11 @@ function Nav() {
     <header
       data-scrolled={scrolled || undefined}
       className={cn(
-        "sticky top-0 z-30 glass transition-[height,box-shadow] duration-200",
+        "sticky top-0 z-30 glass transition-[box-shadow] duration-200",
         scrolled && "shadow-elev-sm",
       )}
     >
-      <div
-        className={cn(
-          "mx-auto flex w-full max-w-6xl items-center justify-between px-6 transition-[height] duration-200",
-          scrolled ? "h-14" : "h-16",
-        )}
-      >
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2.5">
           <div className="grid size-7 place-items-center rounded-md bg-brand-700 text-[color:var(--primary-foreground)]">
             <span className="font-display text-sm leading-none">P</span>
