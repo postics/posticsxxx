@@ -14,6 +14,9 @@ import {
   TopBar,
   SideBarShell,
   type SideItem,
+  CreditsPill,
+  useActiveFromRoute,
+  type Crumb,
 } from "./topbar-parts";
 
 export type WorkspaceNavId =
@@ -33,13 +36,26 @@ export function WorkspaceShell({
   breadcrumb,
   children,
 }: {
-  active: WorkspaceNavId;
-  breadcrumb: string[];
+  active?: WorkspaceNavId;
+  breadcrumb: Crumb[];
   children: ReactNode;
 }) {
   const { role, workspace } = useScope();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+
+  const derived = useActiveFromRoute<WorkspaceNavId>(
+    {
+      "/clients": "clients",
+      "/team": "team",
+      "/brand-kit": "brand",
+      "/marketplace": "marketplace",
+      "/billing": "billing",
+      "/partner": "partner",
+    },
+    "clients",
+  );
+  const activeId: WorkspaceNavId = active ?? derived;
 
   // Solo businesses never see the workspace scope.
   useEffect(() => {
@@ -60,14 +76,15 @@ export function WorkspaceShell({
       <SideBarShell
         brand={<WorkspaceBrand />}
         groups={[{ items }]}
-        active={active}
+        active={activeId}
         collapsed={collapsed}
         setCollapsed={setCollapsed}
       />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar
           left={<ScopeSwitcher mode="workspace" />}
-          breadcrumb={[workspace.name, ...breadcrumb]}
+          breadcrumb={[{ label: workspace.name, to: "/clients" }, ...breadcrumb]}
+          right={<CreditsPill mode="workspace" />}
         />
         <main className="flex-1">{children}</main>
       </div>
@@ -77,7 +94,7 @@ export function WorkspaceShell({
 
 function WorkspaceBrand() {
   return (
-    <Link to="/" className="flex items-center gap-2.5 hover:opacity-80">
+    <Link to="/clients" className="flex items-center gap-2.5 hover:opacity-80">
       <div className="grid size-8 place-items-center rounded-md bg-ink-900 text-paper">
         <span className="font-display text-base leading-none">P</span>
       </div>

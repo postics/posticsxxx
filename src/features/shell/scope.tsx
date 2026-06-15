@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type Role = "business" | "agency";
 
@@ -38,10 +38,31 @@ const DEFAULT_PROJECTS: Project[] = [
   { id: "old-mill-roasters", name: "Old Mill Roasters", initials: "OM", domain: "oldmillroasters.co", reviewEnabled: false },
 ];
 
+const ROLE_KEY = "postics:role";
+const PROJECT_KEY = "postics:currentProjectId";
+
 export function ScopeProvider({ children, initialRole = "agency" }: { children: ReactNode; initialRole?: Role }) {
-  const [role, setRole] = useState<Role>(initialRole);
+  const [role, setRoleState] = useState<Role>(initialRole);
   const [projects] = useState<Project[]>(DEFAULT_PROJECTS);
-  const [currentProjectId, setCurrentProjectId] = useState<string>(DEFAULT_PROJECTS[0].id);
+  const [currentProjectId, setCurrentProjectIdState] = useState<string>(DEFAULT_PROJECTS[0].id);
+
+  // Hydrate from localStorage on mount.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const r = window.localStorage.getItem(ROLE_KEY) as Role | null;
+    if (r === "business" || r === "agency") setRoleState(r);
+    const p = window.localStorage.getItem(PROJECT_KEY);
+    if (p && DEFAULT_PROJECTS.some((x) => x.id === p)) setCurrentProjectIdState(p);
+  }, []);
+
+  const setRole = (r: Role) => {
+    setRoleState(r);
+    if (typeof window !== "undefined") window.localStorage.setItem(ROLE_KEY, r);
+  };
+  const setCurrentProjectId = (id: string) => {
+    setCurrentProjectIdState(id);
+    if (typeof window !== "undefined") window.localStorage.setItem(PROJECT_KEY, id);
+  };
 
   const value = useMemo<ScopeState>(() => {
     const visible = role === "business" ? projects.slice(0, 1) : projects;
