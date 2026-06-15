@@ -1100,6 +1100,106 @@ function Differentiation() {
 
 /* ─────────────── Agency block ─────────────── */
 
+/* ─────────────── Results (before / after) ─────────────── */
+
+const RESULTS = [
+  {
+    brand: "Vellum & Bean",
+    kind: "Coffee · DTC",
+    metric: "Organic sessions / mo",
+    before: "1.2k",
+    after: "8.4k",
+    delta: "+600%",
+    window: "90 days",
+  },
+  {
+    brand: "Northwind Tea",
+    kind: "Shopify · UK",
+    metric: "Indexed pages",
+    before: "84",
+    after: "312",
+    delta: "+271%",
+    window: "120 days",
+  },
+  {
+    brand: "Linden Mercantile",
+    kind: "WordPress · US",
+    metric: "SEO keywords (top 10)",
+    before: "37",
+    after: "186",
+    delta: "+402%",
+    window: "6 months",
+  },
+];
+
+function Results() {
+  return (
+    <section id="results" className="border-y border-line bg-surface/50">
+      <div className="mx-auto w-full max-w-6xl px-6 py-24">
+        <div className="mb-10 grid gap-6 lg:grid-cols-[1fr_1.4fr] lg:items-end">
+          <div className="space-y-3">
+            <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              Trusted by operators
+            </div>
+            <h2 className="font-display text-4xl leading-[1.1] text-ink-900">
+              Real sites, measurable lift.
+            </h2>
+          </div>
+          <p className="text-muted-foreground lg:max-w-md lg:justify-self-end">
+            A few of the brands publishing on Postics. Numbers are pulled from their connected
+            analytics — no cherry-picked screenshots.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {RESULTS.map((r) => (
+            <Card key={r.brand} className="p-6 hover-lift shadow-elev-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-display text-lg text-ink-900">{r.brand}</div>
+                  <div className="font-mono-num text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                    {r.kind}
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-md bg-brand-100 px-1.5 py-0.5 text-[11px] font-medium text-brand-700">
+                  <TrendingUp className="size-3" strokeWidth={1.75} /> {r.delta}
+                </span>
+              </div>
+              <div className="mt-5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                {r.metric}
+              </div>
+              <div className="mt-2 grid grid-cols-[1fr_auto_1fr] items-end gap-3">
+                <div>
+                  <div className="font-mono-num text-2xl text-muted-foreground line-through decoration-line">
+                    {r.before}
+                  </div>
+                  <div className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                    Before
+                  </div>
+                </div>
+                <ArrowRight className="mb-5 size-4 text-muted-foreground" strokeWidth={1.5} />
+                <div>
+                  <div className="font-mono-num text-3xl text-ink-900">{r.after}</div>
+                  <div className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-brand-700">
+                    After · {r.window}
+                  </div>
+                </div>
+              </div>
+              {/* Mini sparkline-ish bar */}
+              <div className="mt-5 flex h-1.5 overflow-hidden rounded-full bg-surface-sunken">
+                <div className="h-full w-[18%] bg-line" />
+                <div className="h-full flex-1 bg-brand-700" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── Agency block end-marker ─────────────── */
+
 function AgencyBlock() {
   return (
     <Card className="grid gap-6 border-brand-700/30 bg-brand-100/30 p-7 lg:grid-cols-[1.4fr_1fr] lg:items-center">
