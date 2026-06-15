@@ -486,6 +486,10 @@ function HeroAgencyPreview() {
 }
 
 function HeroSitePreview() {
+  return null;
+}
+
+function _LegacyHeroSitePreview() {
   return (
     <div className="space-y-5 bg-surface p-6">
       <div className="flex items-center justify-between border-b border-line pb-3">
