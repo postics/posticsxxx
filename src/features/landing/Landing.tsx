@@ -446,7 +446,6 @@ function AudienceSegmented({ value, onChange }: { value: Audience; onChange: (a:
 }
 
 function HeroAgencyPreview() {
-  // (defined below)
   const clients = [
     { name: "Northwind Co.", status: "Live", credits: 64, tone: "live" as const },
     { name: "Atelier Rouge", status: "Drafting", credits: 28, tone: "info" as const },
