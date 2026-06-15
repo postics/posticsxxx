@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamRouteImport } from './routes/team'
-import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as PlanRouteImport } from './routes/plan'
@@ -29,11 +28,6 @@ import { Route as IndexRouteImport } from './routes/index'
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
   path: '/team',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StudioRoute = StudioRouteImport.update({
-  id: '/studio',
-  path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -122,7 +116,6 @@ export interface FileRoutesByFullPath {
   '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
-  '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
 }
 export interface FileRoutesByTo {
@@ -140,7 +133,6 @@ export interface FileRoutesByTo {
   '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
-  '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
 }
 export interface FileRoutesById {
@@ -159,7 +151,6 @@ export interface FileRoutesById {
   '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
-  '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
 }
 export interface FileRouteTypes {
@@ -179,7 +170,6 @@ export interface FileRouteTypes {
     | '/plan'
     | '/review'
     | '/settings'
-    | '/studio'
     | '/team'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -197,7 +187,6 @@ export interface FileRouteTypes {
     | '/plan'
     | '/review'
     | '/settings'
-    | '/studio'
     | '/team'
   id:
     | '__root__'
@@ -215,7 +204,6 @@ export interface FileRouteTypes {
     | '/plan'
     | '/review'
     | '/settings'
-    | '/studio'
     | '/team'
   fileRoutesById: FileRoutesById
 }
@@ -234,7 +222,6 @@ export interface RootRouteChildren {
   PlanRoute: typeof PlanRoute
   ReviewRoute: typeof ReviewRoute
   SettingsRoute: typeof SettingsRoute
-  StudioRoute: typeof StudioRoute
   TeamRoute: typeof TeamRoute
 }
 
@@ -245,13 +232,6 @@ declare module '@tanstack/react-router' {
       path: '/team'
       fullPath: '/team'
       preLoaderRoute: typeof TeamRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/studio': {
-      id: '/studio'
-      path: '/studio'
-      fullPath: '/studio'
-      preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -370,7 +350,6 @@ const rootRouteChildren: RootRouteChildren = {
   PlanRoute: PlanRoute,
   ReviewRoute: ReviewRoute,
   SettingsRoute: SettingsRoute,
-  StudioRoute: StudioRoute,
   TeamRoute: TeamRoute,
 }
 export const routeTree = rootRouteImport
