@@ -485,6 +485,43 @@ function HeroAgencyPreview() {
   );
 }
 
+function HeroMobileCarousel({ audience }: { audience: Audience }) {
+  const slides = audience === "business"
+    ? [
+        { id: "plan", label: "Plan", node: <HeroPlanPreview /> },
+        { id: "console", label: "Console", node: <HeroAgencyPreview /> },
+      ]
+    : [
+        { id: "console", label: "Console", node: <HeroAgencyPreview /> },
+        { id: "plan", label: "Plan", node: <HeroPlanPreview /> },
+      ];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { setIdx(0); }, [audience]);
+  return (
+    <div className="space-y-3">
+      <BrowserFrame
+        url={slides[idx].id === "plan" ? "app.postics.io/plan" : "app.postics.io/agency"}
+        className="animate-rise"
+      >
+        {slides[idx].node}
+      </BrowserFrame>
+      <div className="flex items-center justify-center gap-2">
+        {slides.map((s, i) => (
+          <button
+            key={s.id}
+            aria-label={`Show ${s.label}`}
+            onClick={() => setIdx(i)}
+            className={cn(
+              "h-1.5 rounded-full transition-all",
+              i === idx ? "w-6 bg-brand-700" : "w-1.5 bg-line",
+            )}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function HeroSitePreview() {
   return (
     <div className="space-y-5 bg-surface p-6">
