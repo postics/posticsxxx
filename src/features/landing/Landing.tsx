@@ -773,6 +773,7 @@ const PLANS = [
     cta: "Start Starter",
     href: "/onboarding",
     tone: "default" as const,
+    preview: "Includes 8 AI photos · 2 short videos · basic analytics.",
   },
   {
     name: "Growth",
@@ -788,6 +789,7 @@ const PLANS = [
     cta: "Start Growth",
     href: "/onboarding",
     tone: "featured" as const,
+    preview: "Includes 20 AI photos · 6 videos · 30 social posts · SEO console.",
   },
   {
     name: "Advanced",
@@ -803,6 +805,7 @@ const PLANS = [
     cta: "Start Advanced",
     href: "/onboarding",
     tone: "default" as const,
+    preview: "Includes 40 AI photos · 12 videos · 80 social posts · expert QC.",
   },
   {
     name: "Premium",
@@ -818,6 +821,7 @@ const PLANS = [
     cta: "Apply for Premium",
     href: "/onboarding",
     tone: "premium" as const,
+    preview: "Includes unlimited AI photos & videos · named editor · SLA.",
   },
 ];
 
@@ -887,7 +891,7 @@ function Pricing() {
             <Card
               key={p.name}
               className={cn(
-                "flex flex-col p-7 hover-lift shadow-elev-sm",
+                "group/card relative flex flex-col p-7 hover-lift shadow-elev-sm transition-shadow",
                 featured && "border-brand-700 ring-2 ring-brand-100 shadow-elev-pop xl:-translate-y-2 xl:scale-[1.02]",
                 premium && "border-[color:var(--accent-gold)] ring-2 ring-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/15",
               )}
@@ -912,6 +916,16 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
+              <div
+                className={cn(
+                  "mt-4 max-h-0 overflow-hidden text-[11px] leading-snug text-muted-foreground opacity-0 transition-all duration-200 ease-out",
+                  "group-hover/card:mt-4 group-hover/card:max-h-20 group-hover/card:opacity-100",
+                )}
+              >
+                <div className="rounded-md border border-dashed border-line bg-surface-sunken/50 px-2.5 py-1.5">
+                  {p.preview}
+                </div>
+              </div>
               <Link
                 to={p.href}
                 className={cn(
