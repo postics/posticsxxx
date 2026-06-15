@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Sparkle,
+  RotateCcw,
   Wand2,
   Type as TypeIcon,
   Link2,
@@ -173,7 +173,7 @@ function Stepper({ steps, active }: { steps: { id: string; label: string }[]; ac
 
 function Toolbar() {
   const tools = [
-    { icon: Sparkle, label: "Regenerate section", cost: 18 },
+    { icon: RotateCcw, label: "Regenerate section", cost: 18 },
     { icon: Wand2, label: "Expand", cost: 12 },
     { icon: TypeIcon, label: "Rewrite tone", cost: 8 },
     { icon: Link2, label: "Insert internal links", cost: 5 },
