@@ -530,28 +530,28 @@ function LogoStrip() {
 
 const PILLARS = [
   {
-    icon: Globe2,
-    title: "Site, provisioned",
+    icon: Search,
+    title: "Analyze · you + competitors",
     blurb:
-      "A premium, template-backed site spun up on a private subdomain — yours to keep, connect, or acquire.",
+      "We crawl your existing site and your top competitors to surface gaps, intents and angles worth winning.",
   },
   {
     icon: CalendarDays,
     title: "Plans, not posts",
     blurb:
-      "Quarterly content plans grounded in your audience and goals. Approve or rewrite — never a black box.",
+      "A monthly content plan you approve once: articles, product copy, photos, videos and social posts.",
   },
   {
     icon: PenLine,
-    title: "Drafts with a voice",
+    title: "Production with a voice",
     blurb:
-      "Editorial drafts in your tone. Human review built-in. Inline rewrites, citations, and image direction.",
+      "Articles, product descriptions, AI-generated product photos and short videos — in your tone, with human review on tap.",
   },
   {
-    icon: BarChart3,
-    title: "SEO that compounds",
+    icon: Rocket,
+    title: "Auto-publish, your cadence",
     blurb:
-      "Schema, internal links, sitemaps and rank tracking — wired in from day one, not bolted on later.",
+      "Pushed straight to your site (WordPress, Shopify, Webflow, custom) and your socials on the schedule you set. Pause or rollback anytime.",
   },
 ];
 
@@ -592,23 +592,23 @@ function Pillars() {
 const STEPS = [
   {
     n: "01",
-    title: "Describe the business",
-    blurb: "A few honest sentences. Or paste a URL and we'll learn the rest.",
+    title: "Connect your site",
+    blurb: "Drop in your URL and link the socials you already publish to. No migration, no rebuild.",
   },
   {
     n: "02",
-    title: "Pick a look & topics",
-    blurb: "Four editorial templates. AI-suggested topics you can edit, swap or veto.",
+    title: "Analyze & propose",
+    blurb: "Postics studies your site and top competitors, then proposes a monthly content plan.",
   },
   {
     n: "03",
-    title: "Watch Postics build",
-    blurb: "Provisioning, layout, three articles, SEO — assembled live in front of you.",
+    title: "Approve once",
+    blurb: "Articles, product descriptions, product photos, videos and social posts — approve the plan or rewrite any item.",
   },
   {
     n: "04",
-    title: "Keep, connect, or acquire",
-    blurb: "Subscribe, point your own domain, or buy the site outright.",
+    title: "Auto-publish",
+    blurb: "Postics ships to your site and socials on the cadence you set. Pause, edit, or rollback anytime.",
   },
 ];
 
@@ -621,7 +621,7 @@ function Workflow() {
             How it works
           </div>
           <h2 className="font-display text-4xl leading-[1.1] text-ink-900">
-            From empty browser to live editorial site in under a minute.
+            From your URL to a full content engine — in one afternoon.
           </h2>
         </div>
 
@@ -649,7 +649,7 @@ function Workflow() {
                 <div>
                   <div className="font-display text-xl text-ink-900">Vellum & Bean</div>
                   <div className="font-mono-num text-xs text-muted-foreground">
-                    vellumandbean.postics.site
+                    vellumandbean.com · connected
                   </div>
                 </div>
                 <StatusChip tone="gold">Pro</StatusChip>
