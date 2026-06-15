@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
-  Sparkle,
   Check,
   ShieldCheck,
   Globe2,
@@ -23,6 +22,10 @@ import {
   FileText,
   ShoppingBag,
   Plug,
+  Cpu,
+  TrendingUp,
+  Users,
+  Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrowserFrame, Card, StatusChip } from "@/features/shared/primitives";
@@ -40,6 +43,7 @@ export function Landing() {
       <Reveal><Pillars /></Reveal>
       <Reveal><Workflow /></Reveal>
       <Reveal><Differentiation /></Reveal>
+      <Reveal><Results /></Reveal>
       <Reveal><Pricing /></Reveal>
       <Reveal><Faq /></Reveal>
       <Reveal><CtaBand /></Reveal>
@@ -153,6 +157,9 @@ function Hero() {
         sub: "Postics analyzes your site and competitors, builds a content plan, then generates articles, product photos & videos and social posts — and publishes them to your site and socials on your schedule. Add a human expert for quality whenever you want.",
         cta: "Analyze my site & get a content plan",
         sec: "See how it works",
+        ctaHref: "/onboarding",
+        ctaHint: "Opens your single-project dashboard",
+        ctaHintIcon: Briefcase,
       }
     : {
         eyebrow: "For agencies · White-label, multi-project",
@@ -161,6 +168,9 @@ function Hero() {
         sub: "White-label, multi-project, margin — one engine for all your clients' sites and socials.",
         cta: "Analyze my site & get a content plan",
         sec: "See how it works",
+        ctaHref: "/clients",
+        ctaHint: "Opens your multi-client workspace console",
+        ctaHintIcon: Users,
       };
 
   return (
@@ -198,12 +208,16 @@ function Hero() {
           </h1>
           <p className="max-w-xl text-lg leading-relaxed text-muted-foreground">{copy.sub}</p>
           <div className="flex flex-wrap items-center gap-3">
-            <Link to="/onboarding" className="postics-btn-primary">
+            <Link to={copy.ctaHref} className="postics-btn-primary">
               {copy.cta} <ArrowRight className="size-4" strokeWidth={1.75} />
             </Link>
             <a href="#how" className="postics-btn-secondary">
               {copy.sec}
             </a>
+          </div>
+          <div className="-mt-1 inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <copy.ctaHintIcon className="size-3 text-brand-700" strokeWidth={1.75} />
+            {copy.ctaHint}
           </div>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-muted-foreground">
             {(audience === "business"
@@ -225,13 +239,19 @@ function Hero() {
         </div>
 
         <div className="relative">
+          {/* Desktop & tablet: single full preview */}
           <BrowserFrame
             key={audience}
             url={audience === "business" ? "app.postics.io/plan · yourstore.com" : "app.postics.io/agency"}
-            className="lg:ml-auto animate-rise"
+            className="hidden sm:block lg:ml-auto animate-rise"
           >
             {audience === "business" ? <HeroPlanPreview /> : <HeroAgencyPreview />}
           </BrowserFrame>
+
+          {/* Mobile: small swipeable carousel */}
+          <div className="sm:hidden">
+            <HeroMobileCarousel audience={audience} />
+          </div>
 
           {/* Floating callouts */}
           <div className="absolute -left-4 top-10 hidden rounded-xl border border-line bg-surface p-3 shadow-[0_24px_60px_-30px_rgba(20,24,31,0.25)] sm:flex sm:items-center sm:gap-2.5">
@@ -387,7 +407,7 @@ function HeroPlanPreview() {
         </div>
       </div>
       <div className="lg:col-span-2 inline-flex items-center gap-2 self-start rounded-full border border-line bg-surface-sunken/60 px-2.5 py-1 text-[10px] text-muted-foreground w-fit">
-        <Sparkle className="size-3 text-[color:var(--accent-gold)]" strokeWidth={1.75} />
+        <span className="size-1.5 rounded-full bg-[color:var(--accent-gold)]" />
         Plan + first content in 3 min
       </div>
     </div>
@@ -461,6 +481,43 @@ function HeroAgencyPreview() {
       <div className="flex items-center justify-between rounded-lg bg-surface-sunken/50 px-3 py-2 text-[10px] text-muted-foreground">
         <span>This month · 47 articles published</span>
         <span className="font-mono-num text-[color:var(--success)]">+62% margin</span>
+      </div>
+    </div>
+  );
+}
+
+function HeroMobileCarousel({ audience }: { audience: Audience }) {
+  const slides = audience === "business"
+    ? [
+        { id: "plan", label: "Plan", node: <HeroPlanPreview /> },
+        { id: "console", label: "Console", node: <HeroAgencyPreview /> },
+      ]
+    : [
+        { id: "console", label: "Console", node: <HeroAgencyPreview /> },
+        { id: "plan", label: "Plan", node: <HeroPlanPreview /> },
+      ];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => { setIdx(0); }, [audience]);
+  return (
+    <div className="space-y-3">
+      <BrowserFrame
+        url={slides[idx].id === "plan" ? "app.postics.io/plan" : "app.postics.io/agency"}
+        className="animate-rise"
+      >
+        {slides[idx].node}
+      </BrowserFrame>
+      <div className="flex items-center justify-center gap-2">
+        {slides.map((s, i) => (
+          <button
+            key={s.id}
+            aria-label={`Show ${s.label}`}
+            onClick={() => setIdx(i)}
+            className={cn(
+              "h-1.5 rounded-full transition-all",
+              i === idx ? "w-6 bg-brand-700" : "w-1.5 bg-line",
+            )}
+          />
+        ))}
       </div>
     </div>
   );
@@ -593,7 +650,7 @@ const STEPS = [
       "You keep your own WordPress. Install the Postics connector — no migration, no rebuild.",
   },
   {
-    icon: Sparkle,
+    icon: Cpu,
     title: "AI plans & creates",
     blurb:
       "Analyzes your site + competitors → builds a content plan → generates articles, product photos & videos, and social posts.",
@@ -716,6 +773,7 @@ const PLANS = [
     cta: "Start Starter",
     href: "/onboarding",
     tone: "default" as const,
+    preview: "Includes 8 AI photos · 2 short videos · basic analytics.",
   },
   {
     name: "Growth",
@@ -731,6 +789,7 @@ const PLANS = [
     cta: "Start Growth",
     href: "/onboarding",
     tone: "featured" as const,
+    preview: "Includes 20 AI photos · 6 videos · 30 social posts · SEO console.",
   },
   {
     name: "Advanced",
@@ -746,6 +805,7 @@ const PLANS = [
     cta: "Start Advanced",
     href: "/onboarding",
     tone: "default" as const,
+    preview: "Includes 40 AI photos · 12 videos · 80 social posts · expert QC.",
   },
   {
     name: "Premium",
@@ -761,6 +821,7 @@ const PLANS = [
     cta: "Apply for Premium",
     href: "/onboarding",
     tone: "premium" as const,
+    preview: "Includes unlimited AI photos & videos · named editor · SLA.",
   },
 ];
 
@@ -830,7 +891,7 @@ function Pricing() {
             <Card
               key={p.name}
               className={cn(
-                "flex flex-col p-7 hover-lift shadow-elev-sm",
+                "group/card relative flex flex-col p-7 hover-lift shadow-elev-sm transition-shadow",
                 featured && "border-brand-700 ring-2 ring-brand-100 shadow-elev-pop xl:-translate-y-2 xl:scale-[1.02]",
                 premium && "border-[color:var(--accent-gold)] ring-2 ring-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/15",
               )}
@@ -855,6 +916,16 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
+              <div
+                className={cn(
+                  "mt-4 max-h-0 overflow-hidden text-[11px] leading-snug text-muted-foreground opacity-0 transition-all duration-200 ease-out",
+                  "group-hover/card:mt-4 group-hover/card:max-h-20 group-hover/card:opacity-100",
+                )}
+              >
+                <div className="rounded-md border border-dashed border-line bg-surface-sunken/50 px-2.5 py-1.5">
+                  {p.preview}
+                </div>
+              </div>
               <Link
                 to={p.href}
                 className={cn(
@@ -1043,6 +1114,106 @@ function Differentiation() {
 
 /* ─────────────── Agency block ─────────────── */
 
+/* ─────────────── Results (before / after) ─────────────── */
+
+const RESULTS = [
+  {
+    brand: "Vellum & Bean",
+    kind: "Coffee · DTC",
+    metric: "Organic sessions / mo",
+    before: "1.2k",
+    after: "8.4k",
+    delta: "+600%",
+    window: "90 days",
+  },
+  {
+    brand: "Northwind Tea",
+    kind: "Shopify · UK",
+    metric: "Indexed pages",
+    before: "84",
+    after: "312",
+    delta: "+271%",
+    window: "120 days",
+  },
+  {
+    brand: "Linden Mercantile",
+    kind: "WordPress · US",
+    metric: "SEO keywords (top 10)",
+    before: "37",
+    after: "186",
+    delta: "+402%",
+    window: "6 months",
+  },
+];
+
+function Results() {
+  return (
+    <section id="results" className="border-y border-line bg-surface/50">
+      <div className="mx-auto w-full max-w-6xl px-6 py-24">
+        <div className="mb-10 grid gap-6 lg:grid-cols-[1fr_1.4fr] lg:items-end">
+          <div className="space-y-3">
+            <div className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              Trusted by operators
+            </div>
+            <h2 className="font-display text-4xl leading-[1.1] text-ink-900">
+              Real sites, measurable lift.
+            </h2>
+          </div>
+          <p className="text-muted-foreground lg:max-w-md lg:justify-self-end">
+            A few of the brands publishing on Postics. Numbers are pulled from their connected
+            analytics — no cherry-picked screenshots.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-3">
+          {RESULTS.map((r) => (
+            <Card key={r.brand} className="p-6 hover-lift shadow-elev-sm">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="font-display text-lg text-ink-900">{r.brand}</div>
+                  <div className="font-mono-num text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                    {r.kind}
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-md bg-brand-100 px-1.5 py-0.5 text-[11px] font-medium text-brand-700">
+                  <TrendingUp className="size-3" strokeWidth={1.75} /> {r.delta}
+                </span>
+              </div>
+              <div className="mt-5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                {r.metric}
+              </div>
+              <div className="mt-2 grid grid-cols-[1fr_auto_1fr] items-end gap-3">
+                <div>
+                  <div className="font-mono-num text-2xl text-muted-foreground line-through decoration-line">
+                    {r.before}
+                  </div>
+                  <div className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                    Before
+                  </div>
+                </div>
+                <ArrowRight className="mb-5 size-4 text-muted-foreground" strokeWidth={1.5} />
+                <div>
+                  <div className="font-mono-num text-3xl text-ink-900">{r.after}</div>
+                  <div className="mt-0.5 text-[10px] uppercase tracking-[0.14em] text-brand-700">
+                    After · {r.window}
+                  </div>
+                </div>
+              </div>
+              {/* Mini sparkline-ish bar */}
+              <div className="mt-5 flex h-1.5 overflow-hidden rounded-full bg-surface-sunken">
+                <div className="h-full w-[18%] bg-line" />
+                <div className="h-full flex-1 bg-brand-700" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── Agency block end-marker ─────────────── */
+
 function AgencyBlock() {
   return (
     <Card className="grid gap-6 border-brand-700/30 bg-brand-100/30 p-7 lg:grid-cols-[1.4fr_1fr] lg:items-center">
@@ -1108,7 +1279,7 @@ function CtaBand() {
               to="/onboarding"
               className="inline-flex items-center gap-2 rounded-[10px] bg-[color:var(--accent-gold)] px-5 py-3 text-sm font-medium text-white hover:brightness-95"
             >
-              Analyze my site & get a content plan <Sparkle className="size-4" strokeWidth={1.5} />
+              Analyze my site & get a content plan <ArrowRight className="size-4" strokeWidth={1.75} />
             </Link>
             <Link
               to="/dashboard"
