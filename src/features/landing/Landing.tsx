@@ -322,48 +322,7 @@ function MachineMock({ node }: { node: typeof MACHINE_NODES[number]["key"] }) {
     );
   }
   if (node === "generate") {
-    const langs = ["EN", "DE", "ES"] as const;
-    const [lang, setLang] = useState<typeof langs[number]>("EN");
-    const copy: Record<typeof langs[number], { title: string; body: string }> = {
-      EN: { title: "Single-Origin Roast · 250g", body: "Bright citrus, cocoa finish. Hand-roasted in small batches." },
-      DE: { title: "Single-Origin Röstung · 250g", body: "Helle Zitrusnoten, Kakao-Abgang. Schonend in kleinen Chargen geröstet." },
-      ES: { title: "Tueste de Origen · 250g", body: "Cítricos brillantes, final a cacao. Tostado a mano en lotes pequeños." },
-    };
-    return (
-      <Card className="p-5">
-        <div className="flex items-center justify-between pb-3">
-          <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Generated product</span>
-          <div className="flex items-center gap-1 rounded-full bg-surface-sunken p-0.5">
-            {langs.map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                className={cn(
-                  "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
-                  lang === l ? "bg-surface text-ink-900 shadow-elev-sm" : "text-muted-foreground",
-                )}
-              >
-                {l}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="grid grid-cols-[120px_1fr] gap-4">
-          <div
-            className="aspect-[4/5] rounded-lg border border-line"
-            style={{
-              backgroundImage:
-                "radial-gradient(120% 80% at 30% 20%, color-mix(in oklab, var(--color-brand-100) 70%, white), transparent 60%), linear-gradient(160deg, color-mix(in oklab, var(--color-accent-gold) 22%, white), color-mix(in oklab, var(--color-brand-700) 12%, white))",
-            }}
-          />
-          <div className="flex flex-col justify-center gap-2">
-            <div className="font-display text-lg font-semibold text-ink-900">{copy[lang].title}</div>
-            <p className="text-sm leading-relaxed text-muted-foreground">{copy[lang].body}</p>
-            <div className="font-mono-num text-sm text-ink-900">€18.00</div>
-          </div>
-        </div>
-      </Card>
-    );
+    return <GenerateMock />;
   }
   if (node === "review") {
     const checks = [
@@ -432,6 +391,51 @@ function MachineMock({ node }: { node: typeof MACHINE_NODES[number]["key"] }) {
       </svg>
     </Card>
   );
+}
+
+function GenerateMock() {
+  const langs = ["EN", "DE", "ES"] as const;
+  const [lang, setLang] = useState<typeof langs[number]>("EN");
+  const copy: Record<typeof langs[number], { title: string; body: string }> = {
+      EN: { title: "Single-Origin Roast · 250g", body: "Bright citrus, cocoa finish. Hand-roasted in small batches." },
+      DE: { title: "Single-Origin Röstung · 250g", body: "Helle Zitrusnoten, Kakao-Abgang. Schonend in kleinen Chargen geröstet." },
+      ES: { title: "Tueste de Origen · 250g", body: "Cítricos brillantes, final a cacao. Tostado a mano en lotes pequeños." },
+    };
+    return (
+      <Card className="p-5">
+        <div className="flex items-center justify-between pb-3">
+          <span className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Generated product</span>
+          <div className="flex items-center gap-1 rounded-full bg-surface-sunken p-0.5">
+            {langs.map((l) => (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                className={cn(
+                  "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
+                  lang === l ? "bg-surface text-ink-900 shadow-elev-sm" : "text-muted-foreground",
+                )}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-[120px_1fr] gap-4">
+          <div
+            className="aspect-[4/5] rounded-lg border border-line"
+            style={{
+              backgroundImage:
+                "radial-gradient(120% 80% at 30% 20%, color-mix(in oklab, var(--color-brand-100) 70%, white), transparent 60%), linear-gradient(160deg, color-mix(in oklab, var(--color-accent-gold) 22%, white), color-mix(in oklab, var(--color-brand-700) 12%, white))",
+            }}
+          />
+          <div className="flex flex-col justify-center gap-2">
+            <div className="font-display text-lg font-semibold text-ink-900">{copy[lang].title}</div>
+            <p className="text-sm leading-relaxed text-muted-foreground">{copy[lang].body}</p>
+            <div className="font-mono-num text-sm text-ink-900">€18.00</div>
+          </div>
+        </div>
+      </Card>
+    );
 }
 
 /* ─────────────── Proof by product ─────────────── */
