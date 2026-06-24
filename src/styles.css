@@ -5,9 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Postics design system — editorial studio meets engineering control panel.
+ * Postics design system — engineering control panel.
  * Light theme primary. Warm paper background, deep greenhouse green primary,
  * gold used sparingly for premium / verified / "buy site" moments.
+ * Typography: Inter for display + body, Geist Mono for data.
  */
 
 @theme inline {
