@@ -196,10 +196,9 @@ function TheMachine() {
   return (
     <section id="machine" className="relative mx-auto w-full max-w-6xl px-6 py-24">
       <div className="text-center">
-        <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">/ the machine</div>
-        <h2 className="mx-auto mt-3 max-w-3xl font-display text-4xl font-semibold leading-[1.1] tracking-tight text-ink-900 sm:text-5xl">
-          Paste a URL. <span className="text-brand-700">Watch it run.</span>
-        </h2>
+        <div className="font-mono-num text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+          / paste a url. watch it run.
+        </div>
       </div>
 
       <div className="mt-12 rounded-2xl border border-line bg-surface p-6 shadow-elev-sm sm:p-10">
@@ -244,12 +243,12 @@ function TheMachine() {
         </div>
 
         {/* Active node mock */}
-        <div className="mt-8 min-h-[280px]">
+        <div className="mt-8 min-h-[300px]">
           <MachineMock node={current.key} />
         </div>
 
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          Connected to <span className="text-ink-900">Northbound Coffee Roasters</span> · WooCommerce
+        <p className="mt-6 text-center font-mono-num text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+          connected · northbound coffee roasters · woocommerce
         </p>
       </div>
     </section>
