@@ -703,15 +703,15 @@ function Numbers() {
   const tiles = [
     { v: "10+", label: "languages" },
     { v: "1,000s", label: "of SKUs per run" },
-    { v: "1 cadence", label: "site + socials" },
+    { v: "site + socials", label: "one cadence" },
   ];
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-20">
       <div className="grid gap-4 md:grid-cols-3">
         {tiles.map((t) => (
           <Card key={t.label} className="p-6 text-center">
-            <div className="font-display text-4xl font-semibold tracking-tight text-ink-900">{t.v}</div>
-            <div className="mt-1 text-sm text-muted-foreground">{t.label}</div>
+            <div className="font-mono-num text-4xl font-semibold tracking-tight text-ink-900">{t.v}</div>
+            <div className="mt-1 font-mono-num text-[11px] uppercase tracking-[0.14em] text-muted-foreground">{t.label}</div>
           </Card>
         ))}
       </div>
@@ -719,6 +719,17 @@ function Numbers() {
         <span className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/40 px-3 py-1 text-[11px] uppercase tracking-[0.12em] text-[color:var(--accent-gold)]">
           <Sparkles className="size-3" strokeWidth={2} /> We run Postics on Postics
         </span>
+      </div>
+      {/* Quiet logos strip */}
+      <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 opacity-60">
+        {["WordPress", "WooCommerce", "Instagram", "TikTok", "Facebook", "YouTube"].map((p) => (
+          <span
+            key={p}
+            className="font-mono-num text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            {p}
+          </span>
+        ))}
       </div>
     </section>
   );
