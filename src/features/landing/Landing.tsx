@@ -870,25 +870,47 @@ function HeroEcho() {
 function Footer() {
   return (
     <footer className="border-t border-line bg-surface">
-      <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-        <div className="flex items-center gap-2.5">
-          <div className="grid size-6 place-items-center rounded-md bg-brand-700 text-[color:var(--primary-foreground)]">
-            <span className="font-display text-xs leading-none">P</span>
+      <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-12 sm:grid-cols-[1.4fr_1fr_auto]">
+        {/* Wordmark + tagline */}
+        <div>
+          <div className="flex items-center gap-2.5">
+            <div className="grid size-6 place-items-center rounded-md bg-brand-700 text-[color:var(--primary-foreground)]">
+              <span className="font-display text-xs leading-none">P</span>
+            </div>
+            <span className="font-display text-sm font-semibold tracking-tight text-ink-900">Postics.io</span>
           </div>
-          <span className="font-display text-sm font-semibold tracking-tight text-ink-900">Postics.io</span>
-          <span className="text-xs text-muted-foreground">© {new Date().getFullYear()}</span>
+          <p className="mt-3 max-w-xs text-sm text-muted-foreground">
+            Marketing on autopilot for your store.
+          </p>
         </div>
-        <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
-          <a href="#machine" className="hover:text-ink-900">Product</a>
-          <a href="#pricing" className="hover:text-ink-900">Pricing</a>
-          <a href="#faq" className="hover:text-ink-900">FAQ</a>
-          <a href="#agencies" className="hover:text-ink-900">For agencies</a>
-        </nav>
-        <div className="flex items-center gap-2">
-          <Link to="/dashboard" className="postics-btn-ghost">Log in</Link>
+        {/* Product column — real on-page sections only */}
+        <div>
+          <div className="font-mono-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            / product
+          </div>
+          <nav className="mt-4 flex flex-col gap-2 text-sm text-ink-900">
+            <a href="#machine" className="hover:text-brand-700">The machine</a>
+            <a href="#agencies" className="hover:text-brand-700">For agencies</a>
+            <a href="#pricing" className="hover:text-brand-700">Pricing</a>
+            <a href="#faq" className="hover:text-brand-700">FAQ</a>
+          </nav>
+        </div>
+        {/* CTA */}
+        <div className="flex flex-col items-start gap-2 sm:items-end">
           <a href="#hero-run" className="postics-btn-primary">
             Run it <ArrowRight className="size-4" strokeWidth={1.75} />
           </a>
+          <Link to="/dashboard" className="postics-btn-ghost">Log in</Link>
+        </div>
+      </div>
+      <div className="border-t border-line">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
+          <span className="font-mono-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            © {new Date().getFullYear()} · postics.io
+          </span>
+          <span className="font-mono-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            we run postics on postics
+          </span>
         </div>
       </div>
     </footer>
