@@ -12,6 +12,8 @@ import {
   Globe2,
   Store,
   Users,
+  Lock,
+  Play,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/features/shared/primitives";
@@ -86,6 +88,7 @@ function Nav() {
           <a href="#machine" className="hover:text-ink-900">Product</a>
           <a href="#agencies" className="hover:text-ink-900">Agencies</a>
           <a href="#pricing" className="hover:text-ink-900">Pricing</a>
+          <a href="#faq" className="hover:text-ink-900">FAQ</a>
         </nav>
         <div className="flex items-center gap-2">
           <LanguageButton />
