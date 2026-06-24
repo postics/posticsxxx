@@ -514,6 +514,17 @@ function GenerateMock() {
             <div className="font-display text-lg font-semibold text-ink-900">{copy[lang].title}</div>
             <p className="text-sm leading-relaxed text-muted-foreground">{copy[lang].body}</p>
             <div className="font-mono-num text-sm text-ink-900">€18.00</div>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-sunken px-2 py-1 text-[10px] font-medium uppercase tracking-[0.1em] text-ink-900">
+                <span className="grid size-3.5 place-items-center rounded-full bg-brand-700 text-[color:var(--primary-foreground)]">
+                  <Play className="size-2" strokeWidth={2.5} fill="currentColor" />
+                </span>
+                video · 0:08
+              </span>
+              <span className="font-mono-num text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                title · description · photo
+              </span>
+            </div>
           </div>
         </div>
       </Card>
