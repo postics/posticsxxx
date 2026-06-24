@@ -644,7 +644,7 @@ function ForAgencies() {
         <div>
           <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">/ for agencies</div>
           <h2 className="mt-3 font-display text-3xl font-semibold leading-[1.1] tracking-tight text-ink-900 sm:text-4xl">
-            Run content for every client from one console.
+            Run 20–100 stores from one white-label cabinet.
           </h2>
           <a href="#pricing" className="mt-5 inline-flex items-center gap-1.5 text-sm text-brand-700 hover:text-ink-900">
             For agencies <ArrowRight className="size-3.5" strokeWidth={1.75} />
