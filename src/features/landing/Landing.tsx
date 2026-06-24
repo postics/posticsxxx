@@ -257,71 +257,10 @@ function TheMachine() {
 
 function MachineMock({ node }: { node: typeof MACHINE_NODES[number]["key"] }) {
   if (node === "analyze") {
-    const rows = [
-      { topic: "Single-origin brewing guides", gap: "high", vol: "8.4k" },
-      { topic: "Espresso machine maintenance", gap: "med", vol: "3.1k" },
-      { topic: "Cold brew at home", gap: "high", vol: "12.7k" },
-      { topic: "Decaf without compromise", gap: "low", vol: "1.2k" },
-    ];
-    const tone = (g: string) =>
-      g === "high"
-        ? "bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
-        : g === "med"
-          ? "bg-brand-100 text-brand-700"
-          : "bg-surface-sunken text-muted-foreground";
-    return (
-      <Card className="overflow-hidden">
-        <div className="flex items-center justify-between border-b border-line px-4 py-2.5 text-xs">
-          <span className="text-muted-foreground">Content gap analysis · northboundcoffee.com</span>
-          <span className="font-mono-num text-muted-foreground">42 opportunities</span>
-        </div>
-        <table className="w-full text-sm">
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.topic} className="border-b border-line last:border-b-0">
-                <td className="px-4 py-2.5 text-ink-900">{r.topic}</td>
-                <td className="px-4 py-2.5 text-right">
-                  <span className={cn("rounded px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide", tone(r.gap))}>
-                    {r.gap} gap
-                  </span>
-                </td>
-                <td className="px-4 py-2.5 text-right font-mono-num text-xs text-muted-foreground">{r.vol}/mo</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
-    );
+    return <AnalyzeMock />;
   }
   if (node === "plan") {
-    return (
-      <Card className="p-5">
-        <div className="flex items-center justify-between pb-3">
-          <div className="flex items-center gap-2 text-sm text-ink-900">
-            <CalendarDays className="size-4 text-brand-700" strokeWidth={1.75} /> 12-month plan
-          </div>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>Cadence</span>
-            <span className="font-mono-num rounded bg-surface-sunken px-2 py-0.5 text-ink-900">24 / mo</span>
-          </div>
-        </div>
-        <div className="grid grid-cols-12 gap-1.5">
-          {Array.from({ length: 12 }).map((_, i) => {
-            const h = 14 + ((i * 7) % 32);
-            return (
-              <div key={i} className="flex flex-col items-center gap-1">
-                <div className="flex h-12 items-end">
-                  <div className="w-3 rounded-sm bg-brand-700" style={{ height: `${h * 1.6}px` }} />
-                </div>
-                <span className="font-mono-num text-[9px] text-muted-foreground">
-                  {["J","F","M","A","M","J","J","A","S","O","N","D"][i]}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </Card>
-    );
+    return <PlanMock />;
   }
   if (node === "generate") {
     return <GenerateMock />;
@@ -354,43 +293,184 @@ function MachineMock({ node }: { node: typeof MACHINE_NODES[number]["key"] }) {
     );
   }
   if (node === "publish") {
-    return (
-      <Card className="p-5">
-        <div className="flex items-center gap-2 pb-3 text-sm text-ink-900">
-          <Send className="size-4 text-brand-700" strokeWidth={1.75} /> Publishing
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {["Your site (WooCommerce)", "Instagram", "TikTok", "Facebook"].map((dest) => (
-            <span key={dest} className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-sunken px-3 py-1.5 text-xs text-ink-900">
-              <Check className="size-3 text-[color:var(--success)]" strokeWidth={2.5} /> {dest}
-            </span>
-          ))}
-        </div>
-        <div className="mt-4 rounded-lg border border-[color:var(--success)]/30 bg-[color:var(--success)]/8 px-3 py-2 text-xs text-ink-900">
-          → Published to your site + 3 socials · Tue 10:00
-        </div>
-      </Card>
-    );
+    return <PublishMock />;
   }
-  // measure
-  const points = [12, 18, 16, 24, 30, 28, 36, 42, 48, 55, 62, 70];
-  const max = Math.max(...points);
-  const w = 320;
-  const h = 80;
-  const step = w / (points.length - 1);
-  const d = points.map((p, i) => `${i === 0 ? "M" : "L"} ${i * step} ${h - (p / max) * h}`).join(" ");
+  return <MeasureMock />;
+}
+
+/* ─── Machine sub-mocks ─── */
+
+function AnalyzeMock() {
+  const TARGET = 1418;
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    const start = performance.now();
+    const dur = 1400;
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setN(Math.round(eased * TARGET));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return (
+    <Card className="overflow-hidden">
+      <div className="flex items-center justify-between border-b border-line px-4 py-2.5 text-xs">
+        <span className="text-muted-foreground">Content-gap scan · northboundcoffee.com</span>
+        <span className="font-mono-num text-muted-foreground">2,000 SKUs indexed</span>
+      </div>
+      <div className="grid gap-4 px-5 py-5 sm:grid-cols-[1fr_auto] sm:items-center">
+        <div>
+          <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">missed commercial pages</div>
+          <div className="mt-1 font-display text-5xl font-semibold tabular-nums text-ink-900">
+            {n.toLocaleString()}
+          </div>
+          <div className="mt-1 text-xs text-muted-foreground">category, comparison and how-to pages with buyer intent</div>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <span className="rounded px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]">
+            high revenue gap
+          </span>
+          <span className="font-mono-num text-[10px] text-muted-foreground">est. recoverable / 12mo</span>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function PlanMock() {
+  const months = ["J","F","M","A","M","J","J","A","S","O","N","D"];
+  const [filled, setFilled] = useState(0);
+  useEffect(() => {
+    let i = 0;
+    const t = setInterval(() => {
+      i = (i + 1) % 13;
+      setFilled(i);
+    }, 140);
+    return () => clearInterval(t);
+  }, []);
+  // dial
+  const target = 24;
+  const max = 60;
+  const angle = (target / max) * 270 - 135; // -135deg → +135deg sweep
   return (
     <Card className="p-5">
-      <div className="flex items-center justify-between pb-3 text-sm">
-        <div className="flex items-center gap-2 text-ink-900">
-          <LineChart className="size-4 text-brand-700" strokeWidth={1.75} /> Organic sessions
+      <div className="flex items-center justify-between pb-3">
+        <div className="flex items-center gap-2 text-sm text-ink-900">
+          <CalendarDays className="size-4 text-brand-700" strokeWidth={1.75} /> 12-month plan
         </div>
-        <span className="font-mono-num text-xs text-[color:var(--success)]">+483% / 12w</span>
+        <span className="font-mono-num text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          auto-filling
+        </span>
+      </div>
+      <div className="grid gap-5 sm:grid-cols-[1fr_auto] sm:items-center">
+        <div className="grid grid-cols-12 gap-1.5">
+          {months.map((m, i) => {
+            const isOn = i < filled;
+            const h = 14 + ((i * 7) % 32);
+            return (
+              <div key={m + i} className="flex flex-col items-center gap-1">
+                <div className="flex h-12 items-end">
+                  <div
+                    className={cn(
+                      "w-3 rounded-sm transition-colors duration-300",
+                      isOn ? "bg-brand-700" : "bg-line",
+                    )}
+                    style={{ height: `${h * 1.6}px` }}
+                  />
+                </div>
+                <span className="font-mono-num text-[9px] text-muted-foreground">{m}</span>
+              </div>
+            );
+          })}
+        </div>
+        {/* posts / month dial */}
+        <div className="flex flex-col items-center">
+          <svg viewBox="0 0 100 100" className="size-24">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--color-line)" strokeWidth="6" strokeDasharray={`${(270/360)*Math.PI*2*40} ${Math.PI*2*40}`} transform="rotate(135 50 50)" strokeLinecap="round" />
+            <circle cx="50" cy="50" r="40" fill="none" stroke="var(--color-brand-700)" strokeWidth="6" strokeDasharray={`${(target/max)*(270/360)*Math.PI*2*40} ${Math.PI*2*40}`} transform="rotate(135 50 50)" strokeLinecap="round" />
+            <g transform={`rotate(${angle} 50 50)`}>
+              <line x1="50" y1="50" x2="50" y2="22" stroke="var(--color-ink-900)" strokeWidth="2" strokeLinecap="round" />
+              <circle cx="50" cy="50" r="3" fill="var(--color-ink-900)" />
+            </g>
+          </svg>
+          <div className="-mt-1 text-center">
+            <div className="font-display text-lg font-semibold tabular-nums text-ink-900">{target}</div>
+            <div className="font-mono-num text-[10px] uppercase tracking-[0.12em] text-muted-foreground">posts / month</div>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function PublishMock() {
+  return (
+    <Card className="p-5">
+      <div className="flex items-center gap-2 pb-3 text-sm text-ink-900">
+        <Send className="size-4 text-brand-700" strokeWidth={1.75} /> Publishing
+      </div>
+      {/* Site = guaranteed (green toast) */}
+      <div className="rounded-lg border border-[color:var(--success)]/30 bg-[color:var(--success)]/8 px-3 py-2.5 text-sm text-ink-900">
+        <div className="flex items-center gap-2">
+          <span className="grid size-5 place-items-center rounded-full bg-[color:var(--success)]/15 text-[color:var(--success)]">
+            <Check className="size-3.5" strokeWidth={2.5} />
+          </span>
+          <span className="font-medium">Published to your site</span>
+          <span className="font-mono-num ml-auto text-[11px] text-muted-foreground">just now</span>
+        </div>
+        <div className="mt-1 pl-7 text-xs text-muted-foreground">
+          WordPress / WooCommerce · publishing is guaranteed
+        </div>
+      </div>
+      {/* Socials = best-effort, locked */}
+      <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-dashed border-line bg-surface-sunken/40 px-3 py-2.5 text-sm text-muted-foreground">
+        <span className="grid size-5 place-items-center rounded-full bg-surface-sunken text-muted-foreground">
+          <Lock className="size-3" strokeWidth={2} />
+        </span>
+        <span>Socials · best-effort, pending platform audit</span>
+        <span className="font-mono-num ml-auto text-[10px] uppercase tracking-[0.12em] text-muted-foreground">queued</span>
+      </div>
+    </Card>
+  );
+}
+
+function MeasureMock() {
+  const indexation = [4, 9, 14, 22, 31, 38, 47, 58, 64, 71, 78, 84];
+  const conversions = [2, 3, 3, 5, 6, 8, 10, 13, 17, 21, 24, 28];
+  const max = Math.max(...indexation, ...conversions);
+  const w = 320;
+  const h = 84;
+  const step = w / (indexation.length - 1);
+  const path = (pts: number[]) =>
+    pts.map((p, i) => `${i === 0 ? "M" : "L"} ${i * step} ${h - (p / max) * h}`).join(" ");
+  return (
+    <Card className="p-5">
+      <div className="flex items-center justify-between pb-2 text-sm">
+        <div className="flex items-center gap-2 text-ink-900">
+          <LineChart className="size-4 text-brand-700" strokeWidth={1.75} /> Indexation · conversions
+        </div>
+        <span className="font-mono-num text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          illustrative · sample
+        </span>
       </div>
       <svg viewBox={`0 0 ${w} ${h}`} className="w-full" preserveAspectRatio="none">
-        <path d={`${d} L ${w} ${h} L 0 ${h} Z`} fill="color-mix(in oklab, var(--color-brand-700) 12%, transparent)" />
-        <path d={d} stroke="var(--color-brand-700)" strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={`${path(indexation)} L ${w} ${h} L 0 ${h} Z`} fill="color-mix(in oklab, var(--color-brand-700) 10%, transparent)" />
+        <path d={path(indexation)} stroke="var(--color-brand-700)" strokeWidth={2} fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={path(conversions)} stroke="var(--color-accent-gold)" strokeWidth={2} fill="none" strokeDasharray="3 3" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
+      <div className="mt-2 flex items-center justify-between text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="size-2 rounded-full bg-brand-700" /> indexed pages
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="size-2 rounded-full bg-[color:var(--accent-gold)]" /> conversions
+        </span>
+        <span className="font-mono-num">loop → plan</span>
+      </div>
     </Card>
   );
 }
