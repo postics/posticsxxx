@@ -105,86 +105,468 @@ function SettingsPage() {
 
 /* ───────── Connection ───────── */
 
+type Health = "ok" | "degraded" | "broken";
+type ConnState = "not-connected" | "choosing" | "pairing" | "connected";
+
 function ConnectionTab({ onSave }: { onSave: () => void }) {
+  const [state, setState] = useState<ConnState>("not-connected");
+  const [platform, setPlatform] = useState<"wp" | null>(null);
+  const [siteUrl, setSiteUrl] = useState("");
+  const [health, setHealth] = useState<Health>("ok");
+  const [checking, setChecking] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const pairingCode = "PSTX-9F3K-7QTM-LDBV-2X1A";
+
+  function copyCode() {
+    navigator.clipboard?.writeText(pairingCode).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1400);
+  }
+
+  function runHealthcheck() {
+    setChecking(true);
+    setTimeout(() => {
+      setChecking(false);
+      setState("connected");
+      onSave();
+    }, 900);
+  }
+
+  function revoke() {
+    setState("not-connected");
+    setPlatform(null);
+    setSiteUrl("");
+    setHealth("ok");
+    onSave();
+  }
+
   return (
-    <div className="grid grid-cols-[1.4fr_1fr] gap-5">
+    <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
       <div className="space-y-5">
+        {/* Optional banner */}
+        <div className="flex items-start gap-3 rounded-xl border border-line bg-surface-sunken/50 p-4 text-sm">
+          <Info className="mt-0.5 size-4 text-muted-foreground" strokeWidth={1.5} />
+          <div className="flex-1 text-ink-700">
+            <span className="font-medium text-ink-900">Optional —</span> connect your site or store
+            to auto-publish instead of exporting.{" "}
+            <span className="text-muted-foreground">
+              You can keep using Postics as a pure generator without connecting.
+            </span>
+          </div>
+        </div>
+
+        {/* Platform picker */}
         <Card className="p-5">
-          <div className="flex items-start justify-between">
+          <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-2">
-                <Globe2 className="size-4 text-brand-700" strokeWidth={1.5} />
-                <div className="text-sm font-medium text-ink-900">WordPress site</div>
-                <StatusChip tone="live">Connected</StatusChip>
-              </div>
-              <div className="font-mono-num mt-1 text-xs text-muted-foreground">
-                vellumandbean.com · paired 14 Mar
+              <div className="text-sm font-medium text-ink-900">Choose your platform</div>
+              <div className="mt-0.5 text-xs text-muted-foreground">
+                Postics connects to the site you already have. We never build or host it for you.
               </div>
             </div>
-            <a className="inline-flex items-center gap-1 text-xs text-brand-700 hover:underline" href="#">
-              Open site <ExternalLink className="size-3" strokeWidth={1.5} />
-            </a>
+            {state === "connected" && (
+              <StatusChip tone="live">WordPress paired</StatusChip>
+            )}
           </div>
 
-          <div className="mt-4 space-y-2.5 text-sm">
-            <Row label="Application password" value="**** **** **** xK9p" action="Rotate" />
-            <Row label="HMAC handshake" value="OK · 2025-06-12 09:14 UTC" tone="ok" />
-            <Row label="Last healthcheck" value="240 ms · 2 min ago" tone="ok" action="Re-run" />
-          </div>
-        </Card>
-
-        <Card className="p-5">
-          <div className="text-sm font-medium text-ink-900">RankMath endpoint</div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Postics pushes published content + SEO meta through your custom RankMath endpoint.
-          </p>
-          <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
-            <input
-              defaultValue="https://vellumandbean.com/wp-json/postics/v1/publish"
-              className="font-mono-num rounded-lg border border-line bg-surface px-3 py-2 text-xs outline-none focus:border-ink-700/30"
+          <div className="mt-4 grid gap-3 md:grid-cols-3">
+            <PlatformCard
+              icon={<Globe2 className="size-5" strokeWidth={1.5} />}
+              name="WordPress / WooCommerce"
+              note="Available now"
+              selected={platform === "wp"}
+              onSelect={() => {
+                setPlatform("wp");
+                if (state === "not-connected") setState("pairing");
+                else if (state !== "connected") setState("pairing");
+              }}
             />
-            <button onClick={onSave} className="rounded-lg bg-ink-900 px-3 py-2 text-xs text-[color:var(--primary-foreground)] hover:bg-ink-700">
-              Save
-            </button>
+            <PlatformCard
+              icon={<ShoppingBag className="size-5" strokeWidth={1.5} />}
+              name="Shopify"
+              note="Coming · M1"
+              disabled
+            />
+            <PlatformCard
+              icon={<Webhook className="size-5" strokeWidth={1.5} />}
+              name="Custom API / Webhook"
+              note="Coming · M1"
+              disabled
+            />
           </div>
         </Card>
 
-        {/* LetoLab service lead (small, secondary) */}
-        <Card className="border-dashed bg-surface-sunken/40 p-4">
-          <div className="flex items-start gap-3">
-            <div className="grid size-8 place-items-center rounded-md bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]">
-              <Wand2 className="size-4" strokeWidth={1.5} />
-            </div>
-            <div className="min-w-0">
-              <div className="text-sm text-ink-900">No site yet?</div>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                LetoLab can build a simple, fast-publishing site for you. Separate service — not bundled.
-              </p>
-              <button className="mt-2 inline-flex items-center gap-1 text-xs text-brand-700 hover:underline">
-                Talk to LetoLab <ArrowRight className="size-3" strokeWidth={1.75} />
+        {/* WordPress pairing */}
+        {platform === "wp" && state !== "not-connected" && (
+          <Card className="p-5">
+            <div className="text-sm font-medium text-ink-900">Pair your WordPress site</div>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Three calm steps. You stay in control — Postics publishes as a least-privilege bot user.
+            </p>
+
+            <ol className="mt-5 space-y-5">
+              {/* Step 1 */}
+              <StepRow n={1} title="Install the Postics Connector plugin">
+                <p className="text-xs text-muted-foreground">
+                  Add the plugin to your WordPress site, then enter your site URL so we can reach it.
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button className="postics-btn-secondary text-xs">
+                    <Download className="size-3.5" strokeWidth={1.5} /> Download plugin
+                  </button>
+                  <input
+                    value={siteUrl}
+                    onChange={(e) => setSiteUrl(e.target.value)}
+                    placeholder="https://yoursite.com"
+                    className="font-mono-num flex-1 min-w-[220px] rounded-lg border border-line bg-surface px-3 py-2 text-xs outline-none focus:border-ink-700/30"
+                  />
+                </div>
+              </StepRow>
+
+              {/* Step 2 */}
+              <StepRow n={2} title="Copy your pairing code into WordPress">
+                <p className="text-xs text-muted-foreground">
+                  In WordPress → <span className="font-medium text-ink-700">Settings → Postics</span>,
+                  paste this as the <span className="font-medium text-ink-700">Pairing secret</span>.
+                </p>
+                <div className="mt-3 flex items-center gap-2 rounded-lg border border-line bg-surface-sunken/60 p-2">
+                  <code className="font-mono-num flex-1 select-all px-2 text-xs text-ink-900">
+                    {pairingCode}
+                  </code>
+                  <button
+                    onClick={copyCode}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-2.5 py-1 text-xs hover:border-ink-700/30"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="size-3 text-[color:var(--success)]" strokeWidth={2} /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="size-3" strokeWidth={1.75} /> Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  We display the code here — there's nothing to type back into Postics.
+                </p>
+              </StepRow>
+
+              {/* Step 3 */}
+              <StepRow n={3} title="Run health check">
+                <p className="text-xs text-muted-foreground">
+                  Postics publishes as a least-privilege{" "}
+                  <code className="font-mono-num rounded bg-surface-sunken px-1 py-0.5 text-[10px]">
+                    postics_bot
+                  </code>{" "}
+                  user via an Application Password. Never an admin.
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={runHealthcheck}
+                    disabled={checking}
+                    className={cn(
+                      "postics-btn-primary text-xs",
+                      checking && "cursor-wait opacity-70",
+                    )}
+                  >
+                    {checking ? (
+                      <>
+                        <RefreshCw className="size-3.5 animate-spin" strokeWidth={1.5} /> Checking…
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="size-3.5" strokeWidth={1.5} /> Run health check
+                      </>
+                    )}
+                  </button>
+                  {state === "connected" && (
+                    <span className="inline-flex items-center gap-1 text-xs text-[color:var(--success)]">
+                      <CheckCircle2 className="size-3.5" strokeWidth={1.75} /> Site reachable
+                    </span>
+                  )}
+                </div>
+              </StepRow>
+            </ol>
+          </Card>
+        )}
+
+        {/* Channel honesty */}
+        <Card className="p-5">
+          <div className="text-sm font-medium text-ink-900">Where Postics can publish</div>
+          <div className="mt-3 space-y-2.5">
+            <ChannelRow
+              icon={<Globe2 className="size-4" strokeWidth={1.5} />}
+              label="Your site"
+              status={
+                state === "connected" ? (
+                  <StatusChip tone="live">Publishing now</StatusChip>
+                ) : (
+                  <StatusChip tone="neutral">Connect to enable</StatusChip>
+                )
+              }
+              note={
+                state === "connected"
+                  ? "Guaranteed channel — articles, pages and product copy ship straight to your CMS."
+                  : "Until you connect, ready pieces stay in Export."
+              }
+            />
+            <ChannelRow
+              icon={<Instagram className="size-4" strokeWidth={1.5} />}
+              label="Instagram · LinkedIn · Facebook"
+              status={<StatusChip tone="gold">Best-effort · pending platform audit</StatusChip>}
+              locked
+              note="Coming after platform audits complete. We never imply social posting is guaranteed."
+            />
+          </div>
+        </Card>
+
+        {/* Danger zone */}
+        {state === "connected" && (
+          <Card className="border-dashed border-[#F1D2CE] bg-[#F7E2DF]/20 p-4">
+            <div className="flex items-start gap-3">
+              <ShieldOff className="mt-0.5 size-4 text-[color:var(--danger)]" strokeWidth={1.5} />
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-medium text-ink-900">Revoke access</div>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Removes the Application Password and rotates the signing secret. Your plan,
+                  brand profile and strategy stay intact.
+                </p>
+              </div>
+              <button
+                onClick={revoke}
+                className="rounded-lg border border-[#F1D2CE] bg-white px-3 py-1.5 text-xs text-[color:var(--danger)] hover:bg-[#F7E2DF]/40"
+              >
+                Revoke
               </button>
             </div>
-          </div>
-        </Card>
+          </Card>
+        )}
       </div>
 
-      <div className="space-y-3">
-        <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-          As on site
-        </div>
-        <BrowserFrame url="vellumandbean.com/journal">
-          <div className="px-6 py-6">
-            <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Journal</div>
-            <div className="font-display mt-1 text-lg text-ink-900">Decaf, reconsidered</div>
-            <div className="mt-2 space-y-1.5">
-              <div className="h-1.5 w-full rounded bg-ink-900/10" />
-              <div className="h-1.5 w-5/6 rounded bg-ink-900/10" />
-              <div className="h-1.5 w-3/4 rounded bg-ink-900/10" />
-            </div>
+      {/* Right column — status */}
+      <div className="space-y-4">
+        <StatusPanel
+          state={state}
+          health={health}
+          setHealth={setHealth}
+          siteUrl={state === "connected" ? siteUrl || "yoursite.com" : null}
+        />
+
+        <Card className="p-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-ink-700">
+            <ShieldCheck className="size-3.5 text-brand-700" strokeWidth={1.75} />
+            <span className="font-medium">Least-privilege by default</span>
           </div>
-        </BrowserFrame>
+          <p className="mt-1">
+            Postics writes as <code className="font-mono-num">postics_bot</code> — can publish posts and
+            media, never change themes, plugins or users.
+          </p>
+        </Card>
       </div>
     </div>
+  );
+}
+
+function PlatformCard({
+  icon,
+  name,
+  note,
+  selected,
+  disabled,
+  onSelect,
+}: {
+  icon: React.ReactNode;
+  name: string;
+  note: string;
+  selected?: boolean;
+  disabled?: boolean;
+  onSelect?: () => void;
+}) {
+  return (
+    <div
+      className={cn(
+        "relative rounded-xl border p-4 transition-colors",
+        disabled
+          ? "border-dashed border-line bg-surface-sunken/30 opacity-80"
+          : selected
+          ? "border-brand-700/50 bg-brand-100/40"
+          : "border-line bg-surface hover:border-ink-700/30",
+      )}
+    >
+      <div className="flex items-start justify-between">
+        <span
+          className={cn(
+            "grid size-9 place-items-center rounded-md border border-line bg-surface text-ink-700",
+            selected && "bg-brand-100 text-brand-700 border-brand-100",
+          )}
+        >
+          {icon}
+        </span>
+        {disabled && <Lock className="size-3.5 text-muted-foreground" strokeWidth={1.75} />}
+      </div>
+      <div className="mt-3 text-sm font-medium text-ink-900">{name}</div>
+      <div className="mt-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">{note}</div>
+      <div className="mt-3">
+        {disabled ? (
+          <button className="text-xs text-brand-700 hover:underline">Join waitlist →</button>
+        ) : (
+          <button onClick={onSelect} className="text-xs font-medium text-brand-700 hover:underline">
+            {selected ? "Selected" : "Choose"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function StepRow({
+  n,
+  title,
+  children,
+}: {
+  n: number;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <li className="flex gap-3">
+      <span className="font-mono-num grid size-7 shrink-0 place-items-center rounded-md border border-line bg-surface-sunken text-[11px] text-ink-700">
+        {n}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="text-sm font-medium text-ink-900">{title}</div>
+        <div className="mt-1.5">{children}</div>
+      </div>
+    </li>
+  );
+}
+
+function ChannelRow({
+  icon,
+  label,
+  status,
+  note,
+  locked,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  status: React.ReactNode;
+  note: string;
+  locked?: boolean;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-lg border border-line bg-surface p-3">
+      <span className="grid size-8 place-items-center rounded-md border border-line bg-surface-sunken text-ink-700">
+        {icon}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="text-sm text-ink-900">{label}</div>
+          {status}
+          {locked && <Lock className="size-3 text-[color:var(--accent-gold)]" strokeWidth={1.75} />}
+        </div>
+        <div className="mt-0.5 text-xs text-muted-foreground">{note}</div>
+      </div>
+    </div>
+  );
+}
+
+function StatusPanel({
+  state,
+  health,
+  setHealth,
+  siteUrl,
+}: {
+  state: ConnState;
+  health: Health;
+  setHealth: (h: Health) => void;
+  siteUrl: string | null;
+}) {
+  const tone =
+    state !== "connected"
+      ? "neutral"
+      : health === "ok"
+      ? "live"
+      : health === "degraded"
+      ? "gold"
+      : "danger";
+  const label =
+    state !== "connected"
+      ? "Not connected"
+      : health === "ok"
+      ? "Connected"
+      : health === "degraded"
+      ? "Degraded"
+      : "Broken";
+
+  const detail =
+    state !== "connected"
+      ? "Pick a platform and run the pairing steps."
+      : health === "ok"
+      ? "Plugin v1.2.0 · RankMath: detected"
+      : health === "degraded"
+      ? "No RankMath — we'll publish text without SEO meta. Still works."
+      : "Re-connect your site. Your settings are not lost.";
+
+  return (
+    <Card className="p-5">
+      <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Connection</div>
+      <div className="mt-2 flex items-center gap-2">
+        <StatusChip tone={tone as never}>{label}</StatusChip>
+        {siteUrl && (
+          <span className="font-mono-num truncate text-xs text-muted-foreground">{siteUrl}</span>
+        )}
+      </div>
+      <p className={cn(
+        "mt-2 text-xs",
+        tone === "danger" ? "text-[color:var(--danger)]" : "text-muted-foreground",
+      )}>
+        {detail}
+      </p>
+
+      <div className="mt-4 space-y-2 border-t border-line pt-3 text-xs">
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">Last checked</span>
+          <span className="font-mono-num text-ink-700 inline-flex items-center gap-1">
+            <Clock className="size-3" strokeWidth={1.75} /> 2 min ago
+          </span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">Latency</span>
+          <span className="font-mono-num text-ink-700">{state === "connected" ? "240 ms" : "—"}</span>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground">User</span>
+          <span className="font-mono-num text-ink-700">postics_bot</span>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button className="postics-btn-secondary text-xs">
+          <RefreshCw className="size-3.5" strokeWidth={1.5} /> Re-check
+        </button>
+        {/* Demo health switcher — small, mono */}
+        {state === "connected" && (
+          <div className="ml-auto inline-flex overflow-hidden rounded-md border border-line text-[10px]">
+            {(["ok", "degraded", "broken"] as Health[]).map((h) => (
+              <button
+                key={h}
+                onClick={() => setHealth(h)}
+                className={cn(
+                  "px-2 py-1 font-mono-num uppercase tracking-wide",
+                  health === h ? "bg-ink-900 text-[color:var(--primary-foreground)]" : "bg-surface text-muted-foreground hover:text-ink-700",
+                )}
+                title="Preview health state"
+              >
+                {h}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </Card>
   );
 }
 
