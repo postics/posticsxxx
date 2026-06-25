@@ -93,13 +93,16 @@ export function Card({
   children,
   className,
   as: As = "div",
+  id,
 }: {
   children: ReactNode;
   className?: string;
   as?: any;
+  id?: string;
 }) {
   return (
     <As
+      id={id}
       className={cn(
         "rounded-xl border border-line bg-surface",
         className,
