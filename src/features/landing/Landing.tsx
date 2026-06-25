@@ -14,6 +14,8 @@ import {
   Users,
   Lock,
   Play,
+  Download,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/features/shared/primitives";
@@ -125,7 +127,7 @@ function UrlRunForm({ id }: { id?: string }) {
         <input
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="yourstore.com"
+          placeholder="yoursite.com"
           className="postics-input h-12 w-full pl-9 pr-3 text-base"
           autoComplete="url"
           spellCheck={false}
@@ -154,21 +156,24 @@ function Hero() {
           / content marketing, automated
         </div>
         <h1 className="mx-auto mt-6 max-w-3xl font-display text-[44px] font-semibold leading-[1.05] tracking-tight text-ink-900 sm:text-[64px]">
-          Marketing on autopilot <span className="text-brand-700">for your store.</span>
+          Marketing on autopilot <span className="text-brand-700">for your site.</span>
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          Paste your store URL. Postics writes the copy, makes the photos and video, and publishes —
-          to your site and your socials, on a schedule.
+          Paste your site URL. Postics analyzes it, builds a marketing plan, and generates the
+          content — articles, product copy, posts — ready to export, or auto-publish when you
+          connect your store.
         </p>
         <div id="hero-run" className="mt-8 flex justify-center">
           <UrlRunForm />
         </div>
         <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5"><Check className="size-3.5 text-[color:var(--success)]" strokeWidth={2} /> WooCommerce</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="size-3.5 text-[color:var(--success)]" strokeWidth={2} /> Any business</span>
           <span aria-hidden>·</span>
-          <span className="inline-flex items-center gap-1.5"><Check className="size-3.5 text-[color:var(--success)]" strokeWidth={2} /> WordPress</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="size-3.5 text-[color:var(--success)]" strokeWidth={2} /> Any CMS</span>
           <span aria-hidden>·</span>
           <span className="inline-flex items-center gap-1.5"><Check className="size-3.5 text-[color:var(--success)]" strokeWidth={2} /> 10+ languages</span>
+          <span aria-hidden>·</span>
+          <span className="inline-flex items-center gap-1.5"><Check className="size-3.5 text-[color:var(--success)]" strokeWidth={2} /> Export or auto-publish</span>
         </div>
       </div>
     </section>
@@ -181,8 +186,9 @@ const MACHINE_NODES = [
   { key: "analyze", label: "Analyze", icon: Search },
   { key: "plan", label: "Plan", icon: CalendarDays },
   { key: "generate", label: "Generate", icon: Sparkles },
-  { key: "review", label: "Review", icon: ShieldCheck },
-  { key: "publish", label: "Publish", icon: Send },
+  { key: "review", label: "Quality-gate", icon: ShieldCheck },
+  { key: "export", label: "Export", icon: Download },
+  { key: "publish", label: "Publish · optional", icon: Send },
   { key: "measure", label: "Measure", icon: LineChart },
 ] as const;
 
@@ -204,7 +210,7 @@ function TheMachine() {
       <div className="mt-12 rounded-2xl border border-line bg-surface p-6 shadow-elev-sm sm:p-10">
         {/* Pipeline */}
         <div className="relative">
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-7">
             {MACHINE_NODES.map((n, i) => {
               const isActive = i === active;
               const Icon = n.icon;
@@ -247,8 +253,32 @@ function TheMachine() {
           <MachineMock node={current.key} />
         </div>
 
+        {/* Non-ecomm beat — horizontal positioning */}
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <div className="rounded-xl border border-dashed border-line bg-surface-sunken/40 p-4">
+            <div className="font-mono-num text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              / e-commerce example
+            </div>
+            <div className="mt-2 text-sm text-ink-900">
+              <span className="font-medium">Northbound Coffee Roasters</span>
+              <span className="text-muted-foreground"> — product pages, blog, socials.</span>
+            </div>
+          </div>
+          <div className="rounded-xl border border-dashed border-line bg-surface-sunken/40 p-4">
+            <div className="font-mono-num text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              / services &amp; saas example
+            </div>
+            <div className="mt-2 flex items-start gap-2 text-sm text-ink-900">
+              <FileText className="mt-0.5 size-4 text-brand-700" strokeWidth={1.75} />
+              <div>
+                <span className="font-medium">Article + landing page</span>
+                <span className="text-muted-foreground"> — &ldquo;How to migrate a CRM in a week&rdquo; + matching pricing-page section.</span>
+              </div>
+            </div>
+          </div>
+        </div>
         <p className="mt-6 text-center font-mono-num text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-          connected · northbound coffee roasters · woocommerce
+          works for any business · any CMS · export by default
         </p>
       </div>
     </section>
@@ -291,6 +321,9 @@ function MachineMock({ node }: { node: typeof MACHINE_NODES[number]["key"] }) {
         </ul>
       </Card>
     );
+  }
+  if (node === "export") {
+    return <ExportMock />;
   }
   if (node === "publish") {
     return <PublishMock />;
