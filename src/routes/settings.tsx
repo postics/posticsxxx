@@ -1010,4 +1010,4 @@ function BillingTab() {
 }
 
 // silence unused-imports if a state is not rendered
-void Plug; void RefreshCw;
+void Plug;
