@@ -48,7 +48,7 @@ type Period = "1d" | "7d" | "30d" | "90d";
 
 function AnalyticsPage() {
   return (
-    <ProjectShell breadcrumb={[{ label: "Outcomes" }]}>
+    <ProjectShell breadcrumb={["Outcomes"]}>
       <div className="mx-auto w-full max-w-[1280px] space-y-6 px-8 py-8 animate-rise">
         <Body />
       </div>
