@@ -1,470 +1,685 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
-  Sparkles,
+  X,
+  ArrowUpRight,
+  CreditCard,
   Download,
-  AlertTriangle,
-  ArrowRight,
-  Wallet,
-  RefreshCw,
-  Users,
-  Share2,
-  Sliders,
-  Copy,
-  CheckCircle2,
-  XCircle,
+  Eye,
+  Check,
+  Info,
+  Lock,
+  Zap,
+  Film,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
-import { WorkspaceShell } from "@/features/shell/WorkspaceShell";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
+import { cn } from "@/lib/utils";
 import { Card, StatusChip } from "@/features/shared/primitives";
-import { useScope } from "@/features/shell/scope";
+import { WorkspaceShell } from "@/features/shell/WorkspaceShell";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/billing")({
-  head: () => ({ meta: [{ title: "Billing & shared credits — Postics" }] }),
+  head: () => ({
+    meta: [
+      { title: "Billing & plan — Postics" },
+      {
+        name: "description",
+        content: "Plan, credits, usage and invoices for Northbound Coffee Roasters.",
+      },
+    ],
+  }),
   component: BillingPage,
 });
 
 const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+const money = (n: number) => `$${fmt(n)}`;
 
-type Health = "healthy" | "low" | "depleted" | "payment-failed";
+type Cycle = "monthly" | "annual";
 
 function BillingPage() {
-  const { projects } = useScope();
-  const [health, setHealth] = useState<Health>("low");
-
-  const total = 10_000;
-  const used = health === "depleted" ? 10_000 : health === "low" ? 8_640 : 4_120;
-  const remaining = Math.max(0, total - used);
-  const pct = Math.min(100, Math.round((used / total) * 100));
-
-  const planByIndex = ["Growth", "Advanced", "Premium", "Starter"];
-  const mrrByIndex = [449, 899, 999, 199];
-  const capByIndex = [3200, 2400, 1800, 1240];
-  const burnByIndex = [128, 96, 72, 40];
-
-  const allocation = projects.map((p, i) => {
-    const cap = capByIndex[i] ?? 800;
-    return {
-      id: p.id,
-      name: p.name,
-      initials: p.initials,
-      domain: p.domain,
-      cap,
-      spent: Math.min(cap, Math.round(cap * (0.4 + i * 0.15))),
-      dailyBurn: burnByIndex[i] ?? 30,
-      plan: planByIndex[i] ?? "Starter",
-      mrr: mrrByIndex[i] ?? 199,
-    };
-  });
-  const allocated = allocation.reduce((s, a) => s + a.cap, 0);
-  const unallocated = Math.max(0, total - allocated);
-  const dailyBurn = allocation.reduce((s, a) => s + a.dailyBurn, 0);
-  const daysLeft = dailyBurn > 0 ? Math.max(0, Math.floor(remaining / dailyBurn)) : 999;
+  const [cycle, setCycle] = useState<Cycle>("monthly");
+  const [banner, setBanner] = useState(true);
+  const [confirmTier, setConfirmTier] = useState<Tier | null>(null);
 
   return (
-    <WorkspaceShell active="billing" breadcrumb={["Billing & shared credits"]}>
-      <div className="bg-paper">
-        <div className="mx-auto w-full max-w-6xl px-8 py-8 space-y-6">
-          <header className="flex items-end justify-between gap-6">
-            <div className="space-y-1.5">
-              <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                Workspace · Agency-level billing
-              </div>
-              <h1 className="font-display text-3xl text-ink-900">Billing & shared credits</h1>
-              <p className="text-sm text-muted-foreground">
-                One pool, transparent action pricing. Per-project plans live inside each
-                client's Settings.
-              </p>
-            </div>
-            <div className="flex items-center gap-1 rounded-lg border border-line bg-surface p-1 text-[11px] uppercase tracking-wider text-muted-foreground">
-              {(["healthy", "low", "depleted", "payment-failed"] as Health[]).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setHealth(s)}
-                  className={
-                    "rounded-md px-2 py-1 " +
-                    (health === s ? "bg-ink-900 text-paper" : "hover:bg-surface-sunken")
-                  }
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </header>
-
-          {health === "payment-failed" ? (
-            <Banner
-              tone="danger"
-              icon={<XCircle className="size-4" strokeWidth={1.5} />}
-              text="Last charge for $999 was declined by the issuer. Generation continues for 48h grace; update your card to avoid interruption."
-              cta="Retry payment"
-            />
-          ) : health === "depleted" ? (
-            <Banner
-              tone="danger"
-              icon={<AlertTriangle className="size-4" strokeWidth={1.5} />}
-              text="Shared pool depleted. New generation is paused — already-approved content can still publish. No hard lockout."
-              cta="Top up 5,000 credits"
-            />
-          ) : health === "low" ? (
-            <Banner
-              tone="warn"
-              icon={<AlertTriangle className="size-4" strokeWidth={1.5} />}
-              text={`Pool will likely deplete in ~${daysLeft} days at current burn. Publishing stays available even at zero — only new generation pauses.`}
-              cta="Add 5,000 credits"
-            />
-          ) : null}
-
-          <div className="grid grid-cols-[1.6fr_1fr] gap-4">
-            <Card className="p-6">
-              <div className="flex items-start justify-between gap-6">
-                <div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                    Shared credit pool
-                  </div>
-                  <div className="mt-2 flex items-baseline gap-2.5">
-                    <span className="font-mono-num text-5xl tracking-tight text-ink-900">
-                      {fmt(remaining)}
-                    </span>
-                    <span className="font-mono-num text-sm text-muted-foreground">
-                      / {fmt(total)} credits
-                    </span>
-                  </div>
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    Actions · not LLM tokens. One pool, shared across every client project.
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button className="flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm hover:border-ink-700/30">
-                    <RefreshCw className="size-3.5" strokeWidth={1.5} /> Autopay
-                  </button>
-                  <button className="flex items-center gap-1.5 rounded-lg bg-brand-700 px-3 py-1.5 text-sm text-[color:var(--primary-foreground)] hover:opacity-90">
-                    <Wallet className="size-3.5" strokeWidth={1.5} /> Top-up
-                  </button>
-                </div>
-              </div>
-              <div className="mt-5 h-2 overflow-hidden rounded-full bg-surface-sunken">
-                <div
-                  className={
-                    "h-full " +
-                    (health === "depleted"
-                      ? "bg-[color:var(--danger)]"
-                      : health === "low"
-                        ? "bg-[color:var(--warning)]"
-                        : "bg-brand-700")
-                  }
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-              <div className="mt-2 flex justify-between font-mono-num text-xs text-muted-foreground">
-                <span>{pct}% used this period</span>
-                <span>
-                  Burn ~{fmt(dailyBurn)}/day · Projected depletion ·{" "}
-                  {health === "depleted" ? "today" : `in ${daysLeft}d`}
-                </span>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                  Agency plan
-                </div>
-                <StatusChip tone="gold">Premium</StatusChip>
-              </div>
-              <div className="mt-3 font-display text-2xl text-ink-900">Studio · $999/mo</div>
-              <div className="mt-1 text-sm text-muted-foreground">
-                10,000 pooled credits · Renews Jul 12 · Visa •• 4242
-              </div>
-              <div className="mt-5 flex gap-2">
-                <button className="flex-1 rounded-lg bg-ink-900 px-3 py-2 text-sm text-paper hover:bg-ink-700">
-                  Manage plan
-                </button>
-                <button className="rounded-lg border border-line bg-surface px-3 py-2 text-sm hover:border-ink-700/30">
-                  Update card
-                </button>
-              </div>
-            </Card>
-          </div>
-
-          <Card className="overflow-hidden">
-            <div className="flex items-center justify-between border-b border-line bg-surface-sunken px-5 py-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-ink-900">
-                <Sliders className="size-3.5 text-[color:var(--accent-gold)]" strokeWidth={1.75} />
-                Per-client allocation
-              </div>
-              <div className="font-mono-num text-xs text-muted-foreground">
-                Allocated {fmt(allocated)} · Unallocated buffer {fmt(unallocated)}
-              </div>
-            </div>
-            <div className="grid grid-cols-[1.6fr_120px_1fr_120px_120px_90px] gap-3 border-b border-line px-5 py-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-              <div>Client</div>
-              <div>Plan</div>
-              <div>Usage vs cap</div>
-              <div className="text-right">Burn /day</div>
-              <div className="text-right">Depletes</div>
-              <div className="text-right">Action</div>
-            </div>
-            {allocation.map((a) => {
-              const cPct = Math.min(100, Math.round((a.spent / a.cap) * 100));
-              const cDays = a.dailyBurn > 0 ? Math.floor((a.cap - a.spent) / a.dailyBurn) : 99;
-              return (
-                <div
-                  key={a.id}
-                  className="grid grid-cols-[1.6fr_120px_1fr_120px_120px_90px] items-center gap-3 border-b border-line px-5 py-3 text-sm last:border-b-0"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="grid size-7 place-items-center rounded-md bg-surface-sunken text-[11px] font-medium text-ink-900">
-                      {a.initials}
-                    </div>
-                    <div className="min-w-0">
-                      <div className="truncate text-ink-900">{a.name}</div>
-                      <div className="font-mono-num text-[11px] text-muted-foreground">
-                        {a.domain}
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <StatusChip tone={a.plan === "Premium" ? "gold" : "neutral"}>
-                      {a.plan}
-                    </StatusChip>
-                  </div>
-                  <div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-surface-sunken">
-                      <div
-                        className={
-                          "h-full " +
-                          (cPct > 90 ? "bg-[color:var(--warning)]" : "bg-brand-700")
-                        }
-                        style={{ width: `${cPct}%` }}
-                      />
-                    </div>
-                    <div className="mt-1 font-mono-num text-[11px] text-muted-foreground">
-                      {fmt(a.spent)} / {fmt(a.cap)} cr
-                    </div>
-                  </div>
-                  <div className="font-mono-num text-right text-sm text-ink-700">
-                    {a.dailyBurn} cr
-                  </div>
-                  <div className="font-mono-num text-right text-xs text-muted-foreground">
-                    in {cDays}d
-                  </div>
-                  <div className="text-right">
-                    <button className="text-xs text-brand-700 hover:underline">Allocate</button>
-                  </div>
-                </div>
-              );
-            })}
-          </Card>
-
-          <Card className="overflow-hidden">
-            <div className="flex items-center justify-between border-b border-line bg-surface-sunken px-5 py-3">
-              <div className="flex items-center gap-2 text-sm font-medium text-ink-900">
-                <Sparkles className="size-3.5 text-[color:var(--accent-gold)]" strokeWidth={1.75} />
-                Action cost table
-              </div>
-              <div className="text-xs text-muted-foreground">
-                In credits · framed as actions, not raw LLM tokens
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-px bg-line">
-              {[
-                ["Generate article (1,500w)", "64", "AI draft + SEO + GEO check"],
-                ["Generate landing block", "18", "1 section, ready to drop in"],
-                ["Human edit pass", "120", "Editor + QA, SLA 48h"],
-                ["Publish to site", "4", "Includes RankMath sync"],
-                ["Boost / refresh", "40", "Re-rank update for stale post"],
-                ["Social repurpose", "12", "Per channel, behind approval"],
-              ].map(([a, c, h]) => (
-                <div key={a} className="bg-surface px-5 py-4">
-                  <div className="text-sm text-ink-900">{a}</div>
-                  <div className="font-mono-num mt-1 text-lg text-brand-700">{c} cr</div>
-                  <div className="mt-1 text-xs text-muted-foreground">{h}</div>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          <div className="grid grid-cols-[1.4fr_1fr] gap-4">
-            <Card className="overflow-hidden">
-              <div className="flex items-center justify-between border-b border-line bg-surface-sunken px-5 py-3">
-                <div className="flex items-center gap-2 text-sm font-medium text-ink-900">
-                  <Users className="size-3.5 text-muted-foreground" strokeWidth={1.75} />
-                  Human services · payout history
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Aggregator take-rate <span className="text-ink-900">22%</span> · transparent
-                </div>
-              </div>
-              {[
-                ["Jun 12", "Maya Okafor", "Editor · 4 articles", 880, 194],
-                ["Jun 10", "Daniel Reiss", "Strategist · brief", 420, 92],
-                ["Jun 08", "Inés Vargas", "SEO QA · 6 items", 540, 119],
-                ["Jun 05", "LetoLab expert", "Crisis rewrite", 1200, 240],
-              ].map((r, i) => (
-                <div
-                  key={i}
-                  className="grid grid-cols-[70px_1.2fr_1.4fr_110px_110px] items-center gap-3 border-b border-line px-5 py-3 text-sm last:border-b-0"
-                >
-                  <div className="font-mono-num text-xs text-muted-foreground">{r[0]}</div>
-                  <div className="text-ink-900">{r[1]}</div>
-                  <div className="text-ink-700">{r[2]}</div>
-                  <div className="font-mono-num text-right text-ink-900">
-                    ${fmt(r[3] as number)}
-                  </div>
-                  <div className="font-mono-num text-right text-xs text-muted-foreground">
-                    take ${fmt(r[4] as number)}
-                  </div>
-                </div>
-              ))}
-              <div className="flex items-center justify-between bg-surface-sunken px-5 py-2.5 text-xs text-muted-foreground">
-                <span>4 payouts · 30d</span>
-                <span className="font-mono-num text-ink-900">
-                  Payouts $3,040 · Take $645
-                </span>
-              </div>
-            </Card>
-
-            <div className="space-y-4">
-              <Card className="p-5">
-                <div className="flex items-center gap-2 text-sm font-medium text-ink-900">
-                  <Share2 className="size-4 text-muted-foreground" strokeWidth={1.5} /> Partner
-                  &amp; referrals
-                </div>
-                <div className="mt-2 text-xs text-muted-foreground">
-                  Earn <span className="text-ink-900">25–30%</span> recurring on every workspace
-                  you refer.
-                </div>
-                <div className="mt-3 flex items-center gap-2 rounded-lg border border-line bg-surface-sunken px-3 py-2 font-mono-num text-xs text-ink-700">
-                  <span className="flex-1 truncate">postics.io/r/acme-studio</span>
-                  <button className="text-muted-foreground hover:text-ink-900">
-                    <Copy className="size-3.5" strokeWidth={1.75} />
-                  </button>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                  <div>
-                    <div className="font-mono-num text-xl text-ink-900">$420</div>
-                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                      earned · 30d
-                    </div>
-                  </div>
-                  <div>
-                    <div className="font-mono-num text-xl text-ink-900">6</div>
-                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                      active referrals
-                    </div>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-5">
-                <div className="text-sm font-medium text-ink-900">Plans roll-up</div>
-                <div className="mt-3 space-y-2">
-                  {allocation.map((a) => (
-                    <div key={a.id} className="flex items-center justify-between text-xs">
-                      <span className="text-ink-700 truncate">{a.name}</span>
-                      <span className="font-mono-num text-ink-900">
-                        {a.plan} · ${fmt(a.mrr)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-3 flex items-center justify-between border-t border-line pt-3 text-xs">
-                  <span className="text-muted-foreground">MRR roll-up</span>
-                  <span className="font-mono-num text-ink-900">
-                    ${fmt(allocation.reduce((s, a) => s + a.mrr, 0))} / mo
-                  </span>
-                </div>
-              </Card>
-            </div>
-          </div>
-
-          <Card className="overflow-hidden">
-            <div className="flex items-center justify-between border-b border-line bg-surface-sunken px-5 py-3">
-              <div className="text-sm font-medium text-ink-900">Invoices</div>
-              <button className="flex items-center gap-1 text-xs text-brand-700 hover:underline">
-                <Download className="size-3" strokeWidth={1.75} /> Export all (CSV)
-              </button>
-            </div>
-            <div className="grid grid-cols-[100px_1fr_160px_100px_100px_60px] gap-3 border-b border-line px-5 py-2 text-[11px] uppercase tracking-wider text-muted-foreground">
-              <div>Date</div>
-              <div>Description</div>
-              <div>Scope</div>
-              <div className="text-right">Amount</div>
-              <div className="text-right">Status</div>
-              <div></div>
-            </div>
-            {[
-              ["Jun 12, 2026", "Studio plan · monthly", "Agency master", "$999.00", "paid"],
-              ["Jun 12, 2026", "Top-up · 5,000 credits", "Agency master", "$199.00", "paid"],
-              ["Jun 02, 2026", "Premium add-on · publishing", "Linden Mercantile", "$199.00", "paid"],
-              ["May 28, 2026", "Editor pass · 4 articles", "Vellum & Bean", "$880.00", "paid"],
-              ["May 12, 2026", "Studio plan · monthly", "Agency master", "$999.00", "paid"],
-            ].map((r, i) => (
-              <div
-                key={i}
-                className="grid grid-cols-[100px_1fr_160px_100px_100px_60px] items-center gap-3 border-b border-line px-5 py-3 text-sm last:border-b-0"
-              >
-                <div className="font-mono-num text-xs text-muted-foreground">{r[0]}</div>
-                <div className="text-ink-900 truncate">{r[1]}</div>
-                <div className="text-ink-700 text-xs truncate">{r[2]}</div>
-                <div className="font-mono-num text-right text-ink-900">{r[3]}</div>
-                <div className="text-right">
-                  <span className="inline-flex items-center gap-1 text-xs text-[color:var(--success,#2E7D5B)]">
-                    <CheckCircle2 className="size-3" strokeWidth={1.75} /> {r[4]}
-                  </span>
-                </div>
-                <div className="text-right">
-                  <button className="text-muted-foreground hover:text-ink-900">
-                    <Download className="size-3.5" strokeWidth={1.75} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </Card>
-
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>
-              Need per-client billing detail? Open the client's{" "}
-              <span className="text-ink-700">Settings → Plan &amp; credits</span>.
-            </span>
-            <span>Tax &amp; VAT · Billing contacts · Receipts language</span>
-          </div>
-        </div>
+    <WorkspaceShell breadcrumb={["Billing & plan"]}>
+      <div className="mx-auto w-full max-w-[1180px] space-y-5 px-8 py-8 animate-rise">
+        <Header cycle={cycle} setCycle={setCycle} />
+        {banner ? <LowCreditsBanner onDismiss={() => setBanner(false)} /> : null}
+        <CurrentPlan cycle={cycle} />
+        <CreditBalance />
+        <UsageThisPeriod />
+        <PlanComparison cycle={cycle} onPick={(t) => setConfirmTier(t)} />
+        <Invoices />
       </div>
+      {confirmTier ? (
+        <ConfirmDialog
+          tier={confirmTier}
+          cycle={cycle}
+          onClose={() => setConfirmTier(null)}
+        />
+      ) : null}
     </WorkspaceShell>
   );
 }
 
-function Banner({
-  tone,
-  icon,
-  text,
-  cta,
-}: {
-  tone: "warn" | "danger";
-  icon: ReactNode;
-  text: string;
-  cta: string;
-}) {
-  const styles =
-    tone === "danger"
-      ? "border-[#F1D2CE] bg-[#FBEEEC]"
-      : "border-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/40";
+/* ---------------- header ---------------- */
+
+function Header({ cycle, setCycle }: { cycle: Cycle; setCycle: (c: Cycle) => void }) {
   return (
-    <div
-      className={
-        "flex items-center justify-between rounded-xl border px-5 py-3 text-sm " + styles
-      }
-    >
-      <div className="flex items-center gap-2.5 text-ink-900">
-        <span className={tone === "danger" ? "text-[color:var(--danger)]" : "text-[color:var(--warning)]"}>
-          {icon}
-        </span>
-        <span>{text}</span>
+    <header className="flex flex-wrap items-end justify-between gap-4">
+      <div className="space-y-1.5">
+        <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          Northbound Coffee Roasters
+        </div>
+        <h1 className="text-3xl font-medium text-ink-900">Billing & plan</h1>
+        <p className="text-sm text-muted-foreground">
+          Plan, credits, usage and invoices for this workspace.
+        </p>
       </div>
-      <button className="inline-flex items-center gap-1.5 text-sm text-brand-700 hover:underline">
-        {cta} <ArrowRight className="size-3.5" strokeWidth={1.75} />
+      <CycleToggle value={cycle} onChange={setCycle} />
+    </header>
+  );
+}
+
+function CycleToggle({ value, onChange }: { value: Cycle; onChange: (c: Cycle) => void }) {
+  return (
+    <div className="inline-flex items-center rounded-md border border-line bg-surface-sunken p-0.5">
+      <button
+        onClick={() => onChange("monthly")}
+        className={cn(
+          "rounded-[6px] px-3 py-1.5 text-xs font-medium transition",
+          value === "monthly"
+            ? "bg-surface text-ink-900 shadow-[0_1px_0_rgba(20,24,31,0.04)]"
+            : "text-muted-foreground hover:text-ink-700",
+        )}
+      >
+        Monthly
+      </button>
+      <button
+        onClick={() => onChange("annual")}
+        className={cn(
+          "inline-flex items-center gap-1.5 rounded-[6px] px-3 py-1.5 text-xs font-medium transition",
+          value === "annual"
+            ? "bg-surface text-ink-900 shadow-[0_1px_0_rgba(20,24,31,0.04)]"
+            : "text-muted-foreground hover:text-ink-700",
+        )}
+      >
+        Annual
+        <span className="rounded-sm bg-[color:var(--accent-gold-soft)] px-1 font-mono-num text-[10px] text-[color:var(--accent-gold)]">
+          −20%
+        </span>
       </button>
     </div>
+  );
+}
+
+/* ---------------- low credits banner ---------------- */
+
+function LowCreditsBanner({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/40 px-4 py-3">
+      <div className="flex items-start gap-2.5">
+        <span className="mt-0.5 grid size-6 place-items-center rounded-md bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]">
+          <Info className="size-3.5" strokeWidth={1.75} />
+        </span>
+        <div className="text-sm">
+          <div className="font-medium text-ink-900">You're low on action credits</div>
+          <div className="text-muted-foreground">
+            <span className="font-mono-num">120 of 2,000</span> left this period. Top up or
+            upgrade to keep generating.
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          disabled
+          className="inline-flex items-center gap-1.5 rounded-md border border-dashed border-line bg-surface/60 px-3 py-1.5 text-xs text-muted-foreground"
+        >
+          <Lock className="size-3" strokeWidth={1.75} />
+          Top up — coming (M1)
+        </button>
+        <button
+          onClick={() => toast.info("Open Plan comparison to upgrade.")}
+          className="inline-flex items-center gap-1.5 rounded-md bg-brand-700 px-3 py-1.5 text-xs font-medium text-[color:var(--primary-foreground)] hover:bg-brand-700/90"
+        >
+          Upgrade plan <ArrowUpRight className="size-3" strokeWidth={2} />
+        </button>
+        <button
+          onClick={onDismiss}
+          aria-label="Dismiss"
+          className="grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-surface-sunken"
+        >
+          <X className="size-3.5" strokeWidth={1.75} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- current plan ---------------- */
+
+function CurrentPlan({ cycle }: { cycle: Cycle }) {
+  const monthly = 449;
+  const annualEquiv = Math.round(monthly * 0.8);
+  return (
+    <Card className="p-6">
+      <div className="flex flex-wrap items-start justify-between gap-6">
+        <div className="min-w-0 space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-xl font-medium text-ink-900">Growth</h2>
+            <StatusChip tone="live">Current plan</StatusChip>
+          </div>
+          <div className="flex items-baseline gap-3">
+            <span className="font-mono-num text-3xl text-ink-900">
+              {cycle === "annual" ? `${money(annualEquiv)}/mo` : `${money(monthly)}/mo`}
+            </span>
+            {cycle === "annual" ? (
+              <span className="font-mono-num text-xs text-muted-foreground">
+                billed annually · {money(annualEquiv * 12)}/yr
+              </span>
+            ) : (
+              <span className="font-mono-num text-xs text-muted-foreground">
+                billed monthly
+              </span>
+            )}
+          </div>
+          <div className="font-mono-num text-xs text-muted-foreground">
+            Renews Jul 24, 2026
+          </div>
+          <button
+            onClick={() => toast.info("Payment method drawer — stub")}
+            className="mt-1 inline-flex items-center gap-1.5 text-xs text-brand-700 hover:underline"
+          >
+            <CreditCard className="size-3.5" strokeWidth={1.75} /> Manage payment method
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => toast.info("Open Change plan below.")}
+            className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-3 py-1.5 text-sm hover:border-ink-700/30"
+          >
+            Change plan
+          </button>
+          <button
+            onClick={() => toast.info("Open Upgrade — Premium recommended")}
+            className="inline-flex items-center gap-1.5 rounded-md bg-brand-700 px-3 py-1.5 text-sm font-medium text-[color:var(--primary-foreground)] hover:bg-brand-700/90"
+          >
+            Upgrade <ArrowUpRight className="size-3.5" strokeWidth={2} />
+          </button>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/* ---------------- credit balance ---------------- */
+
+function CreditBalance() {
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-sm font-medium text-ink-900">Credit balance</div>
+          <div className="text-xs text-muted-foreground">
+            Two pools, tracked separately. Resets each period.
+          </div>
+        </div>
+        <span className="font-mono-num text-[11px] text-muted-foreground">
+          period · Jun 1 – Jun 30, 2026
+        </span>
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <CreditTile
+          icon={Zap}
+          label="Action credits"
+          used={1880}
+          total={2000}
+          resetsIn={12}
+        />
+        <CreditTile
+          icon={Film}
+          label="Video credits"
+          used={14}
+          total={20}
+          resetsIn={12}
+          tone="gold"
+        />
+      </div>
+      <p className="mt-3 text-[11px] text-muted-foreground">
+        Grants refill each period; unused credits partially roll over (action ≤
+        20%, video ≤ 10%).
+      </p>
+    </Card>
+  );
+}
+
+function CreditTile({
+  icon: Icon,
+  label,
+  used,
+  total,
+  resetsIn,
+  tone = "brand",
+}: {
+  icon: typeof Zap;
+  label: string;
+  used: number;
+  total: number;
+  resetsIn: number;
+  tone?: "brand" | "gold";
+}) {
+  const remaining = total - used;
+  const pct = Math.min(100, Math.round((used / total) * 100));
+  const barColor =
+    tone === "gold" ? "bg-[color:var(--accent-gold)]" : "bg-brand-700";
+  return (
+    <div className="rounded-lg border border-line bg-surface-sunken/40 p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-muted-foreground">
+          <Icon className="size-3.5" strokeWidth={1.75} />
+          {label}
+        </div>
+        <span className="font-mono-num text-[11px] text-muted-foreground">
+          resets in {resetsIn} days
+        </span>
+      </div>
+      <div className="mt-2 flex items-baseline gap-1.5">
+        <span className="font-mono-num text-2xl text-ink-900">{fmt(remaining)}</span>
+        <span className="font-mono-num text-xs text-muted-foreground">/ {fmt(total)}</span>
+      </div>
+      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-sunken">
+        <div className={cn("h-full", barColor)} style={{ width: `${pct}%` }} />
+      </div>
+      <div className="mt-1.5 font-mono-num text-[10px] text-muted-foreground">
+        {fmt(used)} used · {fmt(remaining)} remaining
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- usage chart ---------------- */
+
+const USAGE = [
+  { name: "Articles", v: 920, color: "var(--brand-700)" },
+  { name: "Product/page copy", v: 540, color: "var(--brand-700)" },
+  { name: "Regenerate/Humanize", v: 280, color: "var(--accent-gold)" },
+  { name: "Internal links", v: 140, color: "var(--brand-700)" },
+];
+
+function UsageThisPeriod() {
+  const total = useMemo(() => USAGE.reduce((s, x) => s + x.v, 0), []);
+  return (
+    <Card className="p-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="text-sm font-medium text-ink-900">Usage this period</div>
+          <div className="font-mono-num text-xs text-muted-foreground">
+            Jun 1 – Jun 30, 2026
+          </div>
+        </div>
+        <div className="font-mono-num text-sm text-ink-700">
+          <span className="text-ink-900">{fmt(total)}</span> action credits used ·{" "}
+          <span className="text-muted-foreground">120 remaining</span>
+        </div>
+      </div>
+
+      <div className="mt-4 h-[180px]">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={USAGE} margin={{ top: 6, right: 8, left: -10, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" vertical={false} />
+            <XAxis
+              dataKey="name"
+              tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{
+                fill: "var(--muted-foreground)",
+                fontSize: 10,
+                fontFamily: "var(--font-mono, ui-monospace)",
+              }}
+              axisLine={false}
+              tickLine={false}
+              width={40}
+            />
+            <Tooltip
+              cursor={{ fill: "var(--surface-sunken)" }}
+              contentStyle={{
+                background: "var(--surface)",
+                border: "1px solid var(--line)",
+                borderRadius: 8,
+                fontSize: 11,
+              }}
+            />
+            <Bar dataKey="v" radius={[6, 6, 0, 0]} barSize={42}>
+              {USAGE.map((u) => (
+                <Cell key={u.name} fill={u.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1.5 font-mono-num text-[11px] text-muted-foreground">
+        {USAGE.map((u) => (
+          <span key={u.name} className="inline-flex items-center gap-1.5">
+            <span
+              className="inline-block size-2 rounded-sm"
+              style={{ background: u.color }}
+            />
+            {u.name} · {fmt(u.v)}
+          </span>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+/* ---------------- plan comparison ---------------- */
+
+type Tier = {
+  id: "starter" | "growth" | "advanced" | "premium" | "agency";
+  name: string;
+  monthly: number;
+  agencyFrom?: boolean;
+  popular?: boolean;
+  lines: string[];
+  review: string;
+};
+
+const TIERS: Tier[] = [
+  {
+    id: "starter",
+    name: "Starter",
+    monthly: 199,
+    lines: ["8 units / mo", "800 action · 5 video credits", "1 language", "Site export"],
+    review: "AI-only + quality-gate",
+  },
+  {
+    id: "growth",
+    name: "Growth",
+    monthly: 449,
+    lines: ["20 units / mo", "2,000 action · 20 video credits", "2 languages", "Connector publish"],
+    review: "AI-only + quality-gate",
+  },
+  {
+    id: "advanced",
+    name: "Advanced",
+    monthly: 899,
+    lines: ["48 units / mo", "5,000 action · 60 video credits", "4 languages", "AI + freelancer review"],
+    review: "AI + freelancer review",
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    monthly: 999,
+    popular: true,
+    lines: ["60 units / mo", "6,500 action · 80 video credits", "6 languages", "AI + LetoLab expert"],
+    review: "AI + LetoLab expert",
+  },
+  {
+    id: "agency",
+    name: "Agency",
+    monthly: 999,
+    agencyFrom: true,
+    lines: ["Multi-client console", "Shared credit pool", "White-label reports", "Priority support"],
+    review: "Per-client review settings",
+  },
+];
+
+const CURRENT: Tier["id"] = "growth";
+const RANK: Record<Tier["id"], number> = {
+  starter: 1,
+  growth: 2,
+  advanced: 3,
+  premium: 4,
+  agency: 5,
+};
+
+function PlanComparison({ cycle, onPick }: { cycle: Cycle; onPick: (t: Tier) => void }) {
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-sm font-medium text-ink-900">Change plan</div>
+          <div className="text-xs text-muted-foreground">
+            {cycle === "annual"
+              ? "Annual billing — −20% (shown as monthly equivalent)"
+              : "Monthly billing"}
+          </div>
+        </div>
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {TIERS.map((t) => {
+          const isCurrent = t.id === CURRENT;
+          const direction = RANK[t.id] > RANK[CURRENT] ? "up" : "down";
+          const price = cycle === "annual" ? Math.round(t.monthly * 0.8) : t.monthly;
+          return (
+            <div
+              key={t.id}
+              className={cn(
+                "relative flex flex-col rounded-xl border bg-surface p-4 transition",
+                isCurrent
+                  ? "border-brand-700/60 shadow-[0_0_0_3px_color-mix(in_oklab,var(--brand-700)_12%,transparent)]"
+                  : "border-line hover:border-ink-700/30",
+                t.popular && !isCurrent && "border-[color:var(--accent-gold-soft)]",
+              )}
+            >
+              {t.popular ? (
+                <span className="absolute -top-2 right-3 rounded-md border border-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)] px-1.5 py-0.5 font-mono-num text-[10px] uppercase tracking-wider text-[color:var(--accent-gold)]">
+                  Popular
+                </span>
+              ) : null}
+              <div className="text-sm font-medium text-ink-900">{t.name}</div>
+              <div className="mt-1 flex items-baseline gap-1">
+                {t.agencyFrom ? (
+                  <span className="text-[11px] text-muted-foreground">from</span>
+                ) : null}
+                <span className="font-mono-num text-2xl text-ink-900">${price}</span>
+                <span className="font-mono-num text-[11px] text-muted-foreground">/mo</span>
+              </div>
+              {cycle === "annual" ? (
+                <div className="font-mono-num text-[10px] text-muted-foreground">
+                  billed annually
+                </div>
+              ) : null}
+
+              <ul className="mt-3 space-y-1.5 text-xs text-ink-700">
+                {t.lines.map((l) => (
+                  <li key={l} className="flex items-start gap-1.5">
+                    <Check
+                      className="mt-0.5 size-3 shrink-0 text-brand-700"
+                      strokeWidth={2}
+                    />
+                    <span>{l}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-4">
+                {isCurrent ? (
+                  <button
+                    disabled
+                    className="w-full rounded-md border border-line bg-surface-sunken px-3 py-1.5 text-xs font-medium text-muted-foreground"
+                  >
+                    Current plan
+                  </button>
+                ) : direction === "up" ? (
+                  <button
+                    onClick={() => onPick(t)}
+                    className="w-full rounded-md bg-brand-700 px-3 py-1.5 text-xs font-medium text-[color:var(--primary-foreground)] hover:bg-brand-700/90"
+                  >
+                    Upgrade
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => onPick(t)}
+                    className="w-full rounded-md border border-line bg-surface px-3 py-1.5 text-xs text-muted-foreground hover:border-ink-700/30 hover:text-ink-700"
+                  >
+                    Downgrade
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+function ConfirmDialog({
+  tier,
+  cycle,
+  onClose,
+}: {
+  tier: Tier;
+  cycle: Cycle;
+  onClose: () => void;
+}) {
+  const price = cycle === "annual" ? Math.round(tier.monthly * 0.8) : tier.monthly;
+  const direction = RANK[tier.id] > RANK[CURRENT] ? "Upgrade" : "Downgrade";
+  return (
+    <div
+      className="fixed inset-0 z-50 grid place-items-center bg-ink-900/40 px-4 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-xl border border-line bg-surface p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          {direction}
+        </div>
+        <h3 className="mt-1 text-xl font-medium text-ink-900">
+          Switch to {tier.name}
+        </h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          You'll be charged{" "}
+          <span className="font-mono-num text-ink-900">${price}/mo</span>{" "}
+          {cycle === "annual" ? "billed annually" : "billed monthly"}. Pro-rated
+          for the remainder of this period.
+        </p>
+        <div className="mt-5 flex items-center justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="rounded-md border border-line bg-surface px-3 py-1.5 text-sm hover:border-ink-700/30"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => {
+              toast.success(`Checkout would start for ${tier.name}.`);
+              onClose();
+            }}
+            className="rounded-md bg-brand-700 px-3 py-1.5 text-sm font-medium text-[color:var(--primary-foreground)] hover:bg-brand-700/90"
+          >
+            Continue to checkout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- invoices ---------------- */
+
+type Invoice = {
+  date: string;
+  desc: string;
+  amount: number;
+  status: "paid" | "open";
+  id: string;
+};
+
+const INVOICES: Invoice[] = [
+  { date: "2026-06-24", desc: "Growth — monthly", amount: 449, status: "open", id: "INV-2026-06" },
+  { date: "2026-05-24", desc: "Growth — monthly", amount: 449, status: "paid", id: "INV-2026-05" },
+  { date: "2026-04-24", desc: "Growth — monthly", amount: 449, status: "paid", id: "INV-2026-04" },
+  { date: "2026-03-24", desc: "Growth — monthly", amount: 449, status: "paid", id: "INV-2026-03" },
+  { date: "2026-02-24", desc: "Starter — monthly", amount: 199, status: "paid", id: "INV-2026-02" },
+];
+
+function Invoices() {
+  const empty = false;
+  return (
+    <Card className="overflow-hidden">
+      <div className="flex items-center justify-between border-b border-line bg-surface-sunken px-5 py-3">
+        <div>
+          <div className="text-sm font-medium text-ink-900">Invoices</div>
+          <div className="text-xs text-muted-foreground">
+            Receipts and open balances
+          </div>
+        </div>
+      </div>
+      {empty ? (
+        <div className="px-5 py-12 text-center text-sm text-muted-foreground">
+          No invoices yet.
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-[1.2fr_2fr_0.8fr_0.8fr_0.8fr] gap-4 border-b border-line px-5 py-2.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            <div>Date</div>
+            <div>Description</div>
+            <div>Amount</div>
+            <div>Status</div>
+            <div className="text-right">Action</div>
+          </div>
+          {INVOICES.map((inv) => (
+            <div
+              key={inv.id}
+              className="grid grid-cols-[1.2fr_2fr_0.8fr_0.8fr_0.8fr] items-center gap-4 border-b border-line px-5 py-3 text-sm last:border-b-0 hover:bg-surface-sunken/40"
+            >
+              <div className="font-mono-num text-xs text-ink-700">{inv.date}</div>
+              <div className="min-w-0">
+                <div className="truncate text-ink-900">{inv.desc}</div>
+                <div className="font-mono-num text-[10px] text-muted-foreground">
+                  {inv.id}
+                </div>
+              </div>
+              <div className="font-mono-num text-sm text-ink-900">
+                ${inv.amount.toFixed(2)}
+              </div>
+              <div>
+                {inv.status === "paid" ? (
+                  <StatusChip tone="live">Paid</StatusChip>
+                ) : (
+                  <StatusChip tone="gold">Open</StatusChip>
+                )}
+              </div>
+              <div className="flex items-center justify-end gap-1">
+                {inv.status === "open" ? (
+                  <button
+                    onClick={() => toast.info(`${inv.id} — opened`)}
+                    className="inline-flex items-center gap-1 rounded-md border border-line bg-surface px-2 py-1 text-xs hover:border-ink-700/30"
+                  >
+                    <Eye className="size-3" strokeWidth={1.75} /> View
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => toast.success(`${inv.id}.pdf — downloaded`)}
+                    className="inline-flex items-center gap-1 rounded-md border border-line bg-surface px-2 py-1 text-xs hover:border-ink-700/30"
+                  >
+                    <Download className="size-3" strokeWidth={1.75} /> PDF
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+    </Card>
   );
 }
