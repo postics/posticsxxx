@@ -79,7 +79,63 @@ const ROLE_COPY: Record<"en" | "ru", Record<Role, string>> = {
   },
 };
 
-const COPY = {
+type CopyShape = {
+  eyebrow: string;
+  title: string;
+  sub: string;
+  invite: string;
+  orgLabel: string;
+  orgType: { direct: string; agency: string };
+  orgNote: string;
+  orgToggleHint: string;
+  members: string;
+  colMember: string;
+  colRole: string;
+  colLast: string;
+  colStatus: string;
+  statusActive: string;
+  statusInvited: string;
+  ownerLocked: string;
+  reviewerHelp: string;
+  clientViewerTag: string;
+  matrixTitle: string;
+  matrixSub: string;
+  matrixCaption: string;
+  humanFootnote: string;
+  whiteLabelFootnote: string;
+  pendingTitle: string;
+  pendingEmpty: string;
+  resend: string;
+  revoke: string;
+  changeRole: string;
+  remove: string;
+  sentAgo: (d: string) => string;
+  dialogTitle: string;
+  dialogSub: string;
+  fieldEmail: string;
+  fieldRole: string;
+  fieldNote: string;
+  cancel: string;
+  send: string;
+  invalidEmail: string;
+  toastSent: (e: string) => string;
+  toastResent: (e: string) => string;
+  toastRevoked: (e: string) => string;
+  toastRole: (n: string, r: string) => string;
+  toastRemoved: (n: string) => string;
+  caps: {
+    teamBilling: string;
+    connect: string;
+    strategy: string;
+    generate: string;
+    approve: string;
+    review: string;
+    view: string;
+    clientScope: string;
+  };
+};
+
+const COPY: Record<"en" | "ru", CopyShape> = {
   en: {
     eyebrow: "Workspace",
     title: "Team",
