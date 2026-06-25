@@ -732,7 +732,6 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 /* ───────── Cadence ───────── */
 
 function CadenceTab({ onSave }: { onSave: () => void }) {
-  const [autopub, setAutopub] = useState<"A" | "B">("B");
   const [perMonth, setPerMonth] = useState(12);
   return (
     <div className="grid grid-cols-[1.4fr_1fr] gap-5">
@@ -807,37 +806,34 @@ function CadenceTab({ onSave }: { onSave: () => void }) {
         </div>
       </Card>
 
-      <Card className="space-y-3 p-5">
-        <div className="text-sm font-medium text-ink-900">Auto-publish</div>
+      <Card className="space-y-3 p-5 opacity-90">
+        <div className="flex items-center justify-between">
+          <div className="text-sm font-medium text-ink-900">Auto-publish</div>
+          <StatusChip tone="neutral">Preview</StatusChip>
+        </div>
         <p className="text-xs text-muted-foreground">
-          Choose what happens once content is generated.
+          Off by default. Export stays the default output — enabling auto-publish activates after setup.
         </p>
-        <button
-          onClick={() => setAutopub("A")}
-          className={cn(
-            "w-full rounded-xl border p-3 text-left transition-colors",
-            autopub === "A" ? "border-brand-700/40 bg-brand-100/50" : "border-line bg-surface hover:border-ink-700/30",
-          )}
-        >
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-medium text-ink-900">Option A — AI only</div>
-            <StatusChip tone="info">Publish on generate</StatusChip>
+
+        <div className="flex items-start gap-3 rounded-xl border border-dashed border-line bg-surface-sunken/40 p-3">
+          <span
+            aria-disabled
+            className="mt-0.5 inline-flex h-5 w-9 shrink-0 cursor-not-allowed items-center rounded-full bg-surface-sunken ring-1 ring-line"
+            title="Scheduling activates after setup"
+          >
+            <span className="ml-0.5 size-4 rounded-full bg-surface ring-1 ring-line" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="text-sm text-ink-900">Auto-publish to your site</div>
+            <div className="mt-0.5 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+              <Lock className="size-3" strokeWidth={1.75} /> Scheduling activates after setup
+            </div>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Drafts auto-publish straight to the site at the scheduled time.</p>
-        </button>
-        <button
-          onClick={() => setAutopub("B")}
-          className={cn(
-            "w-full rounded-xl border p-3 text-left transition-colors",
-            autopub === "B" ? "border-[color:var(--accent-gold)]/40 bg-[color:var(--accent-gold-soft)]/40" : "border-line bg-surface hover:border-ink-700/30",
-          )}
-        >
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-medium text-ink-900">Option Б — AI + approval</div>
-            <StatusChip tone="gold">Publish on approve</StatusChip>
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">Each piece waits for human review before going live.</p>
-        </button>
+        </div>
+
+        <p className="text-[11px] text-muted-foreground">
+          Preview only — this card doesn't save anything yet.
+        </p>
       </Card>
     </div>
   );
