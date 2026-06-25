@@ -7,6 +7,7 @@ import {
   Store,
   CreditCard,
   Handshake,
+  Building2,
 } from "lucide-react";
 import { useScope } from "./scope";
 import {
@@ -20,6 +21,7 @@ import {
 } from "./topbar-parts";
 
 export type WorkspaceNavId =
+  | "agency"
   | "clients"
   | "team"
   | "brand"
@@ -46,6 +48,7 @@ export function WorkspaceShell({
 
   const derived = useActiveFromRoute<WorkspaceNavId>(
     {
+      "/agency": "agency",
       "/clients": "clients",
       "/team": "team",
       "/brand-kit": "brand",
@@ -53,7 +56,7 @@ export function WorkspaceShell({
       "/billing": "billing",
       "/partner": "partner",
     },
-    "clients",
+    "agency",
   );
   const activeId: WorkspaceNavId = active ?? derived;
 
@@ -63,6 +66,7 @@ export function WorkspaceShell({
   }, [role, navigate]);
 
   const items: SideItem[] = [
+    { id: "agency", label: "Agency", icon: Building2, to: "/agency" },
     { id: "clients", label: "Clients", icon: Users, to: "/clients" },
     { id: "team", label: "Team & roles", icon: UserCog, to: "/team" },
     { id: "brand", label: "Brand kit / White-label", icon: Palette, to: "/brand-kit" },
