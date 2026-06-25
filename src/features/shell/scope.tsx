@@ -32,7 +32,7 @@ const ScopeCtx = createContext<ScopeState | null>(null);
 
 const DEFAULT_WORKSPACE: Workspace = { id: "acme", name: "Acme Studio", initials: "AS" };
 const DEFAULT_PROJECTS: Project[] = [
-  { id: "vellum-bean", name: "Vellum & Bean", initials: "VB", domain: "vellumbean.co", reviewEnabled: true },
+  { id: "vellum-bean", name: "Northbound Coffee Roasters", initials: "NC", domain: "northboundcoffee.com", reviewEnabled: true },
   { id: "northwind-tea", name: "Northwind Tea", initials: "NT", domain: "northwindtea.com", reviewEnabled: false },
   { id: "linden-mercantile", name: "Linden Mercantile", initials: "LM", domain: "lindenmercantile.shop", reviewEnabled: true },
   { id: "old-mill-roasters", name: "Old Mill Roasters", initials: "OM", domain: "oldmillroasters.co", reviewEnabled: false },
