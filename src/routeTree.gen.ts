@@ -22,6 +22,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as BrandKitRouteImport } from './routes/brand-kit'
 import { Route as BillingRouteImport } from './routes/billing'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AgencyRouteImport } from './routes/agency'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -90,6 +91,11 @@ const BillingRoute = BillingRouteImport.update({
   path: '/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgencyRoute = AgencyRouteImport.update({
   id: '/agency',
   path: '/agency',
@@ -104,6 +110,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/agency': typeof AgencyRoute
+  '/analytics': typeof AnalyticsRoute
   '/billing': typeof BillingRoute
   '/brand-kit': typeof BrandKitRoute
   '/clients': typeof ClientsRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/agency': typeof AgencyRoute
+  '/analytics': typeof AnalyticsRoute
   '/billing': typeof BillingRoute
   '/brand-kit': typeof BrandKitRoute
   '/clients': typeof ClientsRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/agency': typeof AgencyRoute
+  '/analytics': typeof AnalyticsRoute
   '/billing': typeof BillingRoute
   '/brand-kit': typeof BrandKitRoute
   '/clients': typeof ClientsRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/agency'
+    | '/analytics'
     | '/billing'
     | '/brand-kit'
     | '/clients'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/agency'
+    | '/analytics'
     | '/billing'
     | '/brand-kit'
     | '/clients'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/agency'
+    | '/analytics'
     | '/billing'
     | '/brand-kit'
     | '/clients'
@@ -210,6 +222,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AgencyRoute: typeof AgencyRoute
+  AnalyticsRoute: typeof AnalyticsRoute
   BillingRoute: typeof BillingRoute
   BrandKitRoute: typeof BrandKitRoute
   ClientsRoute: typeof ClientsRoute
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BillingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/agency': {
       id: '/agency'
       path: '/agency'
@@ -338,6 +358,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AgencyRoute: AgencyRoute,
+  AnalyticsRoute: AnalyticsRoute,
   BillingRoute: BillingRoute,
   BrandKitRoute: BrandKitRoute,
   ClientsRoute: ClientsRoute,
