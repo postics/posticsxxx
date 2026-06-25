@@ -262,7 +262,7 @@ function IdentityCard({
   ornament: string;
 }) {
   return (
-    <Card id="identity" className="p-5">
+    <Card className="p-5 scroll-mt-20" as="section">
       <CardHead title="Identity & segment" hint="Detected from your site — confirm or adjust." />
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <label className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -359,7 +359,7 @@ function VoiceCard(props: {
     ]);
 
   return (
-    <Card id="voice" className="p-5">
+    <Card className="p-5 scroll-mt-20" as="section">
       <CardHead
         title="Brand voice"
         hint="The centerpiece — tone, do/don't and a glossary the generator and quality-gate both read."
@@ -560,7 +560,7 @@ function OwnerFaceCard({
   ];
   const active = opts.find((o) => o.id === value)!;
   return (
-    <Card id="owner" className="p-5">
+    <Card className="p-5 scroll-mt-20" as="section">
       <CardHead
         title="Owner as the face"
         hint="Should the founder/owner appear on flagship content?"
@@ -618,7 +618,7 @@ function LocalesCard({
   };
 
   return (
-    <Card id="locales" className="p-5">
+    <Card className="p-5 scroll-mt-20" as="section">
       <CardHead
         title="Languages & markets"
         hint="We generate in each market's language; the primary leads."
@@ -698,7 +698,7 @@ function AssetsCard({
   setAgencyMode: (v: boolean) => void;
 }) {
   return (
-    <Card id="assets" className="p-5">
+    <Card className="p-5 scroll-mt-20" as="section">
       <CardHead
         title="Brand assets / White-label"
         hint="Logos and palette — used in generation and in agency client-facing reports."
