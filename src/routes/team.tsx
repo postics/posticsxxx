@@ -246,7 +246,7 @@ const COPY: Record<"en" | "ru", CopyShape> = {
       clientScope: "client_viewer — только чтение, в рамках назначенных проектов",
     },
   },
-} as const;
+};
 
 const SEED_MEMBERS: Member[] = [
   { id: "m-owner", name: "Elena Voss", initials: "EV", email: "elena@northboundcoffee.com", role: "owner", status: "active", lastActive: "now" },
