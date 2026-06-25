@@ -959,6 +959,25 @@ function HeroEcho() {
 /* ─────────────── Footer ─────────────── */
 
 function Footer() {
+  const projectPages: Array<{ to: string; label: string }> = [
+    { to: "/dashboard", label: "Dashboard" },
+    { to: "/onboarding", label: "Onboarding" },
+    { to: "/plan", label: "Content plan" },
+    { to: "/editor", label: "Editor" },
+    { to: "/review", label: "Review" },
+    { to: "/studio", label: "Product studio" },
+    { to: "/analytics", label: "Analytics" },
+    { to: "/settings", label: "Settings" },
+  ];
+  const workspacePages: Array<{ to: string; label: string }> = [
+    { to: "/clients", label: "Clients" },
+    { to: "/agency", label: "Agency console" },
+    { to: "/team", label: "Team & roles" },
+    { to: "/brand-kit", label: "Brand kit" },
+    { to: "/marketplace", label: "Marketplace" },
+    { to: "/billing", label: "Billing" },
+    { to: "/partner", label: "Partner" },
+  ];
   return (
     <footer className="border-t border-line bg-surface">
       <div className="mx-auto grid w-full max-w-6xl gap-10 px-6 py-12 sm:grid-cols-[1.4fr_1fr_auto]">
@@ -992,6 +1011,44 @@ function Footer() {
             Run it <ArrowRight className="size-4" strokeWidth={1.75} />
           </a>
           <Link to="/dashboard" className="postics-btn-ghost">Log in</Link>
+        </div>
+      </div>
+      {/* Dev / preview map — every built page in the app */}
+      <div className="border-t border-line bg-paper/60">
+        <div className="mx-auto w-full max-w-6xl px-6 py-8">
+          <div className="flex items-center justify-between">
+            <div className="font-mono-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              / preview · all pages
+            </div>
+            <div className="font-mono-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              dev menu
+            </div>
+          </div>
+          <div className="mt-5 grid gap-8 sm:grid-cols-3">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-ink-900">Public</div>
+              <nav className="mt-3 flex flex-col gap-1.5 text-sm text-muted-foreground">
+                <Link to="/" className="hover:text-brand-700">Landing</Link>
+                <Link to="/onboarding" className="hover:text-brand-700">Onboarding</Link>
+              </nav>
+            </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-ink-900">Project</div>
+              <nav className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
+                {projectPages.map((p) => (
+                  <Link key={p.to} to={p.to} className="hover:text-brand-700">{p.label}</Link>
+                ))}
+              </nav>
+            </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-ink-900">Workspace</div>
+              <nav className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
+                {workspacePages.map((p) => (
+                  <Link key={p.to} to={p.to} className="hover:text-brand-700">{p.label}</Link>
+                ))}
+              </nav>
+            </div>
+          </div>
         </div>
       </div>
       <div className="border-t border-line">
