@@ -107,7 +107,31 @@ export function OnboardingWizard() {
           <StepReady
             detected={detected}
             onBack={() => setStep(3)}
-            onGenerate={() => navigate({ to: "/dashboard" })}
+            onGenerate={() => {
+              try {
+                localStorage.setItem(
+                  "postics.onboarding",
+                  JSON.stringify({
+                    brand: detected.brand,
+                    domain: detected.domain,
+                    archetype: detected.archetype,
+                    planLabel: detected.planLabel,
+                    pillars: detected.pillars,
+                    firstBatch: [
+                      { type: "Article", title: `${detected.pillars[0]?.title ?? "Pillar"} — cornerstone` },
+                      { type: "Article", title: `${detected.pillars[1]?.title ?? "Pillar"} — guide` },
+                      { type: "Landing", title: `${detected.planLabel} — landing` },
+                      { type: "Product copy", title: detected.topItems[0] ?? "Hero product" },
+                      { type: "Social", title: `${detected.brand} — launch thread` },
+                    ],
+                    generatedAt: new Date().toISOString(),
+                  }),
+                );
+              } catch {
+                /* storage unavailable — non-blocking */
+              }
+              navigate({ to: "/plan" });
+            }}
           />
         )}
       </main>
