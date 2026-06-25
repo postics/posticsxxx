@@ -1,396 +1,872 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Clock,
   AlertTriangle,
   CheckCircle2,
-  ArrowRight,
-  X,
-  Star,
-  MessageSquare,
-  Paperclip,
+  CircleDot,
+  Lock,
   Filter,
   Inbox,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck,
+  RotateCcw,
+  Scissors,
+  Wand,
+  Hash,
+  Globe2,
+  Send,
+  XCircle,
+  UserPlus,
+  Info,
 } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { AppShell } from "@/features/shell/AppShell";
+import { ProjectShell } from "@/features/shell/ProjectShell";
 import { Card, StatusChip } from "@/features/shared/primitives";
 
 export const Route = createFileRoute("/review")({ component: ReviewPage });
 
-type Status = "Unassigned" | "In progress" | "In QA" | "Returned";
-type Priority = "P0" | "P1" | "P2";
+type ItemState =
+  | "unassigned"
+  | "in_progress"
+  | "returned"
+  | "approved"
+  | "rejected"
+  | "overdue";
+type ItemType = "Article" | "Product or page" | "Social";
+type Reviewer = { id: string; name: string; initials: string; role: "Expert" | "Freelancer" };
 
 type Item = {
   id: string;
   title: string;
-  project: string;
-  type: string;
-  assignee: { name: string; initials: string; rating: number } | null;
-  sla: string;
-  overdue?: boolean;
-  priority: Priority;
-  status: Status;
-  cost: number;
-  takeRate: number;
+  type: ItemType;
+  keyword: string;
+  locale: "EN" | "RU";
+  target: "site" | "social";
+  state: ItemState;
+  reviewer: Reviewer | null;
+  /** Hours until SLA. Negative = overdue. */
+  hoursLeft: number;
+  edits: number;
+  takeRate: number; // 0..1, after edits
+  /** Body paragraphs for the article body. */
+  body: string[];
 };
 
-const ITEMS: Item[] = [
+const REVIEWERS: Reviewer[] = [
+  { id: "ml", name: "Marta L.", initials: "ML", role: "Expert" },
+  { id: "dr", name: "Daniel R.", initials: "DR", role: "Freelancer" },
+  { id: "ik", name: "Iris K.", initials: "IK", role: "Expert" },
+  { id: "tn", name: "Tom N.", initials: "TN", role: "Freelancer" },
+];
+
+const SEED: Item[] = [
   {
-    id: "ITM-241",
-    title: "Why we batch-roast on Tuesdays — long-form",
-    project: "Vellum & Bean",
-    type: "Article · 1,800w",
-    assignee: null,
-    sla: "P1 · first review in 42h",
-    priority: "P1",
-    status: "Unassigned",
-    cost: 84,
-    takeRate: 22,
+    id: "NCR-241",
+    title: "Why we batch-roast on Tuesdays",
+    type: "Article",
+    keyword: "small-batch coffee roasting",
+    locale: "EN",
+    target: "site",
+    state: "in_progress",
+    reviewer: REVIEWERS[0],
+    hoursLeft: 4,
+    edits: 3,
+    takeRate: 0.62,
+    body: [
+      "Tuesdays are a deliberate choice. Green coffee arrives Friday, rests through the weekend, and by Tuesday morning the beans have settled into their best window for heat development.",
+      "Roasting on a fixed weekday keeps the schedule legible — wholesale partners know exactly when their bags will land, and our team can plan calibration around a single profile per origin.",
+      "It also gives us Mondays to cup the previous week's roasts against the new arrivals, so we adjust the curve before the drum is even hot.",
+    ],
   },
   {
-    id: "ITM-238",
+    id: "NCR-238",
     title: "Origin spotlight: Yirgacheffe Konga Co-op",
-    project: "Vellum & Bean",
-    type: "Article · 1,200w",
-    assignee: { name: "Marta L.", initials: "ML", rating: 4.9 },
-    sla: "due in 6h",
-    priority: "P0",
-    overdue: true,
-    status: "In progress",
-    cost: 64,
-    takeRate: 22,
+    type: "Article",
+    keyword: "yirgacheffe konga",
+    locale: "EN",
+    target: "site",
+    state: "overdue",
+    reviewer: REVIEWERS[2],
+    hoursLeft: -2,
+    edits: 6,
+    takeRate: 0.48,
+    body: [
+      "The Konga co-op sits at 1,950m above sea level, where cool nights stretch cherry maturation and concentrate the floral notes Yirgacheffe is known for.",
+      "Our 2026 lot was processed natural on raised beds — twelve days of slow drying with hourly turning.",
+    ],
   },
   {
-    id: "ITM-236",
-    title: "Espresso machine maintenance checklist",
-    project: "Northwall Roasters",
-    type: "Guide · 900w",
-    assignee: { name: "Daniel R.", initials: "DR", rating: 4.7 },
-    sla: "due in 31h",
-    priority: "P2",
-    status: "In QA",
-    cost: 48,
-    takeRate: 25,
+    id: "NCR-236",
+    title: "Espresso machine maintenance — monthly checklist",
+    type: "Product or page",
+    keyword: "espresso maintenance",
+    locale: "EN",
+    target: "site",
+    state: "unassigned",
+    reviewer: null,
+    hoursLeft: 31,
+    edits: 0,
+    takeRate: 0.75,
+    body: [
+      "A monthly reset keeps shots sweet and your machine healthy. Pull the screens, backflush with detergent, and inspect the group gasket for hardening.",
+    ],
   },
   {
-    id: "ITM-230",
+    id: "NCR-230",
     title: "Pour-over vs immersion — buyer's guide",
-    project: "Vellum & Bean",
-    type: "Article · 1,500w",
-    assignee: { name: "Iris K.", initials: "IK", rating: 5.0 },
-    sla: "returned · client edits requested",
-    priority: "P1",
-    status: "Returned",
-    cost: 72,
-    takeRate: 22,
+    type: "Product or page",
+    keyword: "pour over vs french press",
+    locale: "EN",
+    target: "site",
+    state: "returned",
+    reviewer: REVIEWERS[1],
+    hoursLeft: 18,
+    edits: 4,
+    takeRate: 0.58,
+    body: [
+      "Pour-over rewards attention; immersion rewards patience. Both make excellent coffee — the choice is about the morning you want.",
+    ],
   },
   {
-    id: "ITM-228",
+    id: "NCR-228",
     title: "Holiday gift bundles — landing copy",
-    project: "Cedar & Sumac",
-    type: "Landing · 600w",
-    assignee: null,
-    sla: "P2 · 72h",
-    priority: "P2",
-    status: "Unassigned",
-    cost: 36,
-    takeRate: 22,
+    type: "Product or page",
+    keyword: "coffee gift bundle",
+    locale: "EN",
+    target: "site",
+    state: "unassigned",
+    reviewer: null,
+    hoursLeft: 48,
+    edits: 0,
+    takeRate: 0.75,
+    body: [
+      "Three bundles, hand-packed in Northbound paper, each pairing a single-origin with a house blend and a tasting card.",
+    ],
+  },
+  {
+    id: "NCR-225",
+    title: "Brewing ratios cheat-sheet — IG carousel",
+    type: "Social",
+    keyword: "coffee brewing ratios",
+    locale: "EN",
+    target: "social",
+    state: "unassigned",
+    reviewer: null,
+    hoursLeft: 22,
+    edits: 0,
+    takeRate: 0.75,
+    body: ["Carousel of 6 slides; ratios for V60, AeroPress, French Press, espresso, batch brew, and cold brew."],
+  },
+  {
+    id: "NCR-219",
+    title: "Subscription page — value props rewrite",
+    type: "Product or page",
+    keyword: "coffee subscription",
+    locale: "EN",
+    target: "site",
+    state: "in_progress",
+    reviewer: REVIEWERS[3],
+    hoursLeft: 9,
+    edits: 2,
+    takeRate: 0.68,
+    body: ["Three reasons to subscribe: freshness window, member-only lots, and a pause-anytime cadence."],
   },
 ];
 
+const STATE_LABEL: Record<ItemState, string> = {
+  unassigned: "Unassigned",
+  in_progress: "In progress",
+  returned: "Returned",
+  approved: "Approved",
+  rejected: "Rejected",
+  overdue: "Overdue",
+};
+
+const STATE_TONE: Record<ItemState, "neutral" | "live" | "warn" | "danger" | "gold" | "info"> = {
+  unassigned: "neutral",
+  in_progress: "live",
+  returned: "warn",
+  overdue: "danger",
+  approved: "live",
+  rejected: "danger",
+};
+
+const ME: Reviewer = { id: "me", name: "You", initials: "YO", role: "Expert" };
+
 function ReviewPage() {
-  const [open, setOpen] = useState<Item | null>(null);
-  const [role, setRole] = useState<"client" | "manager">("manager");
+  const [items, setItems] = useState<Item[]>(SEED);
+  const [selectedId, setSelectedId] = useState<string>(SEED[0].id);
+  const [railOpen, setRailOpen] = useState(true);
+  const [filter, setFilter] = useState<"all" | ItemState>("all");
+  const [onBrand, setOnBrand] = useState<Record<string, boolean>>({ [SEED[0].id]: false });
+  const [accurate, setAccurate] = useState<Record<string, boolean>>({ [SEED[0].id]: false });
+  const [reasonOpen, setReasonOpen] = useState(false);
+  const [reason, setReason] = useState("");
+
+  const selected = items.find((i) => i.id === selectedId) ?? items[0];
+
+  const visible = useMemo(
+    () => (filter === "all" ? items : items.filter((i) => i.state === filter)),
+    [items, filter],
+  );
+
+  const counts = useMemo(() => {
+    return {
+      inProgress: items.filter((i) => i.state === "in_progress").length,
+      returned: items.filter((i) => i.state === "returned").length,
+      approvedToday: 7,
+      overdue: items.filter((i) => i.state === "overdue").length,
+    };
+  }, [items]);
+
+  function patch(id: string, p: Partial<Item>) {
+    setItems((xs) => xs.map((x) => (x.id === id ? { ...x, ...p } : x)));
+  }
+
+  function assignToMe(id: string) {
+    patch(id, { reviewer: ME, state: "in_progress", hoursLeft: 24 });
+    setSelectedId(id);
+    toast.success("Assigned · SLA timer started", { description: "Due in 24h" });
+  }
+
+  function reassign(id: string) {
+    const pool = REVIEWERS.filter((r) => r.id !== selected.reviewer?.id);
+    const next = pool[Math.floor(Math.random() * pool.length)];
+    patch(id, { reviewer: next, state: "in_progress", hoursLeft: 24 });
+    toast.success(`Reassigned to ${next.name}`);
+  }
+
+  function bumpEdit(kind: string) {
+    if (selected.edits >= 8) return;
+    const nextEdits = selected.edits + 1;
+    const nextTake = Math.max(0.4, 0.75 - nextEdits * 0.04);
+    patch(selected.id, { edits: nextEdits, takeRate: parseFloat(nextTake.toFixed(2)) });
+    toast(`${kind} applied`, { description: `Edit ${nextEdits} / 8` });
+  }
+
+  function approve() {
+    if (!onBrand[selected.id] || !accurate[selected.id]) return;
+    patch(selected.id, { state: "approved" });
+    toast.success("Approved → Scheduled", { description: selected.title });
+  }
+
+  function requestEdit() {
+    patch(selected.id, { state: "returned" });
+    toast("Sent back for edits", { description: "Author notified" });
+  }
+
+  function submitReject() {
+    if (!reason.trim()) return;
+    patch(selected.id, { state: "rejected" });
+    setReasonOpen(false);
+    setReason("");
+    toast.error("Rejected · regenerating", { description: "Quality-gate will retry" });
+  }
 
   return (
-    <AppShell active="review" breadcrumb={["Projects", "Vellum & Bean", "Human Review"]}>
-      <div className="mx-auto w-full max-w-7xl px-8 py-8">
-        <header className="flex items-end justify-between gap-6 pb-6">
-          <div className="space-y-1.5">
-            <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              Option Б · Human-in-the-loop
+    <ProjectShell active="review" breadcrumb={["Human review"]}>
+      <div className="flex h-[calc(100vh-3.5rem)] min-h-0 flex-col">
+        {/* Header */}
+        <header className="border-b border-line bg-paper px-6 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="grid size-9 place-items-center rounded-lg bg-brand-100 text-brand-700">
+                <ShieldCheck className="size-5" strokeWidth={1.5} />
+              </div>
+              <div>
+                <h1 className="text-xl font-medium tracking-tight text-ink-900">Human review</h1>
+                <div className="mt-0.5 inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-2 py-0.5 text-xs text-ink-700">
+                  <span className="size-1.5 rounded-full bg-brand-700" />
+                  Northbound Coffee Roasters
+                </div>
+              </div>
             </div>
-            <h1 className="font-display text-3xl text-ink-900">Review queue</h1>
-            <p className="text-sm text-muted-foreground">
-              Real editors, calm pace. SLA targets: P0 &lt; 24h · P1 first review 48h · full 48–72h.
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <PoolTile label="In progress" value={counts.inProgress} tone="live" />
+              <PoolTile label="Returned" value={counts.returned} tone="warn" />
+              <PoolTile label="Approved today" value={counts.approvedToday} tone="neutral" />
+              <PoolTile label="Overdue" value={counts.overdue} tone="danger" />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex rounded-lg border border-line bg-surface p-0.5 text-xs">
-              {(["client", "manager"] as const).map((r) => (
-                <button
-                  key={r}
-                  onClick={() => setRole(r)}
-                  className={cn(
-                    "rounded-md px-3 py-1.5 capitalize transition-colors",
-                    role === r ? "bg-ink-900 text-paper" : "text-ink-700 hover:bg-surface-sunken",
-                  )}
-                >
-                  {r === "client" ? "Client view" : "Manager view"}
-                </button>
-              ))}
+
+          {/* Honesty banner */}
+          <div className="mt-4 flex items-start gap-2.5 rounded-lg border border-line bg-surface px-3.5 py-2.5 text-xs text-ink-700">
+            <Info className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" strokeWidth={1.5} />
+            <div>
+              <span className="text-ink-900">AI-only with an automatic quality-gate is the default.</span>{" "}
+              This project has human review on Advanced / Premium.
             </div>
-            <button className="flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-sm hover:border-ink-700/30">
-              <Filter className="size-3.5" strokeWidth={1.5} /> Filter
-            </button>
           </div>
         </header>
 
-        <div className="grid grid-cols-4 gap-3 pb-6">
-          <Kpi label="Unassigned" value="2" tone="warn" />
-          <Kpi label="In progress" value="1" tone="info" />
-          <Kpi label="In QA" value="1" />
-          <Kpi label="Avg first-review" value="38h" hint="SLA target 48h" />
-        </div>
+        {/* Workspace */}
+        <div className="flex min-h-0 flex-1">
+          {/* Queue rail */}
+          <aside
+            className={cn(
+              "flex shrink-0 flex-col border-r border-line bg-surface transition-[width] duration-200",
+              railOpen ? "w-[320px]" : "w-[44px]",
+            )}
+          >
+            <div className="flex items-center justify-between border-b border-line px-3 py-2">
+              {railOpen ? (
+                <>
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                    Queue · {visible.length}
+                  </span>
+                  <button
+                    onClick={() => setRailOpen(false)}
+                    className="rounded p-1 text-muted-foreground hover:bg-surface-sunken"
+                  >
+                    <ChevronLeft className="size-4" strokeWidth={1.5} />
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setRailOpen(true)}
+                  className="mx-auto rounded p-1 text-muted-foreground hover:bg-surface-sunken"
+                >
+                  <ChevronRight className="size-4" strokeWidth={1.5} />
+                </button>
+              )}
+            </div>
 
-        <Card className="overflow-hidden">
-          <div className="grid grid-cols-[1.6fr_1fr_0.8fr_1fr_0.8fr_0.8fr_0.6fr] gap-4 border-b border-line bg-surface-sunken px-5 py-3 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            <div>Item</div>
-            <div>Project</div>
-            <div>Type</div>
-            <div>Assignee</div>
-            <div>SLA</div>
-            <div>Status</div>
-            <div className="text-right">{role === "manager" ? "Cost" : ""}</div>
-          </div>
-          {ITEMS.map((i) => (
-            <button
-              key={i.id}
-              onClick={() => setOpen(i)}
-              className="grid w-full grid-cols-[1.6fr_1fr_0.8fr_1fr_0.8fr_0.8fr_0.6fr] items-center gap-4 border-b border-line px-5 py-4 text-left text-sm transition-colors last:border-b-0 hover:bg-surface-sunken/60"
-            >
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono-num text-[10px] text-muted-foreground">{i.id}</span>
-                  <PriorityChip p={i.priority} />
+            {railOpen ? (
+              <>
+                <div className="flex flex-wrap gap-1 border-b border-line px-3 py-2">
+                  {(["all", "unassigned", "in_progress", "returned", "overdue", "approved"] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setFilter(s)}
+                      className={cn(
+                        "rounded-md border px-2 py-0.5 text-[11px] capitalize transition-colors",
+                        filter === s
+                          ? "border-ink-900 bg-ink-900 text-paper"
+                          : "border-line bg-paper text-ink-700 hover:bg-surface-sunken",
+                      )}
+                    >
+                      {s === "all" ? "All" : STATE_LABEL[s]}
+                    </button>
+                  ))}
+                  <button
+                    className="ml-auto inline-flex items-center gap-1 rounded-md border border-line bg-paper px-2 py-0.5 text-[11px] text-muted-foreground hover:bg-surface-sunken"
+                    title="Filters: State · Type · Reviewer · SLA"
+                  >
+                    <Filter className="size-3" strokeWidth={1.5} />
+                    More
+                  </button>
                 </div>
-                <div className="truncate text-ink-900">{i.title}</div>
+
+                <div className="min-h-0 flex-1 overflow-y-auto">
+                  {visible.length === 0 ? (
+                    <EmptyRail />
+                  ) : (
+                    visible.map((i) => (
+                      <QueueRow
+                        key={i.id}
+                        item={i}
+                        active={i.id === selectedId}
+                        onSelect={() => setSelectedId(i.id)}
+                        onAssignMe={() => assignToMe(i.id)}
+                      />
+                    ))
+                  )}
+                </div>
+              </>
+            ) : null}
+          </aside>
+
+          {/* Content pane */}
+          <section className="flex min-w-0 flex-1 flex-col bg-paper">
+            {selected.state === "approved" || selected.state === "rejected" ? (
+              <ResultBanner state={selected.state} />
+            ) : null}
+
+            {/* Context strip + toolbar */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-7 py-3">
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-2 py-1 text-ink-700">
+                  <Hash className="size-3 text-muted-foreground" strokeWidth={1.5} />
+                  <span className="font-mono-num">{selected.keyword}</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-2 py-1 text-ink-700">
+                  <Globe2 className="size-3 text-muted-foreground" strokeWidth={1.5} />
+                  {selected.locale}
+                </span>
+                {selected.target === "site" ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-md border border-brand-100 bg-brand-100 px-2 py-1 text-brand-700">
+                    <CircleDot className="size-3" strokeWidth={1.5} />
+                    Site · Publishing now
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface-sunken px-2 py-1 text-muted-foreground">
+                    <Lock className="size-3" strokeWidth={1.5} />
+                    Social · Best-effort · pending platform audit
+                  </span>
+                )}
               </div>
-              <div className="text-ink-700">{i.project}</div>
-              <div className="text-muted-foreground">{i.type}</div>
-              <div>
-                {i.assignee ? (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <EditBtn label="Fix copy" icon={Wand} onClick={() => bumpEdit("Fix copy")} disabled={selected.edits >= 8} />
+                <EditBtn label="Trim" icon={Scissors} onClick={() => bumpEdit("Trim")} disabled={selected.edits >= 8} />
+                <EditBtn label="Tone tweak" icon={RotateCcw} onClick={() => bumpEdit("Tone tweak")} disabled={selected.edits >= 8} />
+              </div>
+            </div>
+
+            {/* Article body */}
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <article className="mx-auto max-w-3xl px-8 py-10">
+                <div className="mb-3 flex items-center gap-2 text-[11px] font-mono-num uppercase tracking-wider text-muted-foreground">
+                  <span>{selected.id}</span>
+                  <span>·</span>
+                  <span>{selected.type}</span>
+                </div>
+                <h2 className="text-3xl font-medium leading-[1.15] tracking-tight text-ink-900">
+                  {selected.title}
+                </h2>
+                <div className="mt-6 space-y-4 text-[15px] leading-[1.75] text-ink-700">
+                  {selected.body.map((p, idx) => (
+                    <p key={idx}>{p}</p>
+                  ))}
+                </div>
+                <p className="mt-6 text-xs text-muted-foreground">
+                  Draft generated by the engine · quality-gate passed · awaiting your sign-off.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          {/* Checklist rail */}
+          <aside className="hidden w-[320px] shrink-0 flex-col border-l border-line bg-surface lg:flex">
+            <div className="border-b border-line px-4 py-3">
+              <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                Reviewer
+              </div>
+              <div className="mt-2 flex items-center justify-between gap-2">
+                {selected.reviewer ? (
                   <div className="flex items-center gap-2">
-                    <div className="grid size-7 place-items-center rounded-full bg-brand-100 font-display text-[11px] text-brand-700">
-                      {i.assignee.initials}
-                    </div>
+                    <Avatar initials={selected.reviewer.initials} />
                     <div className="min-w-0">
-                      <div className="truncate text-xs text-ink-900">{i.assignee.name}</div>
-                      <div className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-                        <Star className="size-2.5 fill-current text-[color:var(--accent-gold)]" strokeWidth={0} />
-                        {i.assignee.rating}
+                      <div className="truncate text-sm text-ink-900">{selected.reviewer.name}</div>
+                      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                        {selected.reviewer.role}
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <span className="text-xs text-muted-foreground">— auto-match pending</span>
+                  <span className="text-xs text-muted-foreground">Unassigned</span>
                 )}
+                <button
+                  onClick={() =>
+                    selected.reviewer ? reassign(selected.id) : assignToMe(selected.id)
+                  }
+                  className="inline-flex items-center gap-1 rounded-md border border-line bg-paper px-2 py-1 text-[11px] text-ink-700 hover:bg-surface-sunken"
+                >
+                  <UserPlus className="size-3" strokeWidth={1.5} />
+                  {selected.reviewer ? "Reassign" : "Assign me"}
+                </button>
+              </div>
+              <div className="mt-3 flex items-center gap-1.5 text-[11px] text-ink-700">
+                {selected.state === "overdue" ? (
+                  <>
+                    <AlertTriangle className="size-3.5 text-[color:var(--danger)]" strokeWidth={1.5} />
+                    <span className="font-mono-num text-[color:var(--danger)]">
+                      overdue by {Math.abs(selected.hoursLeft)}h
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Clock className="size-3.5 text-muted-foreground" strokeWidth={1.5} />
+                    <span className="font-mono-num">due in {selected.hoursLeft}h</span>
+                  </>
+                )}
+                <span className="ml-auto text-[10px] text-muted-foreground">SLA on assignment</span>
+              </div>
+            </div>
+
+            <div className="border-b border-line px-4 py-3">
+              <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                Checklist
+              </div>
+              <div className="mt-3 space-y-2">
+                <CheckRow
+                  label="On-brand"
+                  checked={!!onBrand[selected.id]}
+                  onToggle={() =>
+                    setOnBrand((s) => ({ ...s, [selected.id]: !s[selected.id] }))
+                  }
+                />
+                <CheckRow
+                  label="Accurate · no invented attributes"
+                  checked={!!accurate[selected.id]}
+                  onToggle={() =>
+                    setAccurate((s) => ({ ...s, [selected.id]: !s[selected.id] }))
+                  }
+                />
+                <div className="flex items-center justify-between rounded-md border border-line bg-paper px-2.5 py-2 text-xs">
+                  <div className="flex items-center gap-2 text-ink-700">
+                    <CheckCircle2
+                      className="size-4 text-brand-700"
+                      strokeWidth={1.5}
+                    />
+                    Quality-gate passed
+                  </div>
+                  <span className="rounded border border-line bg-surface px-1.5 py-0.5 font-mono-num text-[10px] uppercase tracking-wider text-muted-foreground">
+                    auto
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-b border-line px-4 py-3">
+              <div className="flex items-center justify-between text-[11px] font-mono-num uppercase tracking-wider">
+                <span className="text-muted-foreground">Edits</span>
+                <span className={cn("text-ink-900", selected.edits >= 8 && "text-[color:var(--danger)]")}>
+                  {selected.edits} / 8
+                </span>
+              </div>
+              <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-surface-sunken">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all",
+                    selected.edits >= 8 ? "bg-[color:var(--danger)]" : "bg-brand-700",
+                  )}
+                  style={{ width: `${(selected.edits / 8) * 100}%` }}
+                />
               </div>
               <div
+                className="mt-2 flex items-center justify-between text-[11px] font-mono-num text-muted-foreground"
+                title="Share of pay retained after edits"
+              >
+                <span>take rate</span>
+                <span className="text-[color:var(--accent-gold)]">
+                  {selected.takeRate.toFixed(2)} / 0.75 cap
+                </span>
+              </div>
+              {selected.edits >= 8 ? (
+                <div className="mt-2 rounded-md border border-[#F1D2CE] bg-[#F7E2DF] px-2 py-1.5 text-[11px] text-[color:var(--danger)]">
+                  Edit cap reached · inline edits disabled
+                </div>
+              ) : null}
+            </div>
+
+            <div className="mt-auto space-y-2 px-4 py-4">
+              <button
+                onClick={approve}
+                disabled={!onBrand[selected.id] || !accurate[selected.id] || selected.state === "approved"}
                 className={cn(
-                  "flex items-center gap-1.5 text-xs",
-                  i.overdue ? "text-[color:var(--danger)]" : "text-ink-700",
+                  "w-full rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  onBrand[selected.id] && accurate[selected.id] && selected.state !== "approved"
+                    ? "bg-brand-700 text-[color:var(--primary-foreground)] hover:bg-brand-700/90"
+                    : "cursor-not-allowed bg-surface-sunken text-muted-foreground",
                 )}
               >
-                {i.overdue ? <AlertTriangle className="size-3.5" strokeWidth={1.5} /> : <Clock className="size-3.5" strokeWidth={1.5} />}
-                {i.sla}
-              </div>
-              <div>
-                <StatusChip
-                  tone={
-                    i.status === "Unassigned"
-                      ? "warn"
-                      : i.status === "In progress"
-                        ? "info"
-                        : i.status === "In QA"
-                          ? "preview"
-                          : "danger"
-                  }
+                Approve → Scheduled
+              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={requestEdit}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 py-2 text-xs text-ink-700 hover:bg-surface-sunken"
                 >
-                  {i.status}
-                </StatusChip>
+                  <Send className="size-3.5" strokeWidth={1.5} />
+                  Request edit
+                </button>
+                <button
+                  onClick={() => setReasonOpen(true)}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#F1D2CE] bg-[#F7E2DF] px-3 py-2 text-xs text-[color:var(--danger)] hover:bg-[#F1D2CE]/60"
+                >
+                  <XCircle className="size-3.5" strokeWidth={1.5} />
+                  Reject
+                </button>
               </div>
-              <div className="text-right">
-                {role === "manager" ? (
-                  <div className="space-y-0.5">
-                    <div className="font-mono-num text-xs text-ink-900">${i.cost}</div>
-                    <div className="font-mono-num text-[10px] text-muted-foreground">
-                      take {i.takeRate}%
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </button>
-          ))}
-        </Card>
-
-        <div className="mt-6 flex items-center justify-between rounded-xl border border-line bg-surface px-5 py-4 text-sm">
-          <div className="flex items-center gap-3 text-ink-700">
-            <Inbox className="size-4 text-muted-foreground" strokeWidth={1.5} />
-            <span>
-              No freelancers available for P0 spike?{" "}
-              <span className="text-ink-900">Auto-routes to LetoLab in-house experts.</span>
-            </span>
-          </div>
-          <StatusChip tone="gold">Fallback ready</StatusChip>
+              {selected.state === "overdue" ? (
+                <button
+                  onClick={() => reassign(selected.id)}
+                  className="w-full rounded-lg border border-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)] px-3 py-1.5 text-[11px] uppercase tracking-wider text-[color:var(--accent-gold)] hover:opacity-90"
+                >
+                  Reassign · escalate
+                </button>
+              ) : null}
+            </div>
+          </aside>
         </div>
       </div>
 
-      {open ? <Drawer item={open} onClose={() => setOpen(null)} /> : null}
-    </AppShell>
+      {reasonOpen ? (
+        <RejectDialog
+          reason={reason}
+          setReason={setReason}
+          onClose={() => setReasonOpen(false)}
+          onSubmit={submitReject}
+        />
+      ) : null}
+    </ProjectShell>
   );
 }
 
-function Kpi({
+/* ============================ subcomponents ============================ */
+
+function PoolTile({
   label,
   value,
-  hint,
   tone = "neutral",
 }: {
   label: string;
-  value: string;
-  hint?: string;
-  tone?: "neutral" | "warn" | "info";
+  value: number;
+  tone?: "neutral" | "live" | "warn" | "danger";
+}) {
+  const dot =
+    tone === "live"
+      ? "bg-brand-700"
+      : tone === "warn"
+        ? "bg-[color:var(--accent-gold)]"
+        : tone === "danger"
+          ? "bg-[color:var(--danger)]"
+          : "bg-muted-foreground/40";
+  return (
+    <div className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-1.5">
+      <span className={cn("size-1.5 rounded-full", dot)} />
+      <span className="font-mono-num text-sm text-ink-900">{value}</span>
+      <span className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</span>
+    </div>
+  );
+}
+
+function QueueRow({
+  item,
+  active,
+  onSelect,
+  onAssignMe,
+}: {
+  item: Item;
+  active: boolean;
+  onSelect: () => void;
+  onAssignMe: () => void;
 }) {
   return (
-    <Card className="p-4">
-      <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="mt-1 flex items-baseline gap-2">
-        <span className="font-mono-num text-2xl text-ink-900">{value}</span>
-        {tone !== "neutral" ? <StatusChip tone={tone}>now</StatusChip> : null}
+    <div
+      onClick={onSelect}
+      className={cn(
+        "cursor-pointer border-b border-line px-3 py-3 transition-colors",
+        active ? "bg-paper" : "hover:bg-surface-sunken/60",
+      )}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono-num text-[10px] text-muted-foreground">{item.id}</span>
+            <TypeChip type={item.type} />
+          </div>
+          <div className="mt-1 truncate text-sm text-ink-900">{item.title}</div>
+        </div>
+        <StatusChip tone={STATE_TONE[item.state]}>{STATE_LABEL[item.state]}</StatusChip>
       </div>
-      {hint ? <div className="mt-1 text-xs text-muted-foreground">{hint}</div> : null}
-    </Card>
+      <div className="mt-2 flex items-center justify-between text-[11px]">
+        <div className="flex items-center gap-1.5">
+          {item.reviewer ? (
+            <>
+              <Avatar size="xs" initials={item.reviewer.initials} />
+              <span className="text-muted-foreground">{item.reviewer.name}</span>
+            </>
+          ) : (
+            <span className="rounded border border-dashed border-line px-1.5 py-0.5 text-muted-foreground">
+              Unassigned
+            </span>
+          )}
+        </div>
+        {item.state === "overdue" ? (
+          <span className="inline-flex items-center gap-1 font-mono-num text-[color:var(--danger)]">
+            <AlertTriangle className="size-3" strokeWidth={1.5} />
+            {Math.abs(item.hoursLeft)}h over
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 font-mono-num text-muted-foreground">
+            <Clock className="size-3" strokeWidth={1.5} />
+            due in {item.hoursLeft}h
+          </span>
+        )}
+      </div>
+      {item.state === "unassigned" ? (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onAssignMe();
+          }}
+          className="mt-2 w-full rounded-md border border-line bg-paper px-2 py-1 text-[11px] text-ink-900 hover:bg-surface-sunken"
+        >
+          Assign to me
+        </button>
+      ) : null}
+    </div>
   );
 }
 
-function PriorityChip({ p }: { p: Priority }) {
-  const tone = p === "P0" ? "danger" : p === "P1" ? "warn" : "neutral";
-  return <StatusChip tone={tone as any}>{p}</StatusChip>;
+function TypeChip({ type }: { type: ItemType }) {
+  return (
+    <span className="rounded border border-line bg-surface px-1 py-0 text-[10px] uppercase tracking-wider text-muted-foreground">
+      {type}
+    </span>
+  );
 }
 
-function Drawer({ item, onClose }: { item: Item; onClose: () => void }) {
+function Avatar({ initials, size = "sm" }: { initials: string; size?: "xs" | "sm" }) {
   return (
-    <div className="fixed inset-0 z-40">
+    <div
+      className={cn(
+        "grid place-items-center rounded-full bg-brand-100 text-brand-700",
+        size === "xs" ? "size-5 text-[9px]" : "size-7 text-[11px]",
+      )}
+    >
+      {initials}
+    </div>
+  );
+}
+
+function CheckRow({
+  label,
+  checked,
+  onToggle,
+}: {
+  label: string;
+  checked: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <button
+      onClick={onToggle}
+      className={cn(
+        "flex w-full items-center justify-between rounded-md border px-2.5 py-2 text-xs transition-colors",
+        checked
+          ? "border-brand-100 bg-brand-100 text-brand-700"
+          : "border-line bg-paper text-ink-700 hover:bg-surface-sunken",
+      )}
+    >
+      <span className="flex items-center gap-2">
+        {checked ? (
+          <CheckCircle2 className="size-4" strokeWidth={1.5} />
+        ) : (
+          <span className="size-4 rounded border border-line bg-surface" />
+        )}
+        {label}
+      </span>
+      <span className="text-[10px] uppercase tracking-wider opacity-60">
+        {checked ? "Pass" : "Tap"}
+      </span>
+    </button>
+  );
+}
+
+function EditBtn({
+  label,
+  icon: Icon,
+  onClick,
+  disabled,
+}: {
+  label: string;
+  icon: typeof Wand;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs transition-colors",
+        disabled
+          ? "cursor-not-allowed border-line bg-surface-sunken text-muted-foreground"
+          : "border-line bg-surface text-ink-700 hover:border-ink-700/30 hover:bg-paper",
+      )}
+    >
+      <Icon className="size-3.5" strokeWidth={1.5} />
+      {label}
+    </button>
+  );
+}
+
+function ResultBanner({ state }: { state: "approved" | "rejected" }) {
+  if (state === "approved") {
+    return (
+      <div className="flex items-center gap-2 border-b border-brand-100 bg-brand-100 px-7 py-2 text-xs text-brand-700">
+        <CheckCircle2 className="size-3.5" strokeWidth={1.5} />
+        Approved · moved to Scheduled
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center gap-2 border-b border-[#F1D2CE] bg-[#F7E2DF] px-7 py-2 text-xs text-[color:var(--danger)]">
+      <XCircle className="size-3.5" strokeWidth={1.5} />
+      Rejected · queued for regeneration
+    </div>
+  );
+}
+
+function EmptyRail() {
+  return (
+    <div className="px-5 py-10 text-center">
+      <div className="mx-auto grid size-10 place-items-center rounded-full border border-line bg-surface text-muted-foreground">
+        <Inbox className="size-5" strokeWidth={1.5} />
+      </div>
+      <div className="mt-3 text-sm text-ink-900">No items awaiting human review</div>
+      <div className="mt-1 text-xs leading-relaxed text-muted-foreground">
+        AI-only items export and publish automatically once the quality-gate passes.
+      </div>
+    </div>
+  );
+}
+
+function RejectDialog({
+  reason,
+  setReason,
+  onClose,
+  onSubmit,
+}: {
+  reason: string;
+  setReason: (s: string) => void;
+  onClose: () => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-ink-900/30 backdrop-blur-sm" onClick={onClose} />
-      <aside className="absolute right-0 top-0 flex h-full w-[560px] flex-col border-l border-line bg-paper shadow-2xl">
-        <div className="flex items-center justify-between border-b border-line px-6 py-4">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-mono-num text-[10px] text-muted-foreground">{item.id}</span>
-              <PriorityChip p={item.priority} />
-              <StatusChip tone="info">{item.status}</StatusChip>
-            </div>
-            <div className="mt-1 truncate font-display text-lg text-ink-900">{item.title}</div>
-          </div>
-          <button onClick={onClose} className="rounded-md p-1.5 hover:bg-surface-sunken">
-            <X className="size-4" strokeWidth={1.5} />
+      <Card className="relative w-full max-w-md p-5">
+        <div className="flex items-center gap-2 text-ink-900">
+          <XCircle className="size-4 text-[color:var(--danger)]" strokeWidth={1.5} />
+          <span className="text-sm font-medium">Reject and regenerate</span>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Capture a short reason — the engine uses it to seed the next draft.
+        </p>
+        <textarea
+          autoFocus
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder="What's off? (tone, facts, structure…)"
+          className="mt-3 h-24 w-full rounded-md border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-ink-700/30"
+        />
+        <div className="mt-3 flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="rounded-md border border-line bg-paper px-3 py-1.5 text-xs text-ink-700 hover:bg-surface-sunken"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onSubmit}
+            disabled={!reason.trim()}
+            className={cn(
+              "rounded-md px-3 py-1.5 text-xs",
+              reason.trim()
+                ? "bg-[color:var(--danger)] text-white hover:opacity-90"
+                : "cursor-not-allowed bg-surface-sunken text-muted-foreground",
+            )}
+          >
+            Reject · regen
           </button>
         </div>
-
-        <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
-          <Section title="Brief">
-            <p className="text-sm leading-relaxed text-ink-700">
-              Long-form on batch-roasting cadence. Tone: warm, expert, no jargon. Reader: café
-              owners shopping wholesale. Include 2 internal links to /shop and /process.
-            </p>
-          </Section>
-
-          <Section title="AI draft">
-            <div className="rounded-lg border border-line bg-surface p-4 text-sm leading-relaxed text-ink-700">
-              <p>
-                Tuesdays are a deliberate choice. Green coffee arrives Friday, rests through the
-                weekend, and by Tuesday morning the beans have settled into their best window for
-                heat development…
-              </p>
-              <p className="mt-2 text-muted-foreground">— 1,742 / 1,800 words generated</p>
-            </div>
-          </Section>
-
-          <Section title="Requirements checklist">
-            <ul className="space-y-2 text-sm">
-              {["Brand voice (warm, expert)", "2 internal links", "1 primary keyword cluster", "Schema: Article"].map(
-                (r) => (
-                  <li key={r} className="flex items-center gap-2 text-ink-700">
-                    <CheckCircle2 className="size-4 text-brand-700" strokeWidth={1.5} />
-                    {r}
-                  </li>
-                ),
-              )}
-            </ul>
-          </Section>
-
-          <Section title="Thread">
-            <div className="space-y-3">
-              <Msg who="Marta L." text="Pulled the green-coffee timeline from the Friday log — adding a 2-line callout." />
-              <Msg who="Eliza M." mine text="Perfect. Keep the photo caption playful, please." />
-            </div>
-            <div className="mt-3 flex items-center gap-2">
-              <input
-                placeholder="Reply…"
-                className="flex-1 rounded-lg border border-line bg-surface px-3 py-2 text-sm outline-none focus:border-ink-700/30"
-              />
-              <button className="rounded-lg border border-line bg-surface p-2 hover:bg-surface-sunken">
-                <Paperclip className="size-4 text-muted-foreground" strokeWidth={1.5} />
-              </button>
-            </div>
-          </Section>
-        </div>
-
-        <div className="flex items-center justify-between gap-2 border-t border-line bg-surface px-6 py-4">
-          <div className="text-xs text-muted-foreground">
-            QA checklist runs before client return
-          </div>
-          <div className="flex gap-2">
-            <button className="rounded-lg border border-line bg-surface px-3 py-2 text-sm hover:border-ink-700/30">
-              Return
-            </button>
-            <button className="rounded-lg border border-line bg-surface px-3 py-2 text-sm hover:border-ink-700/30">
-              Claim
-            </button>
-            <button className="flex items-center gap-1.5 rounded-lg bg-ink-900 px-3 py-2 text-sm text-paper hover:bg-ink-700">
-              Submit to QA
-              <ArrowRight className="size-3.5" strokeWidth={1.75} />
-            </button>
-          </div>
-        </div>
-      </aside>
+      </Card>
     </div>
   );
 }
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-        {title}
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function Msg({ who, text, mine }: { who: string; text: string; mine?: boolean }) {
-  return (
-    <div className={cn("flex gap-2", mine && "flex-row-reverse")}>
-      <div className="grid size-7 shrink-0 place-items-center rounded-full bg-brand-100 font-display text-[11px] text-brand-700">
-        {who.split(" ").map((p) => p[0]).join("")}
-      </div>
-      <div
-        className={cn(
-          "max-w-[80%] rounded-lg px-3 py-2 text-sm",
-          mine ? "bg-ink-900 text-paper" : "bg-surface ring-1 ring-line text-ink-700",
-        )}
-      >
-        <div className={cn("mb-0.5 text-[10px]", mine ? "text-paper/60" : "text-muted-foreground")}>
-          {who}
-        </div>
-        {text}
-      </div>
-    </div>
-  );
-}
-
-// silence MessageSquare unused warning
-void MessageSquare;
