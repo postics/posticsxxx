@@ -29,7 +29,7 @@ export const Route = createFileRoute("/dashboard")({
 
 function Dashboard() {
   return (
-    <ProjectShell breadcrumb={[{ label: "Overview" }]}>
+    <ProjectShell breadcrumb={["Overview"]}>
       <div className="px-8 py-8">
         <DashboardBody />
       </div>
