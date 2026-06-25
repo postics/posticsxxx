@@ -13,7 +13,6 @@ import { Route as TeamRouteImport } from './routes/team'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReviewRouteImport } from './routes/review'
-import { Route as PlanRouteImport } from './routes/plan'
 import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
@@ -44,11 +43,6 @@ const SettingsRoute = SettingsRouteImport.update({
 const ReviewRoute = ReviewRouteImport.update({
   id: '/review',
   path: '/review',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlanRoute = PlanRouteImport.update({
-  id: '/plan',
-  path: '/plan',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnerRoute = PartnerRouteImport.update({
@@ -119,7 +113,6 @@ export interface FileRoutesByFullPath {
   '/marketplace': typeof MarketplaceRoute
   '/onboarding': typeof OnboardingRoute
   '/partner': typeof PartnerRoute
-  '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
   '/studio': typeof StudioRoute
@@ -137,7 +130,6 @@ export interface FileRoutesByTo {
   '/marketplace': typeof MarketplaceRoute
   '/onboarding': typeof OnboardingRoute
   '/partner': typeof PartnerRoute
-  '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
   '/studio': typeof StudioRoute
@@ -156,7 +148,6 @@ export interface FileRoutesById {
   '/marketplace': typeof MarketplaceRoute
   '/onboarding': typeof OnboardingRoute
   '/partner': typeof PartnerRoute
-  '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
   '/studio': typeof StudioRoute
@@ -176,7 +167,6 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/onboarding'
     | '/partner'
-    | '/plan'
     | '/review'
     | '/settings'
     | '/studio'
@@ -194,7 +184,6 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/onboarding'
     | '/partner'
-    | '/plan'
     | '/review'
     | '/settings'
     | '/studio'
@@ -212,7 +201,6 @@ export interface FileRouteTypes {
     | '/marketplace'
     | '/onboarding'
     | '/partner'
-    | '/plan'
     | '/review'
     | '/settings'
     | '/studio'
@@ -231,7 +219,6 @@ export interface RootRouteChildren {
   MarketplaceRoute: typeof MarketplaceRoute
   OnboardingRoute: typeof OnboardingRoute
   PartnerRoute: typeof PartnerRoute
-  PlanRoute: typeof PlanRoute
   ReviewRoute: typeof ReviewRoute
   SettingsRoute: typeof SettingsRoute
   StudioRoute: typeof StudioRoute
@@ -266,13 +253,6 @@ declare module '@tanstack/react-router' {
       path: '/review'
       fullPath: '/review'
       preLoaderRoute: typeof ReviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/plan': {
-      id: '/plan'
-      path: '/plan'
-      fullPath: '/plan'
-      preLoaderRoute: typeof PlanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partner': {
@@ -367,7 +347,6 @@ const rootRouteChildren: RootRouteChildren = {
   MarketplaceRoute: MarketplaceRoute,
   OnboardingRoute: OnboardingRoute,
   PartnerRoute: PartnerRoute,
-  PlanRoute: PlanRoute,
   ReviewRoute: ReviewRoute,
   SettingsRoute: SettingsRoute,
   StudioRoute: StudioRoute,
