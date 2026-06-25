@@ -611,12 +611,12 @@ function GenerateMock() {
 function ProofByProduct() {
   const items = [
     {
-      title: "every product",
+      title: "every product or page",
       mock: <ProofEveryProduct />,
     },
     {
-      title: "site + socials, one schedule",
-      mock: <ProofSchedule />,
+      title: "export anywhere, or auto-publish",
+      mock: <ProofExport />,
     },
     {
       title: "any language",
@@ -653,26 +653,29 @@ function ProofEveryProduct() {
   );
 }
 
-function ProofSchedule() {
-  const rows = [
-    { day: "Mon", site: 1, ig: 1, tt: 0 },
-    { day: "Tue", site: 0, ig: 1, tt: 1 },
-    { day: "Wed", site: 1, ig: 1, tt: 0 },
-    { day: "Thu", site: 0, ig: 0, tt: 1 },
-    { day: "Fri", site: 1, ig: 1, tt: 1 },
+function ProofExport() {
+  const rows: { label: string; hint: string; primary?: boolean }[] = [
+    { label: "Copy / Markdown / HTML", hint: "any CMS", primary: true },
+    { label: "WordPress", hint: "auto-publish · live" },
+    { label: "Shopify · custom", hint: "coming" },
+    { label: "Instagram · TikTok", hint: "best-effort" },
   ];
-  const Dot = ({ on }: { on: number }) => (
-    <span className={cn("size-2 rounded-full", on ? "bg-brand-700" : "bg-line")} />
-  );
   return (
     <div className="space-y-1.5">
-      <div className="grid grid-cols-[40px_1fr_1fr_1fr] gap-2 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
-        <span></span><span>Site</span><span>IG</span><span>TT</span>
-      </div>
       {rows.map((r) => (
-        <div key={r.day} className="grid grid-cols-[40px_1fr_1fr_1fr] items-center gap-2 rounded-md border border-line bg-surface-sunken/40 px-2 py-1.5">
-          <span className="font-mono-num text-[11px] text-muted-foreground">{r.day}</span>
-          <Dot on={r.site} /><Dot on={r.ig} /><Dot on={r.tt} />
+        <div
+          key={r.label}
+          className={cn(
+            "flex items-center justify-between rounded-md border px-2.5 py-2",
+            r.primary
+              ? "border-brand-700/30 bg-brand-700/[0.04]"
+              : "border-line bg-surface-sunken/40",
+          )}
+        >
+          <span className="text-sm text-ink-900">{r.label}</span>
+          <span className="font-mono-num text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+            {r.hint}
+          </span>
         </div>
       ))}
     </div>
@@ -719,7 +722,7 @@ function ForAgencies() {
         <div>
           <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">/ for agencies</div>
           <h2 className="mt-3 font-display text-3xl font-semibold leading-[1.1] tracking-tight text-ink-900 sm:text-4xl">
-            Run 20–100 stores from one white-label cabinet.
+            Run 20–100 clients from one white-label cabinet.
           </h2>
           <a href="#pricing" className="mt-5 inline-flex items-center gap-1.5 text-sm text-brand-700 hover:text-ink-900">
             For agencies <ArrowRight className="size-3.5" strokeWidth={1.75} />
@@ -777,8 +780,8 @@ function ForAgencies() {
 function Numbers() {
   const tiles = [
     { v: "10+", label: "languages" },
-    { v: "1,000s", label: "of SKUs per run" },
-    { v: "site + socials", label: "one cadence" },
+    { v: "1,000s", label: "of pages/SKUs per run" },
+    { v: "export", label: "or auto-publish" },
   ];
   return (
     <section className="mx-auto w-full max-w-6xl px-6 py-20">
@@ -796,11 +799,21 @@ function Numbers() {
         </span>
       </div>
       {/* Quiet logos strip */}
-      <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 opacity-60">
-        {["WordPress", "WooCommerce", "Instagram", "TikTok", "Facebook", "YouTube"].map((p) => (
+      <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+        <span className="font-mono-num text-[11px] uppercase tracking-[0.18em] text-ink-900">
+          WordPress
+        </span>
+        <span className="font-mono-num text-[11px] uppercase tracking-[0.18em] text-muted-foreground/60">
+          Shopify · custom — coming
+        </span>
+        <span className="font-mono-num text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+          or export anywhere
+        </span>
+        <span aria-hidden className="text-muted-foreground/40">·</span>
+        {["Instagram", "TikTok", "Facebook", "YouTube"].map((p) => (
           <span
             key={p}
-            className="font-mono-num text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+            className="font-mono-num text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70"
           >
             {p}
           </span>
@@ -815,9 +828,10 @@ function Numbers() {
 type BillingCycle = "monthly" | "annual";
 
 const PLANS = [
-  { name: "Starter", price: 199, blurb: "AI-only, quality-gated.", features: ["Connects to WordPress / WooCommerce", "Auto content plan", "Auto-publish on your schedule"] },
+  { name: "Starter", price: 199, blurb: "AI-only, quality-gated.", features: ["Any business, any CMS", "Auto content plan", "Export by default · auto-publish on WordPress"] },
   { name: "Growth", price: 449, blurb: "More volume.", features: ["Everything in Starter", "Higher monthly content volume", "Priority generation"] },
-  { name: "Premium", price: 999, blurb: "AI + human review.", features: ["Everything in Growth", "Human editor in the loop", "Brand-voice tuning"], popular: true },
+  { name: "Advanced", price: 899, blurb: "AI + freelancer review.", features: ["Everything in Growth", "Freelancer editor in the loop", "Multi-language polish"] },
+  { name: "Premium", price: 999, blurb: "AI + LetoLab expert + strategy approval.", features: ["Everything in Advanced", "LetoLab expert assigned", "Strategy approval each cycle"], popular: true },
 ];
 
 function Pricing() {
@@ -846,7 +860,7 @@ function Pricing() {
         </div>
       </div>
 
-      <div className="mt-12 grid gap-5 lg:grid-cols-4">
+      <div className="mt-12 grid gap-5 lg:grid-cols-5">
         {PLANS.map((p) => (
           <Card key={p.name} className={cn("relative p-6", p.popular && "ring-1 ring-[color:var(--accent-gold)]")}>
             {p.popular && (
@@ -875,7 +889,7 @@ function Pricing() {
         {/* Agency */}
         <Card className="relative bg-ink-900 p-6 text-[color:var(--paper)]">
           <div className="font-display text-xl font-semibold">Agency</div>
-          <div className="mt-1 text-sm opacity-70">White-label, 10+ stores.</div>
+          <div className="mt-1 text-sm opacity-70">White-label, 10+ projects.</div>
           <div className="mt-4 flex items-baseline gap-1.5">
             <span className="text-xs opacity-70">from</span>
             <span className="font-display text-4xl font-semibold">${Math.round(999 * factor)}</span>
@@ -885,7 +899,7 @@ function Pricing() {
             Talk to us <ArrowRight className="size-4" strokeWidth={1.75} />
           </a>
           <ul className="mt-5 space-y-2 text-sm">
-            {["Multi-store console", "White-label dashboards & reports", "Partner revenue share"].map((f) => (
+            {["Multi-client console", "White-label dashboards & reports", "Partner revenue share"].map((f) => (
               <li key={f} className="flex items-start gap-2 opacity-90">
                 <Check className="mt-0.5 size-4 text-[color:var(--accent-gold)]" strokeWidth={2} /> {f}
               </li>
@@ -900,8 +914,10 @@ function Pricing() {
 /* ─────────────── FAQ ─────────────── */
 
 const FAQ = [
-  { q: "Do you build my site?", a: "No. We connect to your existing WordPress / WooCommerce." },
-  { q: "Is auto-publishing safe for SEO?", a: "Quality-gated by default; human review on premium." },
+  { q: "Do I have to connect my store?", a: "No. Generate and export your content anywhere; connect later to auto-publish." },
+  { q: "Do you build my site?", a: "No — bring your existing site (any business, any CMS). We don't build or host sites." },
+  { q: "Which platforms?", a: "Export works with any CMS. Auto-publish: WordPress today; Shopify & custom coming." },
+  { q: "Is auto-publishing safe for SEO?", a: "Quality-gated by default; human review on Advanced/Premium." },
   { q: "Which languages?", a: "We publish in your market's language — 10+ supported." },
   { q: "For agencies?", a: "Yes — a white-label cabinet to run all your clients." },
 ];
@@ -931,7 +947,7 @@ function HeroEcho() {
   return (
     <section className="mx-auto w-full max-w-4xl px-6 pb-24 text-center">
       <h2 className="font-display text-3xl font-semibold leading-[1.1] tracking-tight text-ink-900 sm:text-4xl">
-        Paste your store URL. <span className="text-brand-700">Run it.</span>
+        Paste your site URL. <span className="text-brand-700">Run it.</span>
       </h2>
       <div className="mt-6 flex justify-center">
         <UrlRunForm />
@@ -955,7 +971,7 @@ function Footer() {
             <span className="font-display text-sm font-semibold tracking-tight text-ink-900">Postics.io</span>
           </div>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-            Marketing on autopilot for your store.
+            Marketing on autopilot for your site.
           </p>
         </div>
         {/* Product column — real on-page sections only */}
