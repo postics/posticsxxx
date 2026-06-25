@@ -146,9 +146,11 @@ const DICT = {
     partnerHint: "20% revshare за приведённые агентства. Выплаты Net-30.",
     payouts: "Выплаты",
   },
-} as const;
+};
 
-function useT() {
+type TLabels = typeof DICT.en;
+
+function useT(): TLabels {
   const [lang] = useLanguage();
   const key = (lang === "ru" ? "ru" : "en") as "en" | "ru";
   return DICT[key];
