@@ -1015,7 +1015,7 @@ function Footer() {
       </div>
       {/* Dev / preview map — every built page in the app */}
       <div className="border-t border-line bg-paper/60">
-        <div className="mx-auto w-full max-w-6xl px-6 py-8">
+        <div className="mx-auto mt-6 mb-6 w-[calc(100%-3rem)] max-w-6xl rounded-xl border-2 border-dashed border-pink-500 px-6 py-8">
           <div className="flex items-center justify-between">
             <div className="font-mono-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
               / preview · all pages
