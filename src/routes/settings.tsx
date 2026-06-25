@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
   CheckCircle2,
-  ExternalLink,
   Lock,
   AlertTriangle,
   Plug,
@@ -13,16 +12,22 @@ import {
   Facebook,
   Save,
   Calendar,
-  Wand2,
   Receipt,
   ArrowRight,
   Download,
   ShieldCheck,
   Info,
+  Copy,
+  Check,
+  ShoppingBag,
+  Webhook,
+  ShieldOff,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProjectShell } from "@/features/shell/ProjectShell";
-import { Card, StatusChip, BrowserFrame } from "@/features/shared/primitives";
+import { useScope } from "@/features/shell/scope";
+import { Card, StatusChip } from "@/features/shared/primitives";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({ meta: [{ title: "Project settings — Postics" }] }),
@@ -41,6 +46,7 @@ const TABS: { id: Tab; label: string }[] = [
 function SettingsPage() {
   const [tab, setTab] = useState<Tab>("connection");
   const [saved, setSaved] = useState(false);
+  const { currentProject } = useScope();
 
   function flashSaved() {
     setSaved(true);
@@ -48,11 +54,11 @@ function SettingsPage() {
   }
 
   return (
-    <ProjectShell active="settings" breadcrumb={["Vellum & Bean", "Settings"]}>
+    <ProjectShell active="settings" breadcrumb={["Settings"]}>
       <div className="mx-auto w-full max-w-7xl px-8 py-8 space-y-6">
         <header className="space-y-1.5">
           <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            Project · Vellum & Bean
+            Project · {currentProject.name}
           </div>
           <h1 className="font-display text-3xl text-ink-900">Settings</h1>
           <p className="text-sm text-muted-foreground">
