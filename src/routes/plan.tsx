@@ -157,7 +157,7 @@ function PlanPage() {
   }
 
   return (
-    <ProjectShell breadcrumb={[{ label: "Content Plan" }]}>
+    <ProjectShell breadcrumb={[{ label: "Content Plan", to: "/plan" }]}>
       <div className="space-y-5">
         {/* Header */}
         <header className="flex flex-wrap items-center justify-between gap-4">
