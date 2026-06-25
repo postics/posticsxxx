@@ -267,7 +267,7 @@ function ReviewPage() {
   }
 
   return (
-    <ProjectShell active="review" breadcrumb={[{ label: "Human review" }]}>
+    <ProjectShell active="review" breadcrumb={["Human review"]}>
       <div className="flex h-[calc(100vh-3.5rem)] min-h-0 flex-col">
         {/* Header */}
         <header className="border-b border-line bg-paper px-6 py-4">
