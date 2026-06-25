@@ -443,8 +443,13 @@ function PlanMock() {
 function PublishMock() {
   return (
     <Card className="p-5">
-      <div className="flex items-center gap-2 pb-3 text-sm text-ink-900">
-        <Send className="size-4 text-brand-700" strokeWidth={1.75} /> Publishing
+      <div className="flex items-center justify-between pb-3 text-sm">
+        <div className="flex items-center gap-2 text-ink-900">
+          <Send className="size-4 text-brand-700" strokeWidth={1.75} /> Publishing · optional
+        </div>
+        <span className="font-mono-num text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          connect your store to enable
+        </span>
       </div>
       {/* Site = guaranteed (green toast) */}
       <div className="rounded-lg border border-[color:var(--success)]/30 bg-[color:var(--success)]/8 px-3 py-2.5 text-sm text-ink-900">
@@ -452,11 +457,11 @@ function PublishMock() {
           <span className="grid size-5 place-items-center rounded-full bg-[color:var(--success)]/15 text-[color:var(--success)]">
             <Check className="size-3.5" strokeWidth={2.5} />
           </span>
-          <span className="font-medium">Published to your site</span>
+          <span className="font-medium">Publishing now · your site</span>
           <span className="font-mono-num ml-auto text-[11px] text-muted-foreground">just now</span>
         </div>
         <div className="mt-1 pl-7 text-xs text-muted-foreground">
-          WordPress / WooCommerce · publishing is guaranteed
+          WordPress today · Shopify &amp; custom coming · guaranteed channel
         </div>
       </div>
       {/* Socials = best-effort, locked */}
@@ -466,6 +471,43 @@ function PublishMock() {
         </span>
         <span>Socials · best-effort, pending platform audit</span>
         <span className="font-mono-num ml-auto text-[10px] uppercase tracking-[0.12em] text-muted-foreground">queued</span>
+      </div>
+    </Card>
+  );
+}
+
+function ExportMock() {
+  const formats = [
+    { label: "Copy", hint: "to clipboard" },
+    { label: "Markdown", hint: ".md" },
+    { label: "HTML", hint: ".html" },
+    { label: "Paste to your CMS", hint: "any platform" },
+  ];
+  return (
+    <Card className="p-5">
+      <div className="flex items-center justify-between pb-3 text-sm">
+        <div className="flex items-center gap-2 text-ink-900">
+          <Download className="size-4 text-brand-700" strokeWidth={1.75} /> Export · default output
+        </div>
+        <span className="font-mono-num text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          no store required
+        </span>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {formats.map((f) => (
+          <div
+            key={f.label}
+            className="flex items-center justify-between rounded-lg border border-line bg-surface-sunken/40 px-3 py-2.5"
+          >
+            <span className="text-sm text-ink-900">{f.label}</span>
+            <span className="font-mono-num text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+              {f.hint}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 text-xs text-muted-foreground">
+        Take the generated content anywhere — or connect your store to auto-publish.
       </div>
     </Card>
   );
