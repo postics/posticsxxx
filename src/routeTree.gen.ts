@@ -19,7 +19,6 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
 import { Route as EditorRouteImport } from './routes/editor'
 import { Route as DashboardRouteImport } from './routes/dashboard'
-import { Route as ClientsRouteImport } from './routes/clients'
 import { Route as BrandKitRouteImport } from './routes/brand-kit'
 import { Route as BillingRouteImport } from './routes/billing'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
@@ -76,11 +75,6 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ClientsRoute = ClientsRouteImport.update({
-  id: '/clients',
-  path: '/clients',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BrandKitRoute = BrandKitRouteImport.update({
   id: '/brand-kit',
   path: '/brand-kit',
@@ -113,7 +107,6 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AnalyticsRoute
   '/billing': typeof BillingRoute
   '/brand-kit': typeof BrandKitRoute
-  '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
   '/editor': typeof EditorRoute
   '/marketplace': typeof MarketplaceRoute
@@ -131,7 +124,6 @@ export interface FileRoutesByTo {
   '/analytics': typeof AnalyticsRoute
   '/billing': typeof BillingRoute
   '/brand-kit': typeof BrandKitRoute
-  '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
   '/editor': typeof EditorRoute
   '/marketplace': typeof MarketplaceRoute
@@ -150,7 +142,6 @@ export interface FileRoutesById {
   '/analytics': typeof AnalyticsRoute
   '/billing': typeof BillingRoute
   '/brand-kit': typeof BrandKitRoute
-  '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
   '/editor': typeof EditorRoute
   '/marketplace': typeof MarketplaceRoute
@@ -170,7 +161,6 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/billing'
     | '/brand-kit'
-    | '/clients'
     | '/dashboard'
     | '/editor'
     | '/marketplace'
@@ -188,7 +178,6 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/billing'
     | '/brand-kit'
-    | '/clients'
     | '/dashboard'
     | '/editor'
     | '/marketplace'
@@ -206,7 +195,6 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/billing'
     | '/brand-kit'
-    | '/clients'
     | '/dashboard'
     | '/editor'
     | '/marketplace'
@@ -225,7 +213,6 @@ export interface RootRouteChildren {
   AnalyticsRoute: typeof AnalyticsRoute
   BillingRoute: typeof BillingRoute
   BrandKitRoute: typeof BrandKitRoute
-  ClientsRoute: typeof ClientsRoute
   DashboardRoute: typeof DashboardRoute
   EditorRoute: typeof EditorRoute
   MarketplaceRoute: typeof MarketplaceRoute
@@ -310,13 +297,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/clients': {
-      id: '/clients'
-      path: '/clients'
-      fullPath: '/clients'
-      preLoaderRoute: typeof ClientsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/brand-kit': {
       id: '/brand-kit'
       path: '/brand-kit'
@@ -361,7 +341,6 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyticsRoute: AnalyticsRoute,
   BillingRoute: BillingRoute,
   BrandKitRoute: BrandKitRoute,
-  ClientsRoute: ClientsRoute,
   DashboardRoute: DashboardRoute,
   EditorRoute: EditorRoute,
   MarketplaceRoute: MarketplaceRoute,
