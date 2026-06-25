@@ -562,7 +562,7 @@ function Header({
   roleOpen,
   setRoleOpen,
 }: {
-  t: typeof DICT["en"];
+  t: TLabels;
   role: RoleId;
   setRole: (r: RoleId) => void;
   roleOpen: boolean;
@@ -641,7 +641,7 @@ function Tiles({
   spark,
   delta,
 }: {
-  t: typeof DICT["en"];
+  t: TLabels;
   sites: number;
   units: number;
   awaiting: number;
@@ -713,7 +713,7 @@ function ClientsSection({
   toggleRow,
   openClient,
 }: {
-  t: typeof DICT["en"];
+  t: TLabels;
   rows: ClientRow[];
   search: string;
   setSearch: (v: string) => void;
@@ -985,7 +985,7 @@ function ReviewSection({
   items,
   act,
 }: {
-  t: typeof DICT["en"];
+  t: TLabels;
   items: ReviewItem[];
   act: (id: string, action: "approve" | "edit" | "reject") => void;
 }) {
@@ -1097,7 +1097,7 @@ function WhiteLabelSection({
   reportEnabled,
   setReportEnabled,
 }: {
-  t: typeof DICT["en"];
+  t: TLabels;
   brandColor: string;
   setBrandColor: (v: string) => void;
   agencyName: string;
@@ -1236,7 +1236,7 @@ function MiniClientReport({
 }: {
   brandColor: string;
   agencyName: string;
-  t: typeof DICT["en"];
+  t: TLabels;
 }) {
   return (
     <div className="rounded-lg border border-line bg-paper p-4">
@@ -1283,7 +1283,7 @@ function ReportSection({
   brandColor,
   agencyName,
 }: {
-  t: typeof DICT["en"];
+  t: TLabels;
   brandColor: string;
   agencyName: string;
 }) {
@@ -1390,7 +1390,7 @@ function ReportSection({
 // ---------------------------------------------------------------------------
 // Partner strip
 // ---------------------------------------------------------------------------
-function PartnerStrip({ t }: { t: typeof DICT["en"] }) {
+function PartnerStrip({ t }: { t: TLabels }) {
   return (
     <section>
       <Card className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
