@@ -1,646 +1,542 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import {
-  Star,
-  ShieldCheck,
-  Clock,
   Search,
-  X,
-  CheckCircle2,
-  Sparkles,
   ArrowRight,
+  Plug,
+  ShoppingBag,
+  Webhook,
+  Plus,
+  Sparkle,
+  Coffee,
+  MapPin,
+  Cpu,
+  FileText,
+  Image as ImageIcon,
+  Video,
+  Share2,
+  Bell,
+  Check,
 } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { WorkspaceShell } from "@/features/shell/WorkspaceShell";
 import { Card, StatusChip } from "@/features/shared/primitives";
+import { useLanguage } from "@/features/shared/PreferencesControls";
 
 export const Route = createFileRoute("/marketplace")({
   component: MarketplacePage,
-  validateSearch: (s: Record<string, unknown>) => ({
-    brief: typeof s.brief === "string" ? s.brief : undefined,
-    niche: typeof s.niche === "string" ? s.niche : undefined,
-  }),
 });
 
-type Expert = {
+type Connector = {
   id: string;
-  name: string;
-  initials: string;
-  title: string;
-  letolab?: boolean;
-  verified: boolean;
-  niches: string[];
-  langs: string[];
-  rating: number;
-  jobs: number;
-  sla: string;
-  rate: number;
-  tier: "Standard" | "Pro" | "Elite";
-  onTime: number;
-  revision: number;
-  available: "now" | "soon" | "busy";
-  samples: string[];
-  bio: string;
-  trend?: number[]; // last-30d jobs micro-trend
+  name: { en: string; ru: string };
+  body: { en: string; ru: string };
+  meta?: string;
+  icon: typeof Plug;
+  status: "available" | "soon";
 };
 
-const EXPERTS: Expert[] = [
+type Template = {
+  id: string;
+  name: { en: string; ru: string };
+  body: { en: string; ru: string };
+  meta: string;
+  icon: typeof Coffee;
+  chips: string[];
+  recommended?: boolean;
+  soon?: boolean;
+};
+
+const CONNECTORS: Connector[] = [
   {
-    id: "e1",
-    name: "Marta Liang",
-    initials: "ML",
-    title: "Long-form editor · specialty coffee, food",
-    verified: true,
-    niches: ["Food & beverage", "Lifestyle", "Editorial"],
-    langs: ["EN", "ZH"],
-    rating: 4.9,
-    jobs: 214,
-    sla: "first review < 18h",
-    rate: 0.18,
-    tier: "Elite",
-    onTime: 98,
-    revision: 6,
-    available: "now",
-    samples: ["Origin spotlight series — Vellum & Bean", "Wholesale buyer's guide — Northwall"],
-    bio: "Eight years editing food and lifestyle long-form. Calm pen, strong on voice and structure.",
-    trend: [3, 4, 2, 5, 6, 5, 7, 6, 8, 7, 9, 8],
+    id: "wp",
+    name: { en: "WordPress / WooCommerce", ru: "WordPress / WooCommerce" },
+    body: {
+      en: "Connect your existing WordPress/WooCommerce. Site publishing is the guaranteed channel.",
+      ru: "Подключите существующий WordPress/WooCommerce. Публикация на сайте — гарантированный канал.",
+    },
+    meta: "Postics Connector plugin · publishes posts now · WooCommerce products coming (v0.3)",
+    icon: Plug,
+    status: "available",
   },
   {
-    id: "e2",
-    name: "Daniel Reyes",
-    initials: "DR",
-    title: "Technical writer · SaaS, dev tools",
-    verified: true,
-    niches: ["SaaS", "Developer", "B2B"],
-    langs: ["EN", "ES"],
-    rating: 4.7,
-    jobs: 138,
-    sla: "first review < 24h",
-    rate: 0.14,
-    tier: "Pro",
-    onTime: 95,
-    revision: 9,
-    available: "now",
-    samples: ["Engineering blog refresh — Lattice", "API reference rewrite — Plaid"],
-    bio: "Engineer-turned-writer. Comfortable with code samples, sequence diagrams, and changelogs.",
-    trend: [4, 3, 5, 4, 4, 6, 5, 7, 6, 5, 7, 6],
+    id: "shopify",
+    name: { en: "Shopify", ru: "Shopify" },
+    body: {
+      en: "Native Shopify app for product copy, articles, and theme blocks.",
+      ru: "Нативное приложение Shopify для описаний товаров, статей и блоков темы.",
+    },
+    meta: "Coming · M1+",
+    icon: ShoppingBag,
+    status: "soon",
   },
   {
-    id: "e3",
-    name: "Iris Kowalski",
-    initials: "IK",
-    title: "LetoLab in-house · senior editor",
-    letolab: true,
-    verified: true,
-    niches: ["E-commerce", "DTC brands", "Editorial"],
-    langs: ["EN", "PL", "DE"],
-    rating: 5.0,
-    jobs: 312,
-    sla: "first review < 12h",
-    rate: 0.22,
-    tier: "Elite",
-    onTime: 99,
-    revision: 4,
-    available: "soon",
-    samples: ["Cedar & Sumac brand voice playbook", "Quill & Quire holiday campaign"],
-    bio: "LetoLab senior editor. Lead on premium accounts; sets QA bar across the network.",
-    trend: [6, 7, 8, 7, 9, 8, 10, 9, 11, 10, 12, 11],
-  },
-  {
-    id: "e4",
-    name: "Jonas Becker",
-    initials: "JB",
-    title: "SEO content strategist",
-    verified: true,
-    niches: ["SEO", "Content strategy", "B2B"],
-    langs: ["EN", "DE"],
-    rating: 4.8,
-    jobs: 96,
-    sla: "first review < 36h",
-    rate: 0.16,
-    tier: "Pro",
-    onTime: 94,
-    revision: 11,
-    available: "now",
-    samples: ["Cluster strategy — Northwall Roasters", "Topical map — Cedar & Sumac"],
-    bio: "Strategy-first writer. Builds cluster plans before drafting a single sentence.",
-    trend: [2, 3, 2, 4, 3, 5, 4, 4, 5, 4, 6, 5],
-  },
-  {
-    id: "e5",
-    name: "Amara Okafor",
-    initials: "AO",
-    title: "Brand copy · DTC, lifestyle",
-    verified: false,
-    niches: ["DTC brands", "Lifestyle", "Beauty"],
-    langs: ["EN", "FR"],
-    rating: 4.6,
-    jobs: 41,
-    sla: "first review < 48h",
-    rate: 0.11,
-    tier: "Standard",
-    onTime: 91,
-    revision: 14,
-    available: "now",
-    samples: ["Launch copy — Maren Skincare", "Holiday landing — Holt Goods"],
-    bio: "Punchy short-form. Best for landings and product narratives.",
-    trend: [1, 2, 1, 3, 2, 2, 3, 2, 4, 3, 3, 4],
-  },
-  {
-    id: "e6",
-    name: "Hiroshi Tan",
-    initials: "HT",
-    title: "Technical editor · fintech, infra",
-    verified: true,
-    niches: ["Fintech", "Infrastructure", "B2B"],
-    langs: ["EN", "JA"],
-    rating: 4.9,
-    jobs: 178,
-    sla: "first review < 24h",
-    rate: 0.19,
-    tier: "Elite",
-    onTime: 97,
-    revision: 5,
-    available: "busy",
-    samples: ["Risk model whitepaper — Verity Capital", "Edge compute series — Northbeam"],
-    bio: "Editor for hard-to-explain products. Strong on accuracy and tone calibration.",
-    trend: [5, 6, 5, 7, 6, 8, 7, 9, 8, 9, 8, 10],
+    id: "webhook",
+    name: { en: "Custom API / Webhook", ru: "Custom API / Webhook" },
+    body: {
+      en: "Bring any CMS or headless store via a signed webhook.",
+      ru: "Подключите любую CMS или headless-магазин через подписанный webhook.",
+    },
+    meta: "Coming · M1+",
+    icon: Webhook,
+    status: "soon",
   },
 ];
 
-const NICHES = ["All", "Food & beverage", "SaaS", "E-commerce", "Fintech", "DTC brands", "SEO"];
-const LANGS = ["Any", "EN", "ES", "DE", "FR", "JA", "ZH", "PL"];
+const TEMPLATES: Template[] = [
+  {
+    id: "woo",
+    name: { en: "WooCommerce store (flagship)", ru: "Магазин WooCommerce (флагман)" },
+    body: {
+      en: "Product descriptions at scale + commercial articles.",
+      ru: "Массовые описания товаров и коммерческие статьи.",
+    },
+    meta: "wholesale wedge · localizes to your markets",
+    icon: ShoppingBag,
+    chips: ["Product description", "Article", "Social"],
+    recommended: true,
+  },
+  {
+    id: "coffee",
+    name: { en: "Coffee & specialty e-commerce", ru: "Кофе и specialty-электронная коммерция" },
+    body: {
+      en: "Modeled on Northbound Coffee Roasters.",
+      ru: "Построено по образцу Northbound Coffee Roasters.",
+    },
+    meta: "12 units/mo · 3 pillars",
+    icon: Coffee,
+    chips: ["Article", "Product description", "Social"],
+  },
+  {
+    id: "service",
+    name: { en: "Local service business", ru: "Локальный сервисный бизнес" },
+    body: {
+      en: "Service pages, local-intent articles, review-ready trust content.",
+      ru: "Сервисные страницы, локальные статьи и контент, готовый к отзывам.",
+    },
+    meta: "8 units/mo · 4 pillars",
+    icon: MapPin,
+    chips: ["Article", "Social"],
+  },
+  {
+    id: "saas",
+    name: { en: "SaaS / software", ru: "SaaS / ПО" },
+    body: {
+      en: "Comparison pages, feature articles, changelog social.",
+      ru: "Сравнительные страницы, статьи о фичах, чейнджлог в соцсети.",
+    },
+    meta: "10 units/mo · 4 pillars",
+    icon: Cpu,
+    chips: ["Article", "Social"],
+  },
+  {
+    id: "agency-leadgen",
+    name: { en: "Agency lead-gen site", ru: "Сайт агентства · lead-gen" },
+    body: {
+      en: "Case-study driven articles with conversion-led landing copy.",
+      ru: "Кейсы и статьи с конверсионными лендингами.",
+    },
+    meta: "Coming · M1+",
+    icon: FileText,
+    chips: ["Article", "Social"],
+    soon: true,
+  },
+  {
+    id: "marketplace-seller",
+    name: { en: "Marketplace seller (Amazon/Etsy)", ru: "Продавец на маркетплейсе (Amazon/Etsy)" },
+    body: {
+      en: "Listings, A+ content, off-platform articles.",
+      ru: "Листинги, A+ контент, внешние статьи.",
+    },
+    meta: "Coming · M1+",
+    icon: ShoppingBag,
+    chips: ["Product description", "Social"],
+    soon: true,
+  },
+];
+
+const CHIP_ICON: Record<string, typeof FileText> = {
+  Article: FileText,
+  "Product description": FileText,
+  Social: Share2,
+  "Product photo": ImageIcon,
+  "Product video": Video,
+};
+
+const COPY = {
+  en: {
+    h1: "Marketplace",
+    sub: "Connect your site, then start from a template built for your kind of business.",
+    section1Eyebrow: "Connectors",
+    section1Title: "Connect your site or CMS",
+    section1Hint:
+      "Site = guaranteed publishing. Social channels stay best-effort behind a pending platform audit. Or just export — no connection needed.",
+    available: "Available",
+    soon: "Coming · M1+",
+    connect: "Connect",
+    notify: "Notify me",
+    requestTitle: "Request a connector",
+    requestBody: "Tell us your stack. We prioritize by demand.",
+    section2Eyebrow: "Vertical templates",
+    section2Title: "Start from a template built for your business",
+    section2Hint:
+      "Each template installs a strategy + content-mix preset. AI-only with the automatic quality-gate is the default; human review is an Advanced/Premium add-on.",
+    install: "Install template",
+    recommended: "Recommended",
+    searchPh: "Search templates…",
+    noResults: "No templates match that search.",
+    clear: "Clear search",
+    installed: "Template installed",
+    installedDesc: "Preset applied to your project. Open Strategy & Plan to review.",
+    soonChip: "soon",
+  },
+  ru: {
+    h1: "Маркетплейс",
+    sub: "Подключите сайт, затем начните с шаблона под ваш тип бизнеса.",
+    section1Eyebrow: "Коннекторы",
+    section1Title: "Подключите сайт или CMS",
+    section1Hint:
+      "Сайт = гарантированная публикация. Соцсети остаются best-effort до прохождения аудита платформ. Или просто экспорт — без подключения.",
+    available: "Доступно",
+    soon: "Скоро · M1+",
+    connect: "Подключить",
+    notify: "Сообщить",
+    requestTitle: "Запросить коннектор",
+    requestBody: "Расскажите про свой стек. Приоритизируем по спросу.",
+    section2Eyebrow: "Вертикальные шаблоны",
+    section2Title: "Стартуйте с шаблона под ваш бизнес",
+    section2Hint:
+      "Каждый шаблон устанавливает пресет стратегии и контент-микса. По умолчанию — только AI с автопроверкой качества; ревью эксперта — опция Advanced/Premium.",
+    install: "Установить шаблон",
+    recommended: "Рекомендуем",
+    searchPh: "Поиск шаблонов…",
+    noResults: "Ничего не найдено по запросу.",
+    clear: "Сбросить поиск",
+    installed: "Шаблон установлен",
+    installedDesc: "Пресет применён к проекту. Откройте «Стратегию и план», чтобы проверить.",
+    soonChip: "скоро",
+  },
+};
 
 function MarketplacePage() {
-  const search = Route.useSearch();
-  const [open, setOpen] = useState<Expert | null>(null);
-  const [niche, setNiche] = useState(search.niche ?? "All");
-  const [lang, setLang] = useState("Any");
-  const [type, setType] = useState<"all" | "freelancer" | "letolab">("all");
-  const [minRating, setMinRating] = useState(0);
+  const [lang] = useLanguage();
+  const navigate = useNavigate();
+  const key = (lang === "ru" ? "ru" : "en") as "en" | "ru";
+  const t = COPY[key];
+  const [query, setQuery] = useState("");
+  const [installed, setInstalled] = useState<string | null>(null);
 
-  const filtered = EXPERTS.filter((e) => {
-    if (niche !== "All" && !e.niches.includes(niche)) return false;
-    if (lang !== "Any" && !e.langs.includes(lang)) return false;
-    if (type === "letolab" && !e.letolab) return false;
-    if (type === "freelancer" && e.letolab) return false;
-    if (e.rating < minRating) return false;
-    return true;
-  });
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return TEMPLATES;
+    return TEMPLATES.filter(
+      (tpl) =>
+        tpl.name[key].toLowerCase().includes(q) ||
+        tpl.body[key].toLowerCase().includes(q) ||
+        tpl.chips.some((c) => c.toLowerCase().includes(q)),
+    );
+  }, [query, key]);
+
+  function handleInstall(tpl: Template) {
+    setInstalled(tpl.id);
+    toast.success(t.installed, { description: `${tpl.name[key]} · ${t.installedDesc}` });
+  }
 
   return (
-    <WorkspaceShell active="marketplace" breadcrumb={["Marketplace"]}>
-      <div className="mx-auto w-full max-w-7xl px-8 py-8 space-y-6">
-        {search.brief ? (
-          <div className="flex items-start justify-between gap-4 rounded-xl border border-brand-100 bg-brand-100/40 px-4 py-3">
-            <div className="flex items-start gap-2.5 text-sm">
-              <Sparkles className="mt-0.5 size-4 text-brand-700" strokeWidth={1.75} />
-              <div>
-                <div className="text-ink-900">
-                  Pre-filtered for brief · <span className="font-mono-num">{search.brief}</span>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Pick an expert; assignment returns you to the Review Queue.
-                </div>
-              </div>
-            </div>
-            <a href="/review" className="text-xs text-brand-700 hover:underline">
-              Back to Review →
-            </a>
+    <WorkspaceShell active="marketplace" breadcrumb={[{ label: t.h1 }]}>
+      <div className="mx-auto w-full max-w-7xl space-y-10 px-8 py-8">
+        {/* Header */}
+        <header className="space-y-1.5">
+          <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            {t.section1Eyebrow} · {t.section2Eyebrow}
           </div>
-        ) : null}
-
-        <header className="flex items-end justify-between gap-6">
-          <div className="space-y-1.5">
-            <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              Verified experts · curated network
-            </div>
-            <h1 className="font-display text-3xl text-ink-900">Freelancer marketplace</h1>
-            <p className="text-sm text-muted-foreground">
-              Every profile vetted. No bidding, no race-to-the-bottom — just calm, skilled editors.
-            </p>
-          </div>
-          <StatusChip tone="gold">
-            <ShieldCheck className="size-2.5" strokeWidth={2.5} /> Verified network
-          </StatusChip>
+          <h1 className="font-display text-3xl text-ink-900">{t.h1}</h1>
+          <p className="max-w-2xl text-sm text-muted-foreground">{t.sub}</p>
         </header>
 
-        {/* Recommended */}
-        <Card className="border-[color:var(--accent-gold-soft)] bg-gradient-to-br from-[color:var(--accent-gold-soft)]/30 to-surface p-5">
-          <div className="flex items-start gap-3">
-            <div className="grid size-9 place-items-center rounded-md bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]">
-              <Sparkles className="size-4" strokeWidth={1.5} />
-            </div>
-            <div className="flex-1">
-              <div className="text-sm font-medium text-ink-900">
-                Recommended for "Why we batch-roast on Tuesdays — 1,800w"
+        {/* Section 1 — Connectors */}
+        <section className="space-y-4">
+          <div className="flex items-end justify-between">
+            <div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                01 · {t.section1Eyebrow}
               </div>
-              <div className="mt-0.5 text-xs text-muted-foreground">
-                Matched on niche (Food & beverage), language (EN), SLA (P1 · 48h), and tone fit.
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {EXPERTS.slice(0, 3).map((e) => (
-                  <button
-                    key={e.id}
-                    onClick={() => setOpen(e)}
-                    className="flex items-center gap-2 rounded-full border border-line bg-surface px-2.5 py-1 text-xs hover:border-ink-700/30"
-                  >
-                    <div className="grid size-5 place-items-center rounded-full bg-brand-100 font-display text-[9px] text-brand-700">
-                      {e.initials}
-                    </div>
-                    <span className="text-ink-900">{e.name}</span>
-                    <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground">
-                      <Star className="size-2.5 fill-current text-[color:var(--accent-gold)]" strokeWidth={0} />
-                      {e.rating} · {e.jobs}
-                    </span>
-                  </button>
-                ))}
-              </div>
+              <h2 className="font-display text-xl text-ink-900">{t.section1Title}</h2>
             </div>
           </div>
-        </Card>
 
-        {/* Filters */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex flex-1 items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-sm text-muted-foreground">
-            <Search className="size-4" strokeWidth={1.5} />
-            <input
-              placeholder="Search experts, niches, languages…"
-              className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
-            />
-          </div>
-          <Select value={niche} onChange={setNiche} options={NICHES} label="Niche" />
-          <Select value={lang} onChange={setLang} options={LANGS} label="Language" />
-          <div className="flex rounded-lg border border-line bg-surface p-0.5 text-xs">
-            {([
-              ["all", "All"],
-              ["freelancer", "Freelancer"],
-              ["letolab", "LetoLab"],
-            ] as const).map(([k, l]) => (
-              <button
-                key={k}
-                onClick={() => setType(k)}
-                className={cn(
-                  "rounded-md px-2.5 py-1.5 transition-colors",
-                  type === k ? "bg-ink-900 text-paper" : "text-ink-700 hover:bg-surface-sunken",
-                )}
-              >
-                {l}
-              </button>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {CONNECTORS.map((c) => (
+              <ConnectorCard
+                key={c.id}
+                c={c}
+                t={t}
+                lang={key}
+                onConnect={() => {
+                  if (c.status === "available") {
+                    navigate({ to: "/settings" });
+                  } else {
+                    toast(t.notify, { description: c.name[key] });
+                  }
+                }}
+              />
             ))}
+            <RequestCard t={t} />
           </div>
-          <div className="flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs">
-            <span className="text-muted-foreground">Min ★</span>
-            {[0, 4.5, 4.8].map((r) => (
-              <button
-                key={r}
-                onClick={() => setMinRating(r)}
-                className={cn(
-                  "rounded px-1.5 py-0.5 font-mono-num",
-                  minRating === r ? "bg-ink-900 text-paper" : "text-ink-700 hover:bg-surface-sunken",
-                )}
-              >
-                {r === 0 ? "Any" : r}
-              </button>
-            ))}
-          </div>
-        </div>
 
-        {/* Grid */}
-        {filtered.length === 0 ? (
-          <Card className="grid place-items-center px-8 py-16 text-center">
-            <div className="space-y-2">
-              <div className="font-display text-lg text-ink-900">No experts match these filters</div>
-              <p className="text-sm text-muted-foreground">
-                Broaden filters, or route this task to LetoLab in-house experts.
-              </p>
-              <button className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-ink-900 px-3 py-1.5 text-sm text-paper hover:bg-ink-700">
-                Route to LetoLab <ArrowRight className="size-3.5" strokeWidth={1.75} />
-              </button>
+          <p className="border-t border-line pt-4 text-xs text-muted-foreground">
+            {t.section1Hint}
+          </p>
+        </section>
+
+        {/* Section 2 — Templates */}
+        <section className="space-y-4">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                02 · {t.section2Eyebrow}
+              </div>
+              <h2 className="font-display text-xl text-ink-900">{t.section2Title}</h2>
+              <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t.section2Hint}</p>
             </div>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-3 gap-4">
-            {filtered.map((e) => (
-              <ExpertCard key={e.id} e={e} onOpen={() => setOpen(e)} />
-            ))}
+            <div className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-sm">
+              <Search className="size-4 text-muted-foreground" strokeWidth={1.5} />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t.searchPh}
+                className="w-56 bg-transparent text-ink-900 outline-none placeholder:text-muted-foreground"
+              />
+            </div>
           </div>
-        )}
+
+          {filtered.length === 0 ? (
+            <Card className="grid place-items-center px-8 py-16 text-center">
+              <div className="space-y-3">
+                <div className="font-display text-base text-ink-900">{t.noResults}</div>
+                <button
+                  onClick={() => setQuery("")}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs text-ink-700 hover:border-ink-700/30"
+                >
+                  {t.clear}
+                </button>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((tpl) => (
+                <TemplateCard
+                  key={tpl.id}
+                  tpl={tpl}
+                  t={t}
+                  lang={key}
+                  isInstalled={installed === tpl.id}
+                  onInstall={() => handleInstall(tpl)}
+                />
+              ))}
+            </div>
+          )}
+        </section>
       </div>
-
-      {open ? <Drawer e={open} onClose={() => setOpen(null)} /> : null}
     </WorkspaceShell>
   );
 }
 
-function Select({
-  value,
-  onChange,
-  options,
-  label,
+function ConnectorCard({
+  c,
+  t,
+  lang,
+  onConnect,
 }: {
-  value: string;
-  onChange: (v: string) => void;
-  options: string[];
-  label: string;
+  c: Connector;
+  t: (typeof COPY)["en"];
+  lang: "en" | "ru";
+  onConnect: () => void;
 }) {
+  const Icon = c.icon;
+  const isAvailable = c.status === "available";
   return (
-    <label className="flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-xs">
-      <span className="text-muted-foreground">{label}</span>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="bg-transparent text-ink-900 outline-none"
-      >
-        {options.map((o) => (
-          <option key={o}>{o}</option>
-        ))}
-      </select>
-    </label>
-  );
-}
-
-function ExpertCard({ e, onOpen }: { e: Expert; onOpen: () => void }) {
-  return (
-    <Card className="flex flex-col p-5 hover-lift shadow-elev-sm hover:border-ink-700/30">
-      <div className="flex items-start justify-between">
-        <div className="flex items-start gap-3">
-          <div className="relative">
-            <div className="grid size-12 place-items-center rounded-full bg-brand-100 font-display text-base text-brand-700">
-              {e.initials}
-            </div>
-            {e.available === "now" ? (
-              <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-surface bg-brand-700" />
-            ) : e.available === "busy" ? (
-              <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-surface bg-[color:var(--danger)]" />
-            ) : (
-              <span className="absolute -bottom-0.5 -right-0.5 size-3 rounded-full border-2 border-surface bg-[color:var(--accent-gold)]" />
-            )}
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="font-display text-base text-ink-900">{e.name}</span>
-              {e.verified && !e.letolab ? (
-                <span
-                  title="Vetted by LetoLab — identity, portfolio, and SLA confirmed"
-                  className="inline-flex"
-                >
-                  <ShieldCheck
-                    className="size-3.5 fill-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
-                    strokeWidth={1.75}
-                  />
-                </span>
-              ) : null}
-            </div>
-            <div className="text-xs text-muted-foreground">{e.title}</div>
-          </div>
+    <Card
+      className={cn(
+        "flex flex-col p-5 transition-shadow hover-lift",
+        isAvailable ? "shadow-elev-sm hover:border-ink-700/30" : "opacity-90",
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div
+          className={cn(
+            "grid size-9 place-items-center rounded-md",
+            isAvailable
+              ? "bg-brand-100 text-brand-700"
+              : "bg-surface-sunken text-muted-foreground",
+          )}
+        >
+          <Icon className="size-4" strokeWidth={1.5} />
         </div>
-        {e.letolab ? (
-          <StatusChip tone="gold">LetoLab</StatusChip>
+        {isAvailable ? (
+          <StatusChip tone="live">{t.available}</StatusChip>
         ) : (
-          <StatusChip tone={e.tier === "Elite" ? "live" : "neutral"}>{e.tier}</StatusChip>
+          <StatusChip tone="neutral">{t.soon}</StatusChip>
         )}
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-3 border-y border-line py-3">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1">
-            <Star className="size-3.5 fill-current text-[color:var(--accent-gold)]" strokeWidth={0} />
-            <span className="font-mono-num text-sm text-ink-900">{e.rating}</span>
-            <span className="font-mono-num text-xs text-muted-foreground">· {e.jobs} jobs</span>
-          </div>
-          <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-            <Clock className="size-3" strokeWidth={1.5} /> {e.sla}
-          </div>
-        </div>
-        {e.trend ? (
-          <div className="flex flex-col items-end">
-            <Sparkline data={e.trend} />
-            <span className="font-mono-num text-[10px] text-muted-foreground">last 30d</span>
-          </div>
+      <div className="mt-4 flex-1">
+        <div className="font-display text-base text-ink-900">{c.name[lang]}</div>
+        <p className="mt-1 text-sm text-muted-foreground">{c.body[lang]}</p>
+        {c.meta ? (
+          <div className="mt-3 font-mono-num text-[11px] text-muted-foreground">{c.meta}</div>
         ) : null}
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {e.niches.slice(0, 3).map((n) => (
-          <span
-            key={n}
-            className="rounded-md bg-surface-sunken px-2 py-0.5 text-[11px] text-ink-700"
+      <div className="mt-4 border-t border-line pt-4">
+        {isAvailable ? (
+          <button
+            onClick={onConnect}
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-ink-900 px-3 py-2 text-sm text-paper hover:bg-ink-700"
           >
-            {n}
-          </span>
-        ))}
-        <span className="rounded-md border border-line px-2 py-0.5 font-mono-num text-[11px] text-muted-foreground">
-          {e.langs.join(" · ")}
-        </span>
+            {t.connect} <ArrowRight className="size-3.5" strokeWidth={1.75} />
+          </button>
+        ) : (
+          <button
+            onClick={onConnect}
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink-700 hover:border-ink-700/30"
+          >
+            <Bell className="size-3.5" strokeWidth={1.75} /> {t.notify}
+          </button>
+        )}
       </div>
+    </Card>
+  );
+}
 
-      <div className="mt-4">
-        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Recent work</div>
-        <div className="mt-1 text-xs text-ink-700">· {e.samples[0]}</div>
+function RequestCard({ t }: { t: (typeof COPY)["en"] }) {
+  return (
+    <Card className="flex flex-col p-5 border-dashed bg-surface-sunken/40">
+      <div className="grid size-9 place-items-center rounded-md border border-dashed border-line text-muted-foreground">
+        <Plus className="size-4" strokeWidth={1.5} />
       </div>
-
-      <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-        <div>
-          <div className="font-mono-num text-sm text-ink-900">${e.rate.toFixed(2)}/word</div>
-          <div className="font-mono-num text-[10px] text-muted-foreground">
-            agency take 22% · ${(e.rate * 0.22).toFixed(3)}
-          </div>
-        </div>
+      <div className="mt-4 flex-1">
+        <div className="font-display text-base text-ink-900">{t.requestTitle}</div>
+        <p className="mt-1 text-sm text-muted-foreground">{t.requestBody}</p>
+      </div>
+      <div className="mt-4 border-t border-dashed border-line pt-4">
         <button
-          onClick={onOpen}
-          className="flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs hover:border-ink-700/30"
+          onClick={() => toast(t.requestTitle, { description: "Stub form." })}
+          className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink-700 hover:border-ink-700/30"
         >
-          View profile <ArrowRight className="size-3" strokeWidth={1.75} />
+          {t.requestTitle} <ArrowRight className="size-3.5" strokeWidth={1.75} />
         </button>
       </div>
     </Card>
   );
 }
 
-function Sparkline({ data }: { data: number[] }) {
-  const w = 64;
-  const h = 18;
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
-  const step = w / (data.length - 1);
-  const pts = data
-    .map((v, i) => `${(i * step).toFixed(1)},${(h - ((v - min) / range) * h).toFixed(1)}`)
-    .join(" ");
-  const last = data[data.length - 1];
-  const lastX = w;
-  const lastY = h - ((last - min) / range) * h;
+function TemplateCard({
+  tpl,
+  t,
+  lang,
+  isInstalled,
+  onInstall,
+}: {
+  tpl: Template;
+  t: (typeof COPY)["en"];
+  lang: "en" | "ru";
+  isInstalled: boolean;
+  onInstall: () => void;
+}) {
+  const Icon = tpl.icon;
   return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="overflow-visible">
-      <polyline
-        points={pts}
-        fill="none"
-        stroke="var(--color-brand-500)"
-        strokeWidth="1.25"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx={lastX} cy={lastY} r="1.75" fill="var(--color-brand-700)" />
-    </svg>
-  );
-}
-
-function Drawer({ e, onClose }: { e: Expert; onClose: () => void }) {
-  const [assigned, setAssigned] = useState(false);
-  return (
-    <div className="fixed inset-0 z-40">
-      <div className="absolute inset-0 bg-ink-900/30 backdrop-blur-sm" onClick={onClose} />
-      <aside className="absolute right-0 top-0 flex h-full w-[560px] flex-col border-l border-line bg-paper shadow-2xl">
-        <div className="flex items-start justify-between border-b border-line px-6 py-5">
-          <div className="flex items-start gap-3">
-            <div className="grid size-14 place-items-center rounded-full bg-brand-100 font-display text-lg text-brand-700">
-              {e.initials}
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-display text-xl text-ink-900">{e.name}</span>
-                {e.verified ? (
-                  <ShieldCheck
-                    className="size-4 fill-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
-                    strokeWidth={1.75}
-                  />
-                ) : null}
-                {e.letolab ? <StatusChip tone="gold">LetoLab</StatusChip> : null}
-              </div>
-              <div className="text-sm text-muted-foreground">{e.title}</div>
-              <div className="mt-1 flex items-center gap-2 text-xs">
-                <Star className="size-3 fill-current text-[color:var(--accent-gold)]" strokeWidth={0} />
-                <span className="font-mono-num text-ink-900">{e.rating}</span>
-                <span className="font-mono-num text-muted-foreground">· {e.jobs} jobs completed</span>
-              </div>
-            </div>
-          </div>
-          <button onClick={onClose} className="rounded-md p-1.5 hover:bg-surface-sunken">
-            <X className="size-4" strokeWidth={1.5} />
-          </button>
-        </div>
-
-        <div className="flex-1 space-y-6 overflow-y-auto px-6 py-5">
-          {e.available === "busy" ? (
-            <div className="flex items-center justify-between rounded-lg border border-[color:var(--accent-gold-soft)] bg-[color:var(--accent-gold-soft)]/40 px-4 py-3 text-sm">
-              <span className="text-ink-900">Currently booked through next week.</span>
-              <button className="text-xs text-brand-700 hover:underline">Join waitlist</button>
-            </div>
-          ) : null}
-
-          <Section title="Bio">
-            <p className="text-sm leading-relaxed text-ink-700">{e.bio}</p>
-          </Section>
-
-          <Section title="Performance metrics">
-            <div className="grid grid-cols-3 gap-3">
-              <Metric label="On-time" value={`${e.onTime}%`} />
-              <Metric label="Revisions" value={`${e.revision}%`} hint="lower is better" />
-              <Metric label="SLA" value={e.sla.replace("first review ", "")} />
-            </div>
-          </Section>
-
-          <Section title="Portfolio samples">
-            <div className="space-y-2">
-              {e.samples.map((s) => (
-                <div
-                  key={s}
-                  className="flex items-center justify-between rounded-lg border border-line bg-surface px-3 py-2.5 text-sm"
-                >
-                  <span className="truncate text-ink-900">{s}</span>
-                  <button className="text-xs text-brand-700 hover:underline">Open ↗</button>
-                </div>
-              ))}
-            </div>
-          </Section>
-
-          <Section title="Recent reviews">
-            <div className="space-y-3">
-              {[
-                { who: "Vellum & Bean", text: "Caught a structural issue our previous editor missed. Will book again." },
-                { who: "Northwall Roasters", text: "Calm, fast turnarounds. Great taste for tone." },
-              ].map((r) => (
-                <div key={r.who} className="rounded-lg border border-line bg-surface p-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-ink-900">{r.who}</span>
-                    <div className="flex items-center gap-0.5 text-[10px] text-[color:var(--accent-gold)]">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className="size-2.5 fill-current" strokeWidth={0} />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="mt-1 text-sm text-ink-700">{r.text}</p>
-                </div>
-              ))}
-            </div>
-          </Section>
-
-          <Section title="Pricing">
-            <div className="rounded-lg border border-line bg-surface p-4 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-ink-700">Base rate</span>
-                <span className="font-mono-num text-ink-900">${e.rate.toFixed(2)} / word</span>
-              </div>
-              <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
-                <span>Agency take-rate (22%)</span>
-                <span className="font-mono-num">${(e.rate * 0.22).toFixed(3)} / word</span>
-              </div>
-              <div className="mt-2 border-t border-line pt-2 flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">Client price</span>
-                <span className="font-mono-num text-ink-900">${(e.rate * 1.22).toFixed(2)} / word</span>
-              </div>
-            </div>
-          </Section>
-        </div>
-
-        <div className="border-t border-line bg-surface px-6 py-4">
-          {assigned ? (
-            <div className="flex items-center justify-between rounded-lg bg-brand-100 px-4 py-3 text-sm">
-              <div className="flex items-center gap-2 text-brand-700">
-                <CheckCircle2 className="size-4" strokeWidth={1.75} />
-                Assigned · task created in Review Queue
-              </div>
-              <a href="/review" className="text-xs text-brand-700 hover:underline">
-                Open queue →
-              </a>
-            </div>
-          ) : (
-            <div className="flex justify-end gap-2">
-              <button className="rounded-lg border border-line bg-surface px-3 py-2 text-sm hover:border-ink-700/30">
-                Invite
-              </button>
-              <button
-                onClick={() => setAssigned(true)}
-                className="flex items-center gap-1.5 rounded-lg bg-ink-900 px-3 py-2 text-sm text-paper hover:bg-ink-700"
-              >
-                Assign to task <ArrowRight className="size-3.5" strokeWidth={1.75} />
-              </button>
-            </div>
+    <Card
+      className={cn(
+        "flex flex-col p-5 hover-lift",
+        tpl.recommended
+          ? "border-[color:var(--accent-gold-soft)] bg-gradient-to-br from-[color:var(--accent-gold-soft)]/25 to-surface"
+          : tpl.soon
+            ? "opacity-80"
+            : "shadow-elev-sm hover:border-ink-700/30",
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div
+          className={cn(
+            "grid size-9 place-items-center rounded-md",
+            tpl.recommended
+              ? "bg-[color:var(--accent-gold-soft)] text-[color:var(--accent-gold)]"
+              : tpl.soon
+                ? "bg-surface-sunken text-muted-foreground"
+                : "bg-brand-100 text-brand-700",
           )}
+        >
+          <Icon className="size-4" strokeWidth={1.5} />
         </div>
-      </aside>
-    </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-        {title}
+        {tpl.recommended ? (
+          <StatusChip tone="gold">
+            <Sparkle className="size-2.5" strokeWidth={2.5} /> {t.recommended}
+          </StatusChip>
+        ) : tpl.soon ? (
+          <StatusChip tone="neutral">{t.soon}</StatusChip>
+        ) : null}
       </div>
-      {children}
-    </div>
-  );
-}
 
-function Metric({ label, value, hint }: { label: string; value: string; hint?: string }) {
-  return (
-    <div className="rounded-lg border border-line bg-surface p-3">
-      <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className="font-mono-num mt-0.5 text-lg text-ink-900">{value}</div>
-      {hint ? <div className="text-[10px] text-muted-foreground">{hint}</div> : null}
-    </div>
+      <div className="mt-4 flex-1">
+        <div className="font-display text-base text-ink-900">{tpl.name[lang]}</div>
+        <p className="mt-1 text-sm text-muted-foreground">{tpl.body[lang]}</p>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        {tpl.chips.map((chip) => {
+          const ChipIcon = CHIP_ICON[chip] ?? FileText;
+          const isSoonChip = chip === "Product photo" || chip === "Product video";
+          return (
+            <span
+              key={chip}
+              className={cn(
+                "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px]",
+                isSoonChip
+                  ? "border-line bg-surface-sunken text-muted-foreground"
+                  : "border-line bg-surface text-ink-700",
+              )}
+            >
+              <ChipIcon className="size-3" strokeWidth={1.5} />
+              {chip}
+              {isSoonChip ? (
+                <span className="font-mono-num text-[10px] text-muted-foreground">
+                  · {t.soonChip}
+                </span>
+              ) : null}
+            </span>
+          );
+        })}
+      </div>
+
+      <div className="mt-3 font-mono-num text-[11px] text-muted-foreground">{tpl.meta}</div>
+
+      <div className="mt-4 border-t border-line pt-4">
+        <button
+          onClick={onInstall}
+          disabled={tpl.soon}
+          className={cn(
+            "inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm transition-colors",
+            tpl.soon
+              ? "cursor-not-allowed border border-line bg-surface text-muted-foreground"
+              : tpl.recommended
+                ? "bg-ink-900 text-paper hover:bg-ink-700"
+                : "border border-line bg-surface text-ink-700 hover:border-ink-700/30",
+          )}
+        >
+          {isInstalled ? (
+            <>
+              <Check className="size-3.5" strokeWidth={2} /> {t.installed}
+            </>
+          ) : (
+            <>
+              {t.install}
+              {!tpl.soon ? <ArrowRight className="size-3.5" strokeWidth={1.75} /> : null}
+            </>
+          )}
+        </button>
+      </div>
+    </Card>
   );
 }
