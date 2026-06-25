@@ -5,7 +5,7 @@ export const Route = createFileRoute("/onboarding")({
   head: () => ({
     meta: [
       { title: "Get started — Postics" },
-      { name: "description", content: "Spin up a premium content site in under a minute." },
+      { name: "description", content: "Paste your site. Get a content strategy and the first generated pieces in minutes." },
     ],
   }),
   component: () => <OnboardingWizard />,
