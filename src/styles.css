@@ -196,6 +196,11 @@
     font-family: var(--font-display);
     letter-spacing: -0.01em;
   }
+
+  code, kbd, samp, pre, .font-mono, [class*="font-mono"] {
+    font-feature-settings: "zero" 0;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
 }
 
 @utility font-mono-num {
