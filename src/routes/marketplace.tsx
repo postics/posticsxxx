@@ -244,7 +244,7 @@ function MarketplacePage() {
   }
 
   return (
-    <WorkspaceShell active="marketplace" breadcrumb={[{ label: t.h1 }]}>
+    <WorkspaceShell active="marketplace" breadcrumb={[{ label: t.h1, to: "/marketplace" }]}>
       <div className="mx-auto w-full max-w-7xl space-y-10 px-8 py-8">
         {/* Header */}
         <header className="space-y-1.5">
