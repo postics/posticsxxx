@@ -94,9 +94,9 @@ export function AuthCard({
             type="submit"
             disabled={!valid}
             className={cn(
-              "mt-2 inline-flex w-full items-center justify-center gap-2 rounded-[10px] px-5 py-2.5 text-sm font-medium transition",
+              "mt-2 inline-flex w-full items-center justify-center gap-2 rounded-[10px] px-5 py-2.5 text-sm font-medium transition-all",
               valid
-                ? "bg-brand text-paper hover:bg-brand/90"
+                ? "bg-brand text-paper hover:bg-brand/90 active:scale-[0.98] active:bg-brand-500"
                 : "cursor-not-allowed bg-surface-sunken text-ink-mute",
             )}
           >
