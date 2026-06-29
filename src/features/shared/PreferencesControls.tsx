@@ -11,6 +11,7 @@ const THEME_KEY = "postics:theme";
 function applyTheme(t: Theme) {
   if (typeof document === "undefined") return;
   document.documentElement.classList.toggle("dark", t === "dark");
+  document.documentElement.setAttribute("data-theme", t);
   document.documentElement.style.colorScheme = t;
 }
 
