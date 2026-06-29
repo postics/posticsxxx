@@ -63,6 +63,10 @@
   --color-brand-700: var(--brand-700);
   --color-brand-500: var(--brand-500);
   --color-brand-100: var(--brand-100);
+  /* Shorthand aliases so `bg-brand` / `text-ink` / `text-ink-mute` resolve correctly. */
+  --color-brand: var(--brand-700);
+  --color-ink: var(--ink-900);
+  --color-ink-mute: var(--muted-foreground);
   --color-gold: var(--accent-gold);
   --color-gold-soft: var(--accent-gold-soft);
   --color-success: var(--success);
