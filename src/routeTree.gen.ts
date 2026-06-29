@@ -26,7 +26,17 @@ import { Route as BrandKitRouteImport } from './routes/brand-kit'
 import { Route as BillingRouteImport } from './routes/billing'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AgencyRouteImport } from './routes/agency'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminSegmentsRouteImport } from './routes/admin.segments'
+import { Route as AdminPipelineRouteImport } from './routes/admin.pipeline'
+import { Route as AdminOrgsRouteImport } from './routes/admin.orgs'
+import { Route as AdminMarginGuardsRouteImport } from './routes/admin.margin-guards'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminHealthRouteImport } from './routes/admin.health'
+import { Route as AdminCostRouteImport } from './routes/admin.cost'
+import { Route as AdminBuildRouteImport } from './routes/admin.build'
 
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
@@ -113,14 +123,65 @@ const AgencyRoute = AgencyRouteImport.update({
   path: '/agency',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSegmentsRoute = AdminSegmentsRouteImport.update({
+  id: '/segments',
+  path: '/segments',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPipelineRoute = AdminPipelineRouteImport.update({
+  id: '/pipeline',
+  path: '/pipeline',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrgsRoute = AdminOrgsRouteImport.update({
+  id: '/orgs',
+  path: '/orgs',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMarginGuardsRoute = AdminMarginGuardsRouteImport.update({
+  id: '/margin-guards',
+  path: '/margin-guards',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHealthRoute = AdminHealthRouteImport.update({
+  id: '/health',
+  path: '/health',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCostRoute = AdminCostRouteImport.update({
+  id: '/cost',
+  path: '/cost',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBuildRoute = AdminBuildRouteImport.update({
+  id: '/build',
+  path: '/build',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/agency': typeof AgencyRoute
   '/analytics': typeof AnalyticsRoute
   '/billing': typeof BillingRoute
@@ -138,6 +199,15 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
+  '/admin/build': typeof AdminBuildRoute
+  '/admin/cost': typeof AdminCostRoute
+  '/admin/health': typeof AdminHealthRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/margin-guards': typeof AdminMarginGuardsRoute
+  '/admin/orgs': typeof AdminOrgsRoute
+  '/admin/pipeline': typeof AdminPipelineRoute
+  '/admin/segments': typeof AdminSegmentsRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -158,10 +228,20 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
+  '/admin/build': typeof AdminBuildRoute
+  '/admin/cost': typeof AdminCostRoute
+  '/admin/health': typeof AdminHealthRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/margin-guards': typeof AdminMarginGuardsRoute
+  '/admin/orgs': typeof AdminOrgsRoute
+  '/admin/pipeline': typeof AdminPipelineRoute
+  '/admin/segments': typeof AdminSegmentsRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/agency': typeof AgencyRoute
   '/analytics': typeof AnalyticsRoute
   '/billing': typeof BillingRoute
@@ -179,11 +259,21 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
+  '/admin/build': typeof AdminBuildRoute
+  '/admin/cost': typeof AdminCostRoute
+  '/admin/health': typeof AdminHealthRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/margin-guards': typeof AdminMarginGuardsRoute
+  '/admin/orgs': typeof AdminOrgsRoute
+  '/admin/pipeline': typeof AdminPipelineRoute
+  '/admin/segments': typeof AdminSegmentsRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/agency'
     | '/analytics'
     | '/billing'
@@ -201,6 +291,15 @@ export interface FileRouteTypes {
     | '/signup'
     | '/studio'
     | '/team'
+    | '/admin/build'
+    | '/admin/cost'
+    | '/admin/health'
+    | '/admin/login'
+    | '/admin/margin-guards'
+    | '/admin/orgs'
+    | '/admin/pipeline'
+    | '/admin/segments'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -221,9 +320,19 @@ export interface FileRouteTypes {
     | '/signup'
     | '/studio'
     | '/team'
+    | '/admin/build'
+    | '/admin/cost'
+    | '/admin/health'
+    | '/admin/login'
+    | '/admin/margin-guards'
+    | '/admin/orgs'
+    | '/admin/pipeline'
+    | '/admin/segments'
+    | '/admin'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/agency'
     | '/analytics'
     | '/billing'
@@ -241,10 +350,20 @@ export interface FileRouteTypes {
     | '/signup'
     | '/studio'
     | '/team'
+    | '/admin/build'
+    | '/admin/cost'
+    | '/admin/health'
+    | '/admin/login'
+    | '/admin/margin-guards'
+    | '/admin/orgs'
+    | '/admin/pipeline'
+    | '/admin/segments'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AgencyRoute: typeof AgencyRoute
   AnalyticsRoute: typeof AnalyticsRoute
   BillingRoute: typeof BillingRoute
@@ -385,6 +504,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgencyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -392,11 +518,101 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/segments': {
+      id: '/admin/segments'
+      path: '/segments'
+      fullPath: '/admin/segments'
+      preLoaderRoute: typeof AdminSegmentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pipeline': {
+      id: '/admin/pipeline'
+      path: '/pipeline'
+      fullPath: '/admin/pipeline'
+      preLoaderRoute: typeof AdminPipelineRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orgs': {
+      id: '/admin/orgs'
+      path: '/orgs'
+      fullPath: '/admin/orgs'
+      preLoaderRoute: typeof AdminOrgsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/margin-guards': {
+      id: '/admin/margin-guards'
+      path: '/margin-guards'
+      fullPath: '/admin/margin-guards'
+      preLoaderRoute: typeof AdminMarginGuardsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/health': {
+      id: '/admin/health'
+      path: '/health'
+      fullPath: '/admin/health'
+      preLoaderRoute: typeof AdminHealthRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/cost': {
+      id: '/admin/cost'
+      path: '/cost'
+      fullPath: '/admin/cost'
+      preLoaderRoute: typeof AdminCostRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/build': {
+      id: '/admin/build'
+      path: '/build'
+      fullPath: '/admin/build'
+      preLoaderRoute: typeof AdminBuildRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminBuildRoute: typeof AdminBuildRoute
+  AdminCostRoute: typeof AdminCostRoute
+  AdminHealthRoute: typeof AdminHealthRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminMarginGuardsRoute: typeof AdminMarginGuardsRoute
+  AdminOrgsRoute: typeof AdminOrgsRoute
+  AdminPipelineRoute: typeof AdminPipelineRoute
+  AdminSegmentsRoute: typeof AdminSegmentsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminBuildRoute: AdminBuildRoute,
+  AdminCostRoute: AdminCostRoute,
+  AdminHealthRoute: AdminHealthRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminMarginGuardsRoute: AdminMarginGuardsRoute,
+  AdminOrgsRoute: AdminOrgsRoute,
+  AdminPipelineRoute: AdminPipelineRoute,
+  AdminSegmentsRoute: AdminSegmentsRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   AgencyRoute: AgencyRoute,
   AnalyticsRoute: AnalyticsRoute,
   BillingRoute: BillingRoute,
