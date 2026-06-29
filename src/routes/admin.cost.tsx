@@ -126,7 +126,6 @@ function CostPage() {
       actions={<TrafficLight tone="warning" label="Stub data" />}
     >
       <div className="space-y-4">
-        <StubBanner />
         <TitleRow range={range} onRange={setRange} mode={mode} onMode={setMode} />
 
         <GrossCogsHero range={range} />
@@ -149,36 +148,6 @@ function CostPage() {
         </p>
       </div>
     </AdminPage>
-  );
-}
-
-/* --------------------------------- banners -------------------------------- */
-
-function StubBanner() {
-  const { stubMode } = useAdmin();
-  if (!stubMode) return null;
-  return (
-    <div
-      className="flex items-start gap-2.5 rounded-[10px] border px-3 py-2 text-[12px]"
-      style={{
-        borderColor: "color-mix(in oklab, var(--warning, #B07B2C) 40%, var(--line, #E7E2D9))",
-        backgroundColor: "color-mix(in oklab, var(--warning, #B07B2C) 8%, var(--surface, #FFFFFF))",
-      }}
-    >
-      <Dot tone="warning" className="mt-1.5" />
-      <div className="flex-1">
-        <p className="text-ink-900">
-          AI Gateway: <span className="font-mono-num">STUB</span> — costs ~$0, content placeholder. Margin thesis is{" "}
-          <span className="font-medium">UNVERIFIABLE</span> until a real Anthropic key is live.
-        </p>
-      </div>
-      <span
-        title="All USD COGS on this page reflect unit_cost_usd_est, which is ~0 while the Gateway runs on a stub. Numbers go real when the key flips."
-        className="mt-0.5 text-muted-foreground"
-      >
-        <Info className="size-3.5" strokeWidth={1.75} />
-      </span>
-    </div>
   );
 }
 
