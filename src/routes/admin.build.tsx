@@ -16,7 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AdminPage } from "@/features/admin/AdminPage";
+import { AdminPage } from "@/features/admin/AdminShell";
 import { useAdmin } from "@/features/admin/AdminContext";
 import { DataPanel, Dot, TrafficLight, type Tone } from "@/features/admin/ui";
 

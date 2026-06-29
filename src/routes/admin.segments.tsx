@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { ArrowDown, ArrowUp, ChevronRight, Lock, RefreshCw } from "lucide-react";
-import { AdminPage } from "@/features/admin/AdminPage";
+import { AdminPage } from "@/features/admin/AdminShell";
 import { useAdmin } from "@/features/admin/AdminContext";
 import {
   ConfirmReasonDialog,

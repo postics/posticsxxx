@@ -13,7 +13,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AdminPage } from "@/features/admin/AdminPage";
+import { AdminPage } from "@/features/admin/AdminShell";
 import { useAdmin } from "@/features/admin/AdminContext";
 import { Dot, TrafficLight, ConfirmReasonDialog, type Tone } from "@/features/admin/ui";
 
