@@ -81,7 +81,7 @@ export function FocusShell({ step, totalSteps, children }: FocusShellProps) {
           <div className="ml-auto flex items-center gap-1.5">
             <a
               href="mailto:support@postics.io"
-              className="hidden h-9 items-center rounded-lg border border-line bg-surface px-3 text-xs text-ink-700 hover:border-ink-700/30 hover:text-ink-900 sm:inline-flex"
+              className="hidden h-9 items-center rounded-lg border border-line bg-surface px-3 text-xs text-ink-700 transition-all hover:border-ink-700/30 hover:text-ink-900 active:scale-[0.97] active:bg-surface-sunken sm:inline-flex"
             >
               Need help?
             </a>
@@ -90,7 +90,7 @@ export function FocusShell({ step, totalSteps, children }: FocusShellProps) {
             {hasStepper && (
               <button
                 onClick={() => setConfirm(true)}
-                className="ml-1 hidden h-9 items-center rounded-lg border border-line bg-surface px-3 text-xs text-ink-700 hover:border-ink-700/30 hover:text-ink-900 sm:inline-flex"
+                className="ml-1 hidden h-9 items-center rounded-lg border border-line bg-surface px-3 text-xs text-ink-700 transition-all hover:border-ink-700/30 hover:text-ink-900 active:scale-[0.97] active:bg-surface-sunken sm:inline-flex"
               >
                 Save &amp; exit
               </button>
@@ -142,13 +142,13 @@ export function FocusShell({ step, totalSteps, children }: FocusShellProps) {
             <div className="mt-5 flex justify-center gap-2">
               <button
                 onClick={() => setConfirm(false)}
-                className="rounded-lg border border-line px-4 py-2 text-sm text-ink hover:bg-surface-sunken"
+                className="rounded-lg border border-line px-4 py-2 text-sm text-ink transition-all hover:bg-surface-sunken active:scale-[0.97]"
               >
                 Stay
               </button>
               <Link
                 to="/"
-                className="rounded-lg bg-brand px-4 py-2 text-sm text-paper hover:bg-brand/90"
+                className="rounded-lg bg-brand px-4 py-2 text-sm text-paper transition-all hover:bg-brand/90 active:scale-[0.97] active:bg-brand-500"
               >
                 Exit
               </Link>
