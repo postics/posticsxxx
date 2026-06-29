@@ -43,7 +43,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label={`Switch to ${next} theme`}
       title={`Switch to ${next} theme`}
       className={cn(
-        "grid size-9 place-items-center rounded-lg border border-line bg-surface text-ink-700 transition-colors hover:border-ink-700/30 hover:text-ink-900",
+        "grid size-9 place-items-center rounded-lg border border-line bg-surface text-ink-700 transition-all hover:border-ink-700/30 hover:text-ink-900 active:scale-[0.95] active:bg-surface-sunken",
         className,
       )}
     >
@@ -56,50 +56,69 @@ export function ThemeToggle({ className }: { className?: string }) {
 
 const LANG_KEY = "postics:lang";
 
-export const LANGUAGES: { code: string; name: string; flag: string }[] = [
-  { code: "am", name: "አማርኛ", flag: "🇪🇹" },
-  { code: "ar", name: "العربية", flag: "🇸🇦" },
-  { code: "bg", name: "Български", flag: "🇧🇬" },
-  { code: "bn", name: "বাংলা", flag: "🇧🇩" },
-  { code: "cs", name: "Čeština", flag: "🇨🇿" },
-  { code: "de", name: "Deutsch", flag: "🇩🇪" },
-  { code: "el", name: "Ελληνικά", flag: "🇬🇷" },
-  { code: "en", name: "English", flag: "🇬🇧" },
-  { code: "es", name: "Español", flag: "🇪🇸" },
-  { code: "fa", name: "فارسی", flag: "🇮🇷" },
-  { code: "fi", name: "Suomi", flag: "🇫🇮" },
-  { code: "fr", name: "Français", flag: "🇫🇷" },
-  { code: "ha", name: "Hausa", flag: "🇳🇬" },
-  { code: "he", name: "עברית", flag: "🇮🇱" },
-  { code: "hi", name: "हिन्दी", flag: "🇮🇳" },
-  { code: "hu", name: "Magyar", flag: "🇭🇺" },
-  { code: "id", name: "Bahasa Indonesia", flag: "🇮🇩" },
-  { code: "it", name: "Italiano", flag: "🇮🇹" },
-  { code: "ja", name: "日本語", flag: "🇯🇵" },
-  { code: "ka", name: "ქართული", flag: "🇬🇪" },
-  { code: "kk", name: "Қазақша", flag: "🇰🇿" },
-  { code: "ko", name: "한국어", flag: "🇰🇷" },
-  { code: "lv", name: "Latviešu", flag: "🇱🇻" },
-  { code: "nl", name: "Nederlands", flag: "🇳🇱" },
-  { code: "no", name: "Norsk", flag: "🇳🇴" },
-  { code: "pl", name: "Polski", flag: "🇵🇱" },
-  { code: "pt", name: "Português", flag: "🇵🇹" },
-  { code: "ro", name: "Română", flag: "🇷🇴" },
-  { code: "ru", name: "Русский", flag: "🇷🇺" },
-  { code: "si", name: "සිංහල", flag: "🇱🇰" },
-  { code: "sk", name: "Slovenčina", flag: "🇸🇰" },
-  { code: "sr", name: "Српски", flag: "🇷🇸" },
-  { code: "sv", name: "Svenska", flag: "🇸🇪" },
-  { code: "sw", name: "Kiswahili", flag: "🇰🇪" },
-  { code: "th", name: "ไทย", flag: "🇹🇭" },
-  { code: "tl", name: "Filipino", flag: "🇵🇭" },
-  { code: "tr", name: "Türkçe", flag: "🇹🇷" },
-  { code: "uk", name: "Українська", flag: "🇺🇦" },
-  { code: "ur", name: "اردو", flag: "🇵🇰" },
-  { code: "uz", name: "O'zbek", flag: "🇺🇿" },
-  { code: "vi", name: "Tiếng Việt", flag: "🇻🇳" },
-  { code: "zh", name: "中文", flag: "🇨🇳" },
+export const LANGUAGES: { code: string; name: string; cc: string }[] = [
+  { code: "am", name: "አማርኛ", cc: "et" },
+  { code: "ar", name: "العربية", cc: "sa" },
+  { code: "bg", name: "Български", cc: "bg" },
+  { code: "bn", name: "বাংলা", cc: "bd" },
+  { code: "cs", name: "Čeština", cc: "cz" },
+  { code: "de", name: "Deutsch", cc: "de" },
+  { code: "el", name: "Ελληνικά", cc: "gr" },
+  { code: "en", name: "English", cc: "gb" },
+  { code: "es", name: "Español", cc: "es" },
+  { code: "fa", name: "فارسی", cc: "ir" },
+  { code: "fi", name: "Suomi", cc: "fi" },
+  { code: "fr", name: "Français", cc: "fr" },
+  { code: "ha", name: "Hausa", cc: "ng" },
+  { code: "he", name: "עברית", cc: "il" },
+  { code: "hi", name: "हिन्दी", cc: "in" },
+  { code: "hu", name: "Magyar", cc: "hu" },
+  { code: "id", name: "Bahasa Indonesia", cc: "id" },
+  { code: "it", name: "Italiano", cc: "it" },
+  { code: "ja", name: "日本語", cc: "jp" },
+  { code: "ka", name: "ქართული", cc: "ge" },
+  { code: "kk", name: "Қазақша", cc: "kz" },
+  { code: "ko", name: "한국어", cc: "kr" },
+  { code: "lv", name: "Latviešu", cc: "lv" },
+  { code: "nl", name: "Nederlands", cc: "nl" },
+  { code: "no", name: "Norsk", cc: "no" },
+  { code: "pl", name: "Polski", cc: "pl" },
+  { code: "pt", name: "Português", cc: "pt" },
+  { code: "ro", name: "Română", cc: "ro" },
+  { code: "ru", name: "Русский", cc: "ru" },
+  { code: "si", name: "සිංහල", cc: "lk" },
+  { code: "sk", name: "Slovenčina", cc: "sk" },
+  { code: "sr", name: "Српски", cc: "rs" },
+  { code: "sv", name: "Svenska", cc: "se" },
+  { code: "sw", name: "Kiswahili", cc: "ke" },
+  { code: "th", name: "ไทย", cc: "th" },
+  { code: "tl", name: "Filipino", cc: "ph" },
+  { code: "tr", name: "Türkçe", cc: "tr" },
+  { code: "uk", name: "Українська", cc: "ua" },
+  { code: "ur", name: "اردو", cc: "pk" },
+  { code: "uz", name: "O'zbek", cc: "uz" },
+  { code: "vi", name: "Tiếng Việt", cc: "vn" },
+  { code: "zh", name: "中文", cc: "cn" },
 ];
+
+export function Flag({ cc, className }: { cc: string; className?: string }) {
+  return (
+    <img
+      src={`https://flagcdn.com/w40/${cc}.png`}
+      srcSet={`https://flagcdn.com/w80/${cc}.png 2x`}
+      width={20}
+      height={15}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      decoding="async"
+      className={cn(
+        "inline-block h-[15px] w-[20px] shrink-0 rounded-[2px] object-cover ring-1 ring-black/10",
+        className,
+      )}
+    />
+  );
+}
 
 export function useLanguage(): [string, (c: string) => void] {
   const [lang, setLang] = useState("en");
@@ -125,11 +144,11 @@ export function LanguageButton({ compact = false }: { compact?: boolean }) {
         onClick={() => setOpen(true)}
         aria-label="Select language"
         className={cn(
-          "inline-flex h-9 items-center justify-center rounded-lg border border-line bg-surface px-3 text-sm font-medium uppercase tracking-wider text-ink-700 transition-colors hover:border-ink-700/30 hover:text-ink-900",
+          "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 text-sm font-medium uppercase tracking-wider text-ink-700 transition-all hover:border-ink-700/30 hover:text-ink-900 active:scale-[0.97] active:bg-surface-sunken",
           compact && "px-2",
         )}
       >
-        <span className="mr-1.5 text-base leading-none">{current.flag}</span>
+        <Flag cc={current.cc} />
         {current.code}
       </button>
       {open && <LanguageDialog onClose={() => setOpen(false)} />}
@@ -197,7 +216,7 @@ function LanguageDialog({ onClose }: { onClose: () => void }) {
                     : "border-line bg-surface text-ink-700 hover:border-brand-700/40 hover:bg-surface-sunken",
                 )}
               >
-                <span className="text-lg leading-none">{l.flag}</span>
+                <Flag cc={l.cc} />
                 <span className="flex-1 truncate">{l.name}</span>
                 {active && <Check className="size-3.5 text-brand-700" strokeWidth={2} />}
               </button>
