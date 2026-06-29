@@ -32,6 +32,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSegmentsRouteImport } from './routes/admin.segments'
 import { Route as AdminPipelineRouteImport } from './routes/admin.pipeline'
 import { Route as AdminOrgsRouteImport } from './routes/admin.orgs'
+import { Route as AdminMarginGuardsRouteImport } from './routes/admin.margin-guards'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminHealthRouteImport } from './routes/admin.health'
 import { Route as AdminCostRouteImport } from './routes/admin.cost'
@@ -152,6 +153,11 @@ const AdminOrgsRoute = AdminOrgsRouteImport.update({
   path: '/orgs',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMarginGuardsRoute = AdminMarginGuardsRouteImport.update({
+  id: '/margin-guards',
+  path: '/margin-guards',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/admin/cost': typeof AdminCostRoute
   '/admin/health': typeof AdminHealthRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/margin-guards': typeof AdminMarginGuardsRoute
   '/admin/orgs': typeof AdminOrgsRoute
   '/admin/pipeline': typeof AdminPipelineRoute
   '/admin/segments': typeof AdminSegmentsRoute
@@ -225,6 +232,7 @@ export interface FileRoutesByTo {
   '/admin/cost': typeof AdminCostRoute
   '/admin/health': typeof AdminHealthRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/margin-guards': typeof AdminMarginGuardsRoute
   '/admin/orgs': typeof AdminOrgsRoute
   '/admin/pipeline': typeof AdminPipelineRoute
   '/admin/segments': typeof AdminSegmentsRoute
@@ -255,6 +263,7 @@ export interface FileRoutesById {
   '/admin/cost': typeof AdminCostRoute
   '/admin/health': typeof AdminHealthRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/margin-guards': typeof AdminMarginGuardsRoute
   '/admin/orgs': typeof AdminOrgsRoute
   '/admin/pipeline': typeof AdminPipelineRoute
   '/admin/segments': typeof AdminSegmentsRoute
@@ -286,6 +295,7 @@ export interface FileRouteTypes {
     | '/admin/cost'
     | '/admin/health'
     | '/admin/login'
+    | '/admin/margin-guards'
     | '/admin/orgs'
     | '/admin/pipeline'
     | '/admin/segments'
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/admin/cost'
     | '/admin/health'
     | '/admin/login'
+    | '/admin/margin-guards'
     | '/admin/orgs'
     | '/admin/pipeline'
     | '/admin/segments'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/admin/cost'
     | '/admin/health'
     | '/admin/login'
+    | '/admin/margin-guards'
     | '/admin/orgs'
     | '/admin/pipeline'
     | '/admin/segments'
@@ -534,6 +546,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrgsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/margin-guards': {
+      id: '/admin/margin-guards'
+      path: '/margin-guards'
+      fullPath: '/admin/margin-guards'
+      preLoaderRoute: typeof AdminMarginGuardsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -570,6 +589,7 @@ interface AdminRouteChildren {
   AdminCostRoute: typeof AdminCostRoute
   AdminHealthRoute: typeof AdminHealthRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMarginGuardsRoute: typeof AdminMarginGuardsRoute
   AdminOrgsRoute: typeof AdminOrgsRoute
   AdminPipelineRoute: typeof AdminPipelineRoute
   AdminSegmentsRoute: typeof AdminSegmentsRoute
@@ -581,6 +601,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCostRoute: AdminCostRoute,
   AdminHealthRoute: AdminHealthRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMarginGuardsRoute: AdminMarginGuardsRoute,
   AdminOrgsRoute: AdminOrgsRoute,
   AdminPipelineRoute: AdminPipelineRoute,
   AdminSegmentsRoute: AdminSegmentsRoute,
