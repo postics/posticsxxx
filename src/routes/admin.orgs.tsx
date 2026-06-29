@@ -193,7 +193,6 @@ function OrgsPage() {
   return (
     <AdminPage title="Orgs & Activation">
       <div className="space-y-4">
-        <StubBanner />
         <HeaderRow
           realRole={realRole}
           previewRole={effectiveRole}
