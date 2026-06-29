@@ -1,5 +1,5 @@
 // Platform-admin only route. The sidebar hides the Money group for agency-admin
-// (see AdminShell), and this component guards the URL too. Agency users get a
+// (see AdminPage), and this component guards the URL too. Agency users get a
 // locked state — never any cross-tenant USD, take_rate, or unit_cost_usd_est.
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { AdminShell } from "@/features/admin/AdminShell";
+import { AdminPage } from "@/features/admin/AdminPage";
 import { useAdmin } from "@/features/admin/AdminContext";
 import { DataPanel, Dot, TrafficLight, type Tone } from "@/features/admin/ui";
 
@@ -120,7 +120,7 @@ function CostPage() {
   const [mode, setMode] = useState<CostMode>("usd");
 
   return (
-    <AdminShell
+    <AdminPage
       title="Unit-economics & cost"
       breadcrumb={["Admin", "Money", "Unit-economics"]}
       actions={<TrafficLight tone="warning" label="Stub data" />}
@@ -148,7 +148,7 @@ function CostPage() {
           Read-only analytics. Mutations during any impersonation session are blocked (read-only by default).
         </p>
       </div>
-    </AdminShell>
+    </AdminPage>
   );
 }
 

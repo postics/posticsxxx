@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { AdminShell } from "@/features/admin/AdminShell";
+import { AdminPage } from "@/features/admin/AdminPage";
 import { useAdmin } from "@/features/admin/AdminContext";
 import {
   ConfirmReasonDialog,
@@ -148,7 +148,7 @@ function PipelinePage() {
   );
 
   return (
-    <AdminShell title="Pipeline & Quality Ops">
+    <AdminPage title="Pipeline & Quality Ops">
       <div className="space-y-4">
         <StubBanner />
         <HeaderRow isPlatform={isPlatform} scopedOrg={scopedOrg} />
@@ -176,7 +176,7 @@ function PipelinePage() {
           </p>
         ) : null}
       </div>
-    </AdminShell>
+    </AdminPage>
   );
 }
 

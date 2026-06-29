@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { AdminShell } from "@/features/admin/AdminShell";
+import { AdminPage } from "@/features/admin/AdminPage";
 import { useAdmin } from "@/features/admin/AdminContext";
 import {
   ConfirmReasonDialog,
@@ -118,14 +118,14 @@ function MarginGuardsPage() {
   const isPlatform = session?.role === "platform";
 
   return (
-    <AdminShell title="Video & Margin Guards">
+    <AdminPage title="Video & Margin Guards">
       {!isPlatform ? <LockedCard /> : <PlatformView />}
       {impersonation ? (
         <p className="font-mono-num mt-3 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
           Mutations during impersonation are blocked (read-only).
         </p>
       ) : null}
-    </AdminShell>
+    </AdminPage>
   );
 }
 

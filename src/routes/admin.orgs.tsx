@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { AdminShell } from "@/features/admin/AdminShell";
+import { AdminPage } from "@/features/admin/AdminPage";
 import { useAdmin } from "@/features/admin/AdminContext";
 import {
   ConfirmReasonDialog,
@@ -191,7 +191,7 @@ function OrgsPage() {
   );
 
   return (
-    <AdminShell title="Orgs & Activation">
+    <AdminPage title="Orgs & Activation">
       <div className="space-y-4">
         <StubBanner />
         <HeaderRow
@@ -233,7 +233,7 @@ function OrgsPage() {
           toast.success(`Viewing as ${o.name} · read-only`);
         }}
       />
-    </AdminShell>
+    </AdminPage>
   );
 }
 
