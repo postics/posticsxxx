@@ -791,7 +791,6 @@ function DonutCard({
   slices: { label: string; value: number; color: string }[];
 }) {
   const total = slices.reduce((s, x) => s + x.value, 0) || 1;
-  const c = 56; // circumference reference
   let offset = 0;
   return (
     <DataPanel title={title} hint={hint}>
@@ -833,8 +832,6 @@ function DonutCard({
           ))}
         </ul>
       </div>
-      {/* swallow unused c */}
-      <span className="hidden">{c}</span>
     </DataPanel>
   );
 }
