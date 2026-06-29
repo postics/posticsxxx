@@ -19,7 +19,7 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { AdminPage } from "@/features/admin/AdminShell";
-import { useAdmin } from "@/features/admin/AdminContext";
+import { useAdmin, useMutationsBlocked } from "@/features/admin/AdminContext";
 import {
   ConfirmReasonDialog,
   DataPanel,
@@ -746,11 +746,14 @@ function LowCreditQueue({ rows, onOpen }: { rows: AdminOrgRow[]; onOpen: (id: st
 
 function GrantButton({ org }: { org: AdminOrgRow }) {
   const [open, setOpen] = useState(false);
+  const blocked = useMutationsBlocked();
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-900 hover:bg-surface-sunken"
+        disabled={blocked}
+        title={blocked ? "Mutations blocked during view-as" : undefined}
+        className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-900 hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface"
       >
         Grant credits
       </button>
