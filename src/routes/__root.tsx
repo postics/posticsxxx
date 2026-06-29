@@ -114,6 +114,12 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script
+          // Apply persisted theme + language before first paint to avoid FOUC.
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=document.documentElement;var t=localStorage.getItem('postics:theme');if(!t){t=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}d.classList.toggle('dark',t==='dark');d.setAttribute('data-theme',t);d.style.colorScheme=t;var l=localStorage.getItem('postics:lang');if(l){d.setAttribute('lang',l);}}catch(e){}})();`,
+          }}
+        />
         <HeadContent />
       </head>
       <body>

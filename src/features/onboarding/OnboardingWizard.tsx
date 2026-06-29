@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, StatusChip } from "@/features/shared/primitives";
+import { ThemeToggle, LanguageButton } from "@/features/shared/PreferencesControls";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -186,6 +187,10 @@ function TopStepper({ step }: { step: Step }) {
             })}
           </div>
           <span className="font-mono text-xs text-ink-mute">{step}/4</span>
+          <div className="flex items-center gap-1.5 border-l border-line/70 pl-3">
+            <LanguageButton compact />
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>
