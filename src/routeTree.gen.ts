@@ -11,12 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as PlanRouteImport } from './routes/plan'
 import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as EditorRouteImport } from './routes/editor'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ClientsRouteImport } from './routes/clients'
@@ -34,6 +36,11 @@ const TeamRoute = TeamRouteImport.update({
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -64,6 +71,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const MarketplaceRoute = MarketplaceRouteImport.update({
   id: '/marketplace',
   path: '/marketplace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorRoute = EditorRouteImport.update({
@@ -116,12 +128,14 @@ export interface FileRoutesByFullPath {
   '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
   '/editor': typeof EditorRoute
+  '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
   '/onboarding': typeof OnboardingRoute
   '/partner': typeof PartnerRoute
   '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
 }
@@ -134,12 +148,14 @@ export interface FileRoutesByTo {
   '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
   '/editor': typeof EditorRoute
+  '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
   '/onboarding': typeof OnboardingRoute
   '/partner': typeof PartnerRoute
   '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
 }
@@ -153,12 +169,14 @@ export interface FileRoutesById {
   '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
   '/editor': typeof EditorRoute
+  '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
   '/onboarding': typeof OnboardingRoute
   '/partner': typeof PartnerRoute
   '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
 }
@@ -173,12 +191,14 @@ export interface FileRouteTypes {
     | '/clients'
     | '/dashboard'
     | '/editor'
+    | '/login'
     | '/marketplace'
     | '/onboarding'
     | '/partner'
     | '/plan'
     | '/review'
     | '/settings'
+    | '/signup'
     | '/studio'
     | '/team'
   fileRoutesByTo: FileRoutesByTo
@@ -191,12 +211,14 @@ export interface FileRouteTypes {
     | '/clients'
     | '/dashboard'
     | '/editor'
+    | '/login'
     | '/marketplace'
     | '/onboarding'
     | '/partner'
     | '/plan'
     | '/review'
     | '/settings'
+    | '/signup'
     | '/studio'
     | '/team'
   id:
@@ -209,12 +231,14 @@ export interface FileRouteTypes {
     | '/clients'
     | '/dashboard'
     | '/editor'
+    | '/login'
     | '/marketplace'
     | '/onboarding'
     | '/partner'
     | '/plan'
     | '/review'
     | '/settings'
+    | '/signup'
     | '/studio'
     | '/team'
   fileRoutesById: FileRoutesById
@@ -228,12 +252,14 @@ export interface RootRouteChildren {
   ClientsRoute: typeof ClientsRoute
   DashboardRoute: typeof DashboardRoute
   EditorRoute: typeof EditorRoute
+  LoginRoute: typeof LoginRoute
   MarketplaceRoute: typeof MarketplaceRoute
   OnboardingRoute: typeof OnboardingRoute
   PartnerRoute: typeof PartnerRoute
   PlanRoute: typeof PlanRoute
   ReviewRoute: typeof ReviewRoute
   SettingsRoute: typeof SettingsRoute
+  SignupRoute: typeof SignupRoute
   StudioRoute: typeof StudioRoute
   TeamRoute: typeof TeamRoute
 }
@@ -252,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -294,6 +327,13 @@ declare module '@tanstack/react-router' {
       path: '/marketplace'
       fullPath: '/marketplace'
       preLoaderRoute: typeof MarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editor': {
@@ -364,12 +404,14 @@ const rootRouteChildren: RootRouteChildren = {
   ClientsRoute: ClientsRoute,
   DashboardRoute: DashboardRoute,
   EditorRoute: EditorRoute,
+  LoginRoute: LoginRoute,
   MarketplaceRoute: MarketplaceRoute,
   OnboardingRoute: OnboardingRoute,
   PartnerRoute: PartnerRoute,
   PlanRoute: PlanRoute,
   ReviewRoute: ReviewRoute,
   SettingsRoute: SettingsRoute,
+  SignupRoute: SignupRoute,
   StudioRoute: StudioRoute,
   TeamRoute: TeamRoute,
 }

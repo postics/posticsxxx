@@ -117,7 +117,7 @@ function UrlRunForm({ id }: { id?: string }) {
       onSubmit={(e) => {
         e.preventDefault();
         // route into onboarding with the URL
-        const q = url.trim() ? `?store=${encodeURIComponent(url.trim())}` : "";
+        const q = url.trim() ? `?site=${encodeURIComponent(url.trim())}` : "";
         window.location.href = `/onboarding${q}`;
       }}
       className="flex w-full max-w-xl flex-col gap-2 sm:flex-row sm:items-stretch"
