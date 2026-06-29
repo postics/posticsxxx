@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as StudioRouteImport } from './routes/studio'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ReviewRouteImport } from './routes/review'
 import { Route as PlanRouteImport } from './routes/plan'
@@ -35,6 +36,11 @@ const TeamRoute = TeamRouteImport.update({
 const StudioRoute = StudioRouteImport.update({
   id: '/studio',
   path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SettingsRoute = SettingsRouteImport.update({
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
 }
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
 }
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/plan': typeof PlanRoute
   '/review': typeof ReviewRoute
   '/settings': typeof SettingsRoute
+  '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
 }
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/review'
     | '/settings'
+    | '/signup'
     | '/studio'
     | '/team'
   fileRoutesByTo: FileRoutesByTo
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/review'
     | '/settings'
+    | '/signup'
     | '/studio'
     | '/team'
   id:
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/plan'
     | '/review'
     | '/settings'
+    | '/signup'
     | '/studio'
     | '/team'
   fileRoutesById: FileRoutesById
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   PlanRoute: typeof PlanRoute
   ReviewRoute: typeof ReviewRoute
   SettingsRoute: typeof SettingsRoute
+  SignupRoute: typeof SignupRoute
   StudioRoute: typeof StudioRoute
   TeamRoute: typeof TeamRoute
 }
@@ -265,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: '/studio'
       fullPath: '/studio'
       preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/settings': {
@@ -391,6 +411,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlanRoute: PlanRoute,
   ReviewRoute: ReviewRoute,
   SettingsRoute: SettingsRoute,
+  SignupRoute: SignupRoute,
   StudioRoute: StudioRoute,
   TeamRoute: TeamRoute,
 }
