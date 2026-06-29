@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card, StatusChip } from "@/features/shared/primitives";
-import { ThemeToggle, LanguageButton } from "@/features/shared/PreferencesControls";
+import { FocusShell } from "@/features/shell/FocusShell";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -74,10 +74,17 @@ export function OnboardingWizard() {
   const [detected, setDetected] = useState<Detected | null>(null);
   const navigate = useNavigate();
 
+  // Prefill from ?site=… (fallback ?store=… for backwards-compat).
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const seed = params.get("site") ?? params.get("store");
+    if (seed) setUrl(seed);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-paper">
-      <TopStepper step={step} />
-      <main className="mx-auto w-full max-w-5xl px-6 pb-24 pt-10">
+    <FocusShell step={step} totalSteps={4}>
+      <div className="mx-auto w-full max-w-5xl px-6 pb-24 pt-10">
         {step === 1 && (
           <StepAnalyze
             url={url}
@@ -135,65 +142,8 @@ export function OnboardingWizard() {
             }}
           />
         )}
-      </main>
-    </div>
-  );
-}
-
-/* ──────────────────────────── Top stepper ──────────────────────────── */
-
-function TopStepper({ step }: { step: Step }) {
-  const labels = ["Analyze", "Diagnosis", "Strategy", "Ready"];
-  return (
-    <header className="sticky top-0 z-20 border-b border-line/70 bg-paper/85 backdrop-blur">
-      <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between px-6">
-        <Link to="/" className="flex items-center gap-2 text-sm tracking-tight text-ink">
-          <span className="font-semibold">postics</span>
-          <span className="text-ink-mute">/ onboarding</span>
-        </Link>
-        <div className="flex items-center gap-3">
-          <div className="hidden items-center gap-2 sm:flex">
-            {labels.map((l, i) => {
-              const n = (i + 1) as Step;
-              const active = n === step;
-              const done = n < step;
-              return (
-                <div key={l} className="flex items-center gap-2">
-                  <div
-                    className={cn(
-                      "flex h-5 w-5 items-center justify-center rounded-full border text-[10px] font-mono",
-                      done
-                        ? "border-brand bg-brand text-paper"
-                        : active
-                          ? "border-brand text-brand"
-                          : "border-line text-ink-mute",
-                    )}
-                  >
-                    {done ? <Check className="h-3 w-3" /> : n}
-                  </div>
-                  <span
-                    className={cn(
-                      "text-xs",
-                      active ? "text-ink" : "text-ink-mute",
-                    )}
-                  >
-                    {l}
-                  </span>
-                  {i < labels.length - 1 && (
-                    <span className="mx-1 h-px w-6 bg-line" aria-hidden />
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          <span className="font-mono text-xs text-ink-mute">{step}/4</span>
-          <div className="flex items-center gap-1.5 border-l border-line/70 pl-3">
-            <LanguageButton compact />
-            <ThemeToggle />
-          </div>
-        </div>
       </div>
-    </header>
+    </FocusShell>
   );
 }
 
