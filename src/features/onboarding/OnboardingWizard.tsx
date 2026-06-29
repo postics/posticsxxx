@@ -199,7 +199,7 @@ function StepAnalyze({
         Paste your site. We'll do the rest.
       </h1>
       <p className="mt-3 text-ink-mute">
-        Works for any business on any CMS. No signup, no store connection required.
+        Works for any business on any site or CMS. No signup, no site connection required.
       </p>
 
       <Card className="mt-8 p-5 text-left">
