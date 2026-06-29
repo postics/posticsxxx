@@ -94,7 +94,7 @@ function activeIdFor(pathname: string): NavId {
 }
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  const { impersonation, stopImpersonation, stubMode } = useAdmin();
+  const { impersonation, stopImpersonation, stubMode, session } = useAdmin();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const active = activeIdFor(pathname);
   const [collapsed, setCollapsed] = useState(false);
@@ -207,7 +207,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         {impersonation ? (
           <ImpersonationBanner
             orgName={impersonation.orgName}
-            staff={useAdmin().session?.email ?? "staff"}
+            staff={session?.email ?? "staff"}
             expiresAt={impersonation.expiresAt}
             onExit={stopImpersonation}
           />
