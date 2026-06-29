@@ -238,34 +238,6 @@ function OrgsPage() {
 
 /* ============================== chrome ============================== */
 
-function StubBanner() {
-  const [collapsed, setCollapsed] = useState(false);
-  if (collapsed) {
-    return (
-      <button
-        onClick={() => setCollapsed(false)}
-        className="font-mono-num inline-flex items-center gap-1.5 rounded-md border border-line bg-surface-sunken px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-muted-foreground hover:bg-surface"
-      >
-        <Dot tone="warning" /> Gateway · stub
-      </button>
-    );
-  }
-  return (
-    <div className="flex items-start gap-2 rounded-md border border-line bg-surface-sunken px-3 py-2 text-[11px] text-muted-foreground">
-      <Dot tone="warning" className="mt-1" />
-      <div className="flex-1">
-        <span className="font-mono-num uppercase tracking-[0.14em] text-ink-900">AI Gateway: STUB</span>
-        <span className="ml-2 opacity-80">
-          costs ~$0, content is placeholder. Margin/cost figures are not yet trustworthy.
-        </span>
-      </div>
-      <button onClick={() => setCollapsed(true)} className="text-muted-foreground hover:text-ink-900" aria-label="Collapse">
-        <X className="size-3.5" />
-      </button>
-    </div>
-  );
-}
-
 function HeaderRow({
   realRole,
   previewRole,
