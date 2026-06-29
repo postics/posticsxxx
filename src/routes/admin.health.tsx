@@ -13,7 +13,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AdminShell } from "@/features/admin/AdminShell";
+import { AdminPage } from "@/features/admin/AdminShell";
 import { useAdmin } from "@/features/admin/AdminContext";
 import { Dot, TrafficLight, ConfirmReasonDialog, type Tone } from "@/features/admin/ui";
 
@@ -546,7 +546,7 @@ function HealthPage() {
       );
 
   return (
-    <AdminShell
+    <AdminPage
       title="Healthcheck / Integrations"
       breadcrumb={["Admin", "Operations", "Healthcheck"]}
       actions={
@@ -712,7 +712,7 @@ function HealthPage() {
           setConfirm({ open: false, title: "" });
         }}
       />
-    </AdminShell>
+    </AdminPage>
   );
 }
 

@@ -1,5 +1,5 @@
 // Platform-admin only route. The sidebar hides the Money group for agency-admin
-// (see AdminShell), and this component guards the URL too. Agency users get a
+// (see AdminPage), and this component guards the URL too. Agency users get a
 // locked state — never any cross-tenant USD, take_rate, or unit_cost_usd_est.
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { AdminShell } from "@/features/admin/AdminShell";
+import { AdminPage } from "@/features/admin/AdminShell";
 import { useAdmin } from "@/features/admin/AdminContext";
 import { DataPanel, Dot, TrafficLight, type Tone } from "@/features/admin/ui";
 
@@ -120,13 +120,12 @@ function CostPage() {
   const [mode, setMode] = useState<CostMode>("usd");
 
   return (
-    <AdminShell
+    <AdminPage
       title="Unit-economics & cost"
       breadcrumb={["Admin", "Money", "Unit-economics"]}
       actions={<TrafficLight tone="warning" label="Stub data" />}
     >
       <div className="space-y-4">
-        <StubBanner />
         <TitleRow range={range} onRange={setRange} mode={mode} onMode={setMode} />
 
         <GrossCogsHero range={range} />
@@ -148,37 +147,7 @@ function CostPage() {
           Read-only analytics. Mutations during any impersonation session are blocked (read-only by default).
         </p>
       </div>
-    </AdminShell>
-  );
-}
-
-/* --------------------------------- banners -------------------------------- */
-
-function StubBanner() {
-  const { stubMode } = useAdmin();
-  if (!stubMode) return null;
-  return (
-    <div
-      className="flex items-start gap-2.5 rounded-[10px] border px-3 py-2 text-[12px]"
-      style={{
-        borderColor: "color-mix(in oklab, var(--warning, #B07B2C) 40%, var(--line, #E7E2D9))",
-        backgroundColor: "color-mix(in oklab, var(--warning, #B07B2C) 8%, var(--surface, #FFFFFF))",
-      }}
-    >
-      <Dot tone="warning" className="mt-1.5" />
-      <div className="flex-1">
-        <p className="text-ink-900">
-          AI Gateway: <span className="font-mono-num">STUB</span> — costs ~$0, content placeholder. Margin thesis is{" "}
-          <span className="font-medium">UNVERIFIABLE</span> until a real Anthropic key is live.
-        </p>
-      </div>
-      <span
-        title="All USD COGS on this page reflect unit_cost_usd_est, which is ~0 while the Gateway runs on a stub. Numbers go real when the key flips."
-        className="mt-0.5 text-muted-foreground"
-      >
-        <Info className="size-3.5" strokeWidth={1.75} />
-      </span>
-    </div>
+    </AdminPage>
   );
 }
 

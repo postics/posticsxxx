@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { AdminShell } from "@/features/admin/AdminShell";
+import { AdminPage } from "@/features/admin/AdminShell";
 import { useAdmin } from "@/features/admin/AdminContext";
 import {
   ConfirmReasonDialog,
@@ -148,9 +148,8 @@ function PipelinePage() {
   );
 
   return (
-    <AdminShell title="Pipeline & Quality Ops">
+    <AdminPage title="Pipeline & Quality Ops">
       <div className="space-y-4">
-        <StubBanner />
         <HeaderRow isPlatform={isPlatform} scopedOrg={scopedOrg} />
 
         {/* widget 1: FSM funnel */}
@@ -176,28 +175,11 @@ function PipelinePage() {
           </p>
         ) : null}
       </div>
-    </AdminShell>
+    </AdminPage>
   );
 }
 
 /* ============================== chrome bits ============================== */
-
-function StubBanner() {
-  return (
-    <div
-      className="font-mono-num flex items-start gap-2 rounded-md border border-line bg-surface-sunken px-3 py-2 text-[11px] text-muted-foreground"
-      style={{ borderLeft: "2px solid var(--warning, #B07B2C)" }}
-    >
-      <Dot tone="warning" className="mt-1" />
-      <div>
-        <div className="uppercase tracking-[0.14em] text-ink-900">AI Gateway: STUB</div>
-        <div className="opacity-80">
-          costs ~$0, content is placeholder. Originality &amp; AI-detect scores below are stub values, not trustworthy yet.
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function HeaderRow({ isPlatform, scopedOrg }: { isPlatform: boolean; scopedOrg: string | null }) {
   return (

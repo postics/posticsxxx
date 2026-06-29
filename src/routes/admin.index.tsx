@@ -10,6 +10,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useAdmin } from "@/features/admin/AdminContext";
+import { AdminPage } from "@/features/admin/AdminShell";
 import {
   ConfirmReasonDialog,
   DataPanel,
@@ -187,20 +188,23 @@ function CockpitPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="space-y-6">
+    <AdminPage
+      title="Cockpit"
+      breadcrumb={["Admin", "Overview", "Cockpit"]}
+      actions={isPlatform ? <QuickActions /> : null}
+    >
+      <div className="space-y-6">
       <header className="flex items-start justify-between gap-4">
         <div>
           <p className="font-mono-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
             {isPlatform ? "Platform · cross-tenant" : "Agency · your org only"}
           </p>
-          <h1 className="font-display text-2xl text-ink-900">Cockpit</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
             {isPlatform
               ? "Founder god-view. Cross-tenant KPIs, the global attention queue, and the activation funnel."
               : "Scoped to your agency: your seats, your sub-clients, your usage and credits."}
           </p>
         </div>
-        {isPlatform ? <QuickActions /> : null}
       </header>
 
       {isPlatform ? <PlatformKPIs /> : <AgencyKPIs />}
@@ -212,7 +216,8 @@ function CockpitPage() {
       />
 
       <ActivationFunnel isPlatform={isPlatform} />
-    </div>
+      </div>
+    </AdminPage>
   );
 }
 

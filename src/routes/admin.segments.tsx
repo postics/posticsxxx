@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { ArrowDown, ArrowUp, ChevronRight, Lock, RefreshCw } from "lucide-react";
-import { AdminShell } from "@/features/admin/AdminShell";
+import { AdminPage } from "@/features/admin/AdminShell";
 import { useAdmin } from "@/features/admin/AdminContext";
 import {
   ConfirmReasonDialog,
@@ -139,14 +139,14 @@ function SegmentsPage() {
 
   if (!isPlatform) {
     return (
-      <AdminShell title="Segmentation Lens" breadcrumb={["Admin", "Customers", "Segmentation Lens"]}>
+      <AdminPage title="Segmentation Lens" breadcrumb={["Admin", "Customers", "Segmentation Lens"]}>
         <LockedAgencyView />
-      </AdminShell>
+      </AdminPage>
     );
   }
 
   return (
-    <AdminShell
+    <AdminPage
       title="Segmentation Lens"
       breadcrumb={["Admin", "Customers", "Segmentation Lens"]}
       actions={<HeaderActions />}
@@ -169,7 +169,7 @@ function SegmentsPage() {
       <p className="font-mono-num mt-6 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
         Future: agency-admins will get a SCOPED archetype view of THEIR sub-clients only — no margin, no cross-tenant data.
       </p>
-    </AdminShell>
+    </AdminPage>
   );
 }
 

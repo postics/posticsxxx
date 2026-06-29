@@ -16,7 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AdminShell } from "@/features/admin/AdminShell";
+import { AdminPage } from "@/features/admin/AdminShell";
 import { useAdmin } from "@/features/admin/AdminContext";
 import { DataPanel, Dot, TrafficLight, type Tone } from "@/features/admin/ui";
 
@@ -126,7 +126,7 @@ function BuildPage() {
   const [milestoneOpen, setMilestoneOpen] = useState(false);
 
   return (
-    <AdminShell
+    <AdminPage
       title="Build Status"
       breadcrumb={["Admin", "Platform", "Build Status"]}
       actions={
@@ -165,7 +165,7 @@ function BuildPage() {
 
       {smokeOpen ? <SmokeTestDialog onClose={() => setSmokeOpen(false)} /> : null}
       {milestoneOpen ? <MilestoneEditor onClose={() => setMilestoneOpen(false)} /> : null}
-    </AdminShell>
+    </AdminPage>
   );
 }
 
