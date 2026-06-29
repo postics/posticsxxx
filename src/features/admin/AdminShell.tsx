@@ -207,6 +207,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         {impersonation ? (
           <ImpersonationBanner
             orgName={impersonation.orgName}
+            staff={useAdmin().session?.email ?? "staff"}
             expiresAt={impersonation.expiresAt}
             onExit={stopImpersonation}
           />
@@ -396,10 +397,12 @@ function StubBanner() {
 
 function ImpersonationBanner({
   orgName,
+  staff,
   expiresAt,
   onExit,
 }: {
   orgName: string;
+  staff: string;
   expiresAt: number;
   onExit: () => void;
 }) {
@@ -415,14 +418,15 @@ function ImpersonationBanner({
     >
       <Lock className="size-3.5" strokeWidth={1.75} />
       <span>
-        Viewing as <strong className="font-medium">{orgName}</strong> — READ-ONLY ·{" "}
-        <span className="font-mono-num">{formatRemaining(expiresAt)}</span> left
+        VIEWING AS <strong className="font-medium">{orgName}</strong> — READ-ONLY ·{" "}
+        <span className="font-mono-num">{formatRemaining(expiresAt)}</span> left · you are{" "}
+        <span className="font-medium">{staff}</span>
       </span>
       <button
         onClick={onExit}
         className="font-mono-num ml-auto rounded-md border border-paper/40 bg-paper/10 px-2 py-1 text-[11px] uppercase tracking-[0.1em] text-paper hover:bg-paper/20"
       >
-        Exit
+        End session
       </button>
     </div>
   );
