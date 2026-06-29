@@ -36,6 +36,7 @@ import { Route as AdminMarginGuardsRouteImport } from './routes/admin.margin-gua
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminHealthRouteImport } from './routes/admin.health'
 import { Route as AdminCostRouteImport } from './routes/admin.cost'
+import { Route as AdminBuildRouteImport } from './routes/admin.build'
 
 const TeamRoute = TeamRouteImport.update({
   id: '/team',
@@ -172,6 +173,11 @@ const AdminCostRoute = AdminCostRouteImport.update({
   path: '/cost',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBuildRoute = AdminBuildRouteImport.update({
+  id: '/build',
+  path: '/build',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -193,6 +199,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
+  '/admin/build': typeof AdminBuildRoute
   '/admin/cost': typeof AdminCostRoute
   '/admin/health': typeof AdminHealthRoute
   '/admin/login': typeof AdminLoginRoute
@@ -221,6 +228,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
+  '/admin/build': typeof AdminBuildRoute
   '/admin/cost': typeof AdminCostRoute
   '/admin/health': typeof AdminHealthRoute
   '/admin/login': typeof AdminLoginRoute
@@ -251,6 +259,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/studio': typeof StudioRoute
   '/team': typeof TeamRoute
+  '/admin/build': typeof AdminBuildRoute
   '/admin/cost': typeof AdminCostRoute
   '/admin/health': typeof AdminHealthRoute
   '/admin/login': typeof AdminLoginRoute
@@ -282,6 +291,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/studio'
     | '/team'
+    | '/admin/build'
     | '/admin/cost'
     | '/admin/health'
     | '/admin/login'
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/studio'
     | '/team'
+    | '/admin/build'
     | '/admin/cost'
     | '/admin/health'
     | '/admin/login'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/studio'
     | '/team'
+    | '/admin/build'
     | '/admin/cost'
     | '/admin/health'
     | '/admin/login'
@@ -562,10 +574,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCostRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/build': {
+      id: '/admin/build'
+      path: '/build'
+      fullPath: '/admin/build'
+      preLoaderRoute: typeof AdminBuildRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminBuildRoute: typeof AdminBuildRoute
   AdminCostRoute: typeof AdminCostRoute
   AdminHealthRoute: typeof AdminHealthRoute
   AdminLoginRoute: typeof AdminLoginRoute
@@ -577,6 +597,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBuildRoute: AdminBuildRoute,
   AdminCostRoute: AdminCostRoute,
   AdminHealthRoute: AdminHealthRoute,
   AdminLoginRoute: AdminLoginRoute,
