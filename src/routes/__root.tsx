@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ScopeProvider } from "../features/shell/scope";
 import { Toaster } from "../components/ui/sonner";
+import { AdminProvider } from "../features/admin/AdminContext";
 
 function NotFoundComponent() {
   return (
@@ -136,9 +137,11 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ScopeProvider>
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
-        <Toaster position="bottom-right" />
+        <AdminProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+          <Toaster position="bottom-right" />
+        </AdminProvider>
       </ScopeProvider>
     </QueryClientProvider>
   );
