@@ -821,10 +821,10 @@ function Chip({
     <button
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1.5 text-sm transition",
+        "rounded-full border px-3 py-1.5 text-sm transition-all active:scale-[0.97]",
         active
-          ? "border-brand bg-brand text-paper"
-          : "border-line text-ink hover:bg-surface-sunken",
+          ? "border-brand bg-brand text-paper active:bg-brand-500"
+          : "border-line text-ink hover:bg-surface-sunken active:bg-surface-sunken",
       )}
     >
       {children}
