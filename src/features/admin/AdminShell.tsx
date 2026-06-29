@@ -207,7 +207,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
         {impersonation ? (
           <ImpersonationBanner
             orgName={impersonation.orgName}
-            staff={impersonation.reason ? undefined : undefined}
             expiresAt={impersonation.expiresAt}
             onExit={stopImpersonation}
           />
