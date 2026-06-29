@@ -219,21 +219,23 @@ function TheMachine() {
                   key={n.key}
                   onClick={() => setActive(i)}
                   className={cn(
-                    "group flex flex-col items-center gap-2 rounded-xl border px-3 py-4 transition-all duration-200",
+                    "group flex flex-col items-center gap-2 rounded-xl border px-3 py-4 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 active:scale-[0.98]",
                     isActive
-                      ? "border-brand-700/30 bg-brand-100 shadow-elev-sm"
-                      : "border-line bg-surface-sunken/40 hover:border-ink-700/20",
+                      ? "border-brand-700 bg-brand-700 text-[color:var(--primary-foreground)] shadow-elev-sm active:bg-brand-500"
+                      : "border-line bg-surface-sunken hover:border-ink-700/30 hover:bg-surface-sunken",
                   )}
                 >
                   <span
                     className={cn(
                       "grid size-9 place-items-center rounded-full transition-colors",
-                      isActive ? "bg-brand-700 text-[color:var(--primary-foreground)]" : "bg-surface text-ink-700",
+                      isActive
+                        ? "bg-[color:var(--primary-foreground)]/15 text-[color:var(--primary-foreground)]"
+                        : "bg-surface text-ink-700",
                     )}
                   >
                     <Icon className="size-4" strokeWidth={1.75} />
                   </span>
-                  <span className={cn("text-xs", isActive ? "text-ink-900 font-medium" : "text-muted-foreground")}>
+                  <span className={cn("text-xs", isActive ? "font-medium text-[color:var(--primary-foreground)]" : "text-ink-700")}>
                     {n.label}
                   </span>
                 </button>
@@ -844,14 +846,16 @@ function Pricing() {
         <h2 className="mx-auto mt-3 max-w-3xl font-display text-4xl font-semibold leading-[1.1] tracking-tight text-ink-900 sm:text-5xl">
           Simple plans. <span className="text-brand-700">No setup fees.</span>
         </h2>
-        <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-line bg-surface p-1 text-xs">
+        <div className="mt-6 inline-flex items-center gap-1 rounded-full border border-line bg-surface-sunken p-1 text-xs shadow-inner">
           {(["monthly","annual"] as BillingCycle[]).map((c) => (
             <button
               key={c}
               onClick={() => setCycle(c)}
               className={cn(
-                "rounded-full px-3 py-1.5 transition-colors",
-                cycle === c ? "bg-brand-700 text-[color:var(--primary-foreground)]" : "text-muted-foreground hover:text-ink-900",
+                "rounded-full px-3 py-1.5 font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 active:scale-[0.98]",
+                cycle === c
+                  ? "bg-brand-700 text-[color:var(--primary-foreground)] shadow-elev-sm active:bg-brand-500"
+                  : "text-ink-700 hover:text-ink-900",
               )}
             >
               {c === "monthly" ? "Monthly" : "Annual −20%"}
