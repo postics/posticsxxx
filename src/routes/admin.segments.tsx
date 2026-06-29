@@ -37,7 +37,7 @@ const ARCH: Record<
 > = {
   B1: { id: "B1", label: "Faceless catalog", short: "Catalog", color: "#7AA6C2", desc: "Multi-SKU store with no visible owner — wants traffic." },
   B2: { id: "B2", label: "Founder-led", short: "Founder", color: "#D6A256", desc: "Personal brand front-and-center; voice matters." },
-  B3: { id: "B3", label: "Wholesale wedge", short: "Wholesale", color: "#1E3A34", icp: true, desc: "Multi-locale catalog selling to retailers. Lead wedge." },
+  B3: { id: "B3", label: "Wholesale wedge", short: "Wholesale", color: "var(--brand-700)", icp: true, desc: "Multi-locale catalog selling to retailers. Lead wedge." },
   B4: { id: "B4", label: "Local service", short: "Local", color: "#A6453C", desc: "Geo-bound service business; leads over traffic." },
   B5: { id: "B5", label: "Agency operator", short: "Agency", color: "#3C7D5C", icp: true, desc: "Runs Postics for N sub-clients. Meta-ICP buyer." },
 };
@@ -135,7 +135,7 @@ const PRIMARY_GOAL = [
 
 function SegmentsPage() {
   const { session } = useAdmin();
-  const isPlatform = (session?.role ?? "platform") === "platform";
+  const isPlatform = session?.role === "platform";
 
   if (!isPlatform) {
     return (
@@ -769,7 +769,7 @@ function DistributionStrip() {
         hint="Feeds B1-vs-B3 routing. Multi-locale = wholesale wedge."
         slices={[
           { label: "Single", value: CATALOG_LOCALE.single, color: "#7AA6C2" },
-          { label: "Multi (3+ langs)", value: CATALOG_LOCALE.multi, color: "#1E3A34" },
+          { label: "Multi (3+ langs)", value: CATALOG_LOCALE.multi, color: "var(--brand-700)" },
         ]}
       />
       <BarCard
