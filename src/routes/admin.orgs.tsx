@@ -19,7 +19,7 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { AdminPage } from "@/features/admin/AdminShell";
-import { useAdmin } from "@/features/admin/AdminContext";
+import { useAdmin, useMutationsBlocked } from "@/features/admin/AdminContext";
 import {
   ConfirmReasonDialog,
   DataPanel,
@@ -746,11 +746,14 @@ function LowCreditQueue({ rows, onOpen }: { rows: AdminOrgRow[]; onOpen: (id: st
 
 function GrantButton({ org }: { org: AdminOrgRow }) {
   const [open, setOpen] = useState(false);
+  const blocked = useMutationsBlocked();
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-900 hover:bg-surface-sunken"
+        disabled={blocked}
+        title={blocked ? "Mutations blocked during view-as" : undefined}
+        className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-900 hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface"
       >
         Grant credits
       </button>
@@ -781,6 +784,8 @@ function OrgDrawer({
   onViewAs: (o: AdminOrgRow) => void;
 }) {
   const [action, setAction] = useState<null | "suspend" | "plan" | "grant" | "rotate">(null);
+  const blocked = useMutationsBlocked();
+  const blockedTitle = blocked ? "Mutations blocked during view-as" : undefined;
   if (!org) return null;
   const funnel = FUNNEL_BY_ORG[org.id] ?? FUNNEL_BY_ORG.org_north;
   const seats = SEATS_BY_ORG[org.id] ?? [
@@ -898,7 +903,12 @@ function OrgDrawer({
             ) : null}
             <div className="mt-2 flex items-center gap-2">
               {isPlatform ? (
-                <button onClick={() => setAction("grant")} className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-900 hover:bg-surface-sunken">
+                <button
+                  onClick={() => setAction("grant")}
+                  disabled={blocked}
+                  title={blockedTitle}
+                  className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-900 hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface"
+                >
                   Grant / refund credits
                 </button>
               ) : (
@@ -955,13 +965,17 @@ function OrgDrawer({
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => toast.success(`Re-probe · project_${i + 1}`)}
-                        className="rounded-md border border-line bg-surface px-1.5 py-0.5 text-[11px] hover:bg-surface-sunken"
+                        disabled={blocked}
+                        title={blockedTitle}
+                        className="rounded-md border border-line bg-surface px-1.5 py-0.5 text-[11px] hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface"
                       >
                         <RefreshCw className="size-3" />
                       </button>
                       <button
                         onClick={() => setAction("rotate")}
-                        className="rounded-md border border-line bg-surface px-1.5 py-0.5 text-[11px] text-[color:var(--danger,#A6453C)] hover:bg-surface-sunken"
+                        disabled={blocked}
+                        title={blockedTitle}
+                        className="rounded-md border border-line bg-surface px-1.5 py-0.5 text-[11px] text-[color:var(--danger,#A6453C)] hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface"
                       >
                         <KeyRound className="size-3" />
                       </button>
@@ -975,13 +989,28 @@ function OrgDrawer({
           {isPlatform ? (
             <Section title="Danger zone · platform-only">
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => setAction("plan")} className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-900 hover:bg-surface-sunken">
+                <button
+                  onClick={() => setAction("plan")}
+                  disabled={blocked}
+                  title={blockedTitle}
+                  className="rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-ink-900 hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface"
+                >
                   Change plan / take-rate
                 </button>
-                <button onClick={() => setAction("suspend")} className="rounded-md border border-[color:var(--danger,#A6453C)]/40 bg-surface px-2 py-1 text-[11px] text-[color:var(--danger,#A6453C)] hover:bg-surface-sunken">
+                <button
+                  onClick={() => setAction("suspend")}
+                  disabled={blocked}
+                  title={blockedTitle}
+                  className="rounded-md border border-[color:var(--danger,#A6453C)]/40 bg-surface px-2 py-1 text-[11px] text-[color:var(--danger,#A6453C)] hover:bg-surface-sunken disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-surface"
+                >
                   <PauseCircle className="mr-1 inline-block size-3" /> Suspend org
                 </button>
               </div>
+              {blocked ? (
+                <p className="font-mono-num mt-2 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                  Mutations blocked during view-as
+                </p>
+              ) : null}
               <p className="mt-2 text-[11px] text-muted-foreground">
                 Suspend gates outgoing expensive paths (generation / video / auto-publish), not just login.
               </p>
