@@ -28,6 +28,7 @@ import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as AgencyRouteImport } from './routes/agency'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSegmentsRouteImport } from './routes/admin.segments'
 import { Route as AdminPipelineRouteImport } from './routes/admin.pipeline'
 import { Route as AdminOrgsRouteImport } from './routes/admin.orgs'
@@ -132,6 +133,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSegmentsRoute = AdminSegmentsRouteImport.update({
   id: '/segments',
   path: '/segments',
@@ -201,10 +207,10 @@ export interface FileRoutesByFullPath {
   '/admin/orgs': typeof AdminOrgsRoute
   '/admin/pipeline': typeof AdminPipelineRoute
   '/admin/segments': typeof AdminSegmentsRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/agency': typeof AgencyRoute
   '/analytics': typeof AnalyticsRoute
   '/billing': typeof BillingRoute
@@ -230,6 +236,7 @@ export interface FileRoutesByTo {
   '/admin/orgs': typeof AdminOrgsRoute
   '/admin/pipeline': typeof AdminPipelineRoute
   '/admin/segments': typeof AdminSegmentsRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -260,6 +267,7 @@ export interface FileRoutesById {
   '/admin/orgs': typeof AdminOrgsRoute
   '/admin/pipeline': typeof AdminPipelineRoute
   '/admin/segments': typeof AdminSegmentsRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -291,10 +299,10 @@ export interface FileRouteTypes {
     | '/admin/orgs'
     | '/admin/pipeline'
     | '/admin/segments'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/agency'
     | '/analytics'
     | '/billing'
@@ -320,6 +328,7 @@ export interface FileRouteTypes {
     | '/admin/orgs'
     | '/admin/pipeline'
     | '/admin/segments'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -349,6 +358,7 @@ export interface FileRouteTypes {
     | '/admin/orgs'
     | '/admin/pipeline'
     | '/admin/segments'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -508,6 +518,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/segments': {
       id: '/admin/segments'
       path: '/segments'
@@ -576,6 +593,7 @@ interface AdminRouteChildren {
   AdminOrgsRoute: typeof AdminOrgsRoute
   AdminPipelineRoute: typeof AdminPipelineRoute
   AdminSegmentsRoute: typeof AdminSegmentsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -587,6 +605,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOrgsRoute: AdminOrgsRoute,
   AdminPipelineRoute: AdminPipelineRoute,
   AdminSegmentsRoute: AdminSegmentsRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
