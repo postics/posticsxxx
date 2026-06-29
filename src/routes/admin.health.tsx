@@ -954,14 +954,14 @@ function VendorMenu({
   onAction: (a: Action) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const items: { label: string; action: Action; danger?: boolean; show: boolean }[] = [
+  const items: { label: string; action: Action; danger?: boolean; show: boolean }[] = ([
     { label: "Re-probe health", action: "reprobe", show: true },
     { label: "Set / edit budget cap", action: "set-cap", show: !!vendor.spend && vendor.spend !== "pending" },
     { label: "Rotate key", action: "rotate", danger: true, show: !vendor.wiring.key.missing },
     { label: vendor.wiring.adapter === "live" ? "Flip adapter live → STUB" : "Flip adapter STUB → live", action: "flip", danger: true, show: true },
     { label: "Kill-switch (disable globally)", action: "kill", danger: true, show: vendor.id === "video" || vendor.id === "image" },
     { label: "View per-tenant", action: "open-tenants", show: !!vendor.perTenant },
-  ].filter((i) => i.show);
+  ] as { label: string; action: Action; danger?: boolean; show: boolean }[]).filter((i) => i.show);
 
   return (
     <div className="relative">
