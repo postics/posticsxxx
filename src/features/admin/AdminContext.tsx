@@ -144,6 +144,37 @@ export function useAdmin() {
   return ctx;
 }
 
+/** Fail-closed: unknown / missing session is treated as 'agency'. */
+export function useAdminRole(): AdminRole {
+  const ctx = useContext(AdminCtx);
+  const r = ctx?.session?.role;
+  return r === "platform" ? "platform" : "agency";
+}
+export function useStub() {
+  const ctx = useContext(AdminCtx);
+  return !!ctx?.stubMode;
+}
+export function useImpersonation() {
+  const ctx = useContext(AdminCtx);
+  return ctx?.impersonation ?? null;
+}
+/** Mutations are blocked app-wide while an impersonation/view-as session is active. */
+export function useMutationsBlocked() {
+  const ctx = useContext(AdminCtx);
+  return !!ctx?.impersonation;
+}
+
+/** Paths gated to platform-admins. Agency-admins hitting these redirect to /admin. */
+export const PLATFORM_ONLY_PATHS: readonly string[] = [
+  "/admin/cost",
+  "/admin/margin-guards",
+  "/admin/build",
+  "/admin/segments",
+];
+export function isPlatformOnlyPath(pathname: string): boolean {
+  return PLATFORM_ONLY_PATHS.some((p) => pathname === p || pathname.startsWith(p + "/"));
+}
+
 /** Returns a human "MM:SS left" for the current impersonation, or null. */
 export function formatRemaining(expiresAt: number): string {
   const ms = Math.max(0, expiresAt - Date.now());
