@@ -512,17 +512,17 @@ function MarginCard() {
     <DataPanel
       title="Segment × Margin"
       hint="Are B3/B5 actually profitable, or subsidized? Watch the B4 long-tail."
-      state="pending"
-      pendingNote="Margin needs the artifacts writer to persist real model_route + unit_cost_usd_est per action (pending backend). Until then COGS ≈ $0 (stub) — the column shapes are reviewable but values are placeholder."
-    />
-  );
-}
-
-/** Render the structure too — DataPanel.pending hides children, so we render a sibling table below. */
-function MarginTable() {
-  return (
-    <section className="rounded-[14px] border border-line bg-surface p-4">
-      <div className="overflow-hidden rounded-md border border-line">
+      actions={
+        <span
+          title="Margin needs the artifacts writer to persist real model_route + unit_cost_usd_est per action (pending backend). Until then COGS ≈ $0 (stub)."
+          className="font-mono-num inline-flex items-center gap-1.5 rounded-md border border-line bg-surface-sunken px-1.5 py-0.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground"
+        >
+          <span aria-hidden className="inline-block size-1.5 rounded-full" style={{ backgroundColor: "var(--danger)" }} />
+          Pending instrumentation
+        </span>
+      }
+    >
+      <div className="overflow-hidden rounded-md border border-line opacity-80">
         <table className="w-full text-[12px]">
           <thead className="bg-surface-sunken/60 text-left">
             <tr className="font-mono-num text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
@@ -541,7 +541,7 @@ function MarginTable() {
               const gmPct = Math.round(r.gm * 100);
               const tone: Tone = gmPct >= 70 ? "success" : gmPct >= 60 ? "warning" : "danger";
               return (
-                <tr key={r.arch} className="opacity-70">
+                <tr key={r.arch}>
                   <td className="px-3 py-2">
                     <span className="inline-flex items-center gap-2">
                       <span aria-hidden className="inline-block size-2 rounded-full" style={{ backgroundColor: a.color }} />
@@ -574,7 +574,10 @@ function MarginTable() {
       <p className="font-mono-num mt-2 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
         * COGS values are placeholder while AI Gateway runs on stub. GM % shown as target shape, not measured truth.
       </p>
-    </section>
+      <p className="mt-2 text-[11px] text-muted-foreground">
+        Read: B3 &amp; B5 trend healthy (GM ≥ 70%); B4 long-tail thins to 58% — subsidized by Starter pricing. Confirm once real COGS lands.
+      </p>
+    </DataPanel>
   );
 }
 
@@ -908,6 +911,3 @@ function LockedAgencyView() {
   );
 }
 
-// Re-export MarginTable into the page below the MarginCard pending block so the shape stays reviewable.
-// (Wired inside SegmentsPage via a wrapper.)
-SegmentsPage.MarginTable = MarginTable;
