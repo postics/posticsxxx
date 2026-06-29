@@ -745,7 +745,7 @@ function StepReady({
           </button>
 
           <button className="text-sm text-ink-mute hover:text-ink">
-            Connect your site or store to auto-publish <span className="opacity-70">(optional)</span>
+            Connect your site to auto-publish <span className="opacity-70">(optional)</span>
           </button>
           <button className="text-xs text-ink-mute hover:text-ink">
             Talk to the team
