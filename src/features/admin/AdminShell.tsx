@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle, LanguageButton } from "@/features/shared/PreferencesControls";
-import { useAdmin, formatRemaining, type AdminRole } from "./AdminContext";
+import { useAdmin, useAdminRole, formatRemaining, PLATFORM_ONLY_PATHS } from "./AdminContext";
 import { ADMIN_ORGS } from "./mock-data";
 
 type NavId =
@@ -93,28 +93,14 @@ function activeIdFor(pathname: string): NavId {
   return "cockpit";
 }
 
-export function AdminShell({
-  title,
-  breadcrumb,
-  actions,
-  children,
-}: {
-  title: string;
-  breadcrumb?: string[];
-  actions?: ReactNode;
-  children: ReactNode;
-}) {
-  const { session, impersonation, stopImpersonation, stubMode } = useAdmin();
+export function AdminShell({ children }: { children: ReactNode }) {
+  const { impersonation, stopImpersonation, stubMode } = useAdmin();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const active = activeIdFor(pathname);
   const [collapsed, setCollapsed] = useState(false);
   const readOnly = !!impersonation;
-
-  const role: AdminRole = session?.role ?? "platform";
-  const visibleGroups = GROUPS.filter((g) => !(g.platformOnly && role !== "platform")).map((g) => ({
-    ...g,
-    items: g.items.filter((i) => !(i.platformOnly && role !== "platform")),
-  }));
+  const role = useAdminRole();
+  const isPlatform = role === "platform";
 
   return (
     <div className="flex min-h-screen w-full bg-paper text-ink-700" data-admin-readonly={readOnly}>
@@ -142,7 +128,7 @@ export function AdminShell({
         </div>
 
         <nav className="flex-1 space-y-3 overflow-y-auto px-2 py-3">
-          {visibleGroups.map((g) => (
+          {GROUPS.map((g) => (
             <div key={g.id}>
               {!collapsed ? (
                 <div className="font-mono-num px-2.5 pb-1 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
@@ -153,6 +139,27 @@ export function AdminShell({
                 {g.items.map((item) => {
                   const Icon = item.icon;
                   const isActive = item.id === active;
+                  const locked = !!item.platformOnly && !isPlatform;
+                  if (locked) {
+                    return (
+                      <div
+                        key={item.id}
+                        title="Platform-only — visible to Postics staff."
+                        aria-disabled="true"
+                        className="group relative flex cursor-not-allowed items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[13px] text-muted-foreground/70"
+                      >
+                        <Icon className="size-4 shrink-0 opacity-60" strokeWidth={1.5} />
+                        {!collapsed && (
+                          <>
+                            <span className="flex-1 truncate">{item.label}</span>
+                            <span className="font-mono-num inline-flex items-center gap-1 rounded border border-line bg-surface-sunken px-1 py-[1px] text-[9px] uppercase tracking-[0.12em]">
+                              <Lock className="size-2.5" strokeWidth={1.75} /> P-only
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    );
+                  }
                   return (
                     <Link
                       key={item.id}
@@ -196,31 +203,52 @@ export function AdminShell({
         <AdminTopBar />
 
         {/* Banners stack */}
-        {stubMode && role === "platform" ? <StubBanner /> : null}
+        {stubMode && isPlatform ? <StubBanner /> : null}
         {impersonation ? (
           <ImpersonationBanner
             orgName={impersonation.orgName}
+            staff={impersonation.reason ? undefined : undefined}
             expiresAt={impersonation.expiresAt}
             onExit={stopImpersonation}
           />
         ) : null}
 
-        {/* Page header */}
-        <div className="border-b border-line bg-paper px-6 py-4 md:px-8">
-          <div className="font-mono-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            {(breadcrumb ?? ["Admin"]).join(" / ")}
-          </div>
-          <div className="mt-1 flex items-end justify-between gap-3">
-            <h1 className="font-display text-2xl text-ink-900">{title}</h1>
-            {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
-          </div>
-        </div>
-
-        <main className="flex-1 px-6 py-6 md:px-8">{children}</main>
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );
 }
+
+/** Page header + body wrapper used inside each /admin/* route. */
+export function AdminPage({
+  title,
+  breadcrumb,
+  actions,
+  children,
+}: {
+  title: string;
+  breadcrumb?: string[];
+  actions?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <>
+      <div className="border-b border-line bg-paper px-6 py-4 md:px-8">
+        <div className="font-mono-num text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          {(breadcrumb ?? ["Admin"]).join(" / ")}
+        </div>
+        <div className="mt-1 flex items-end justify-between gap-3">
+          <h1 className="font-display text-2xl text-ink-900">{title}</h1>
+          {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
+        </div>
+      </div>
+      <div className="px-6 py-6 md:px-8">{children}</div>
+    </>
+  );
+}
+
+// Backwards-compat: PLATFORM_ONLY_PATHS re-export for callers importing from the shell.
+export { PLATFORM_ONLY_PATHS };
 
 /* ---------- top bar ---------- */
 function AdminTopBar() {
