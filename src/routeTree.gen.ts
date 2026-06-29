@@ -17,6 +17,7 @@ import { Route as PlanRouteImport } from './routes/plan'
 import { Route as PartnerRouteImport } from './routes/partner'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MarketplaceRouteImport } from './routes/marketplace'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as EditorRouteImport } from './routes/editor'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ClientsRouteImport } from './routes/clients'
@@ -64,6 +65,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const MarketplaceRoute = MarketplaceRouteImport.update({
   id: '/marketplace',
   path: '/marketplace',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EditorRoute = EditorRouteImport.update({
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
   '/editor': typeof EditorRoute
+  '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
   '/onboarding': typeof OnboardingRoute
   '/partner': typeof PartnerRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
   '/editor': typeof EditorRoute
+  '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
   '/onboarding': typeof OnboardingRoute
   '/partner': typeof PartnerRoute
@@ -153,6 +161,7 @@ export interface FileRoutesById {
   '/clients': typeof ClientsRoute
   '/dashboard': typeof DashboardRoute
   '/editor': typeof EditorRoute
+  '/login': typeof LoginRoute
   '/marketplace': typeof MarketplaceRoute
   '/onboarding': typeof OnboardingRoute
   '/partner': typeof PartnerRoute
@@ -173,6 +182,7 @@ export interface FileRouteTypes {
     | '/clients'
     | '/dashboard'
     | '/editor'
+    | '/login'
     | '/marketplace'
     | '/onboarding'
     | '/partner'
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/clients'
     | '/dashboard'
     | '/editor'
+    | '/login'
     | '/marketplace'
     | '/onboarding'
     | '/partner'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/clients'
     | '/dashboard'
     | '/editor'
+    | '/login'
     | '/marketplace'
     | '/onboarding'
     | '/partner'
@@ -228,6 +240,7 @@ export interface RootRouteChildren {
   ClientsRoute: typeof ClientsRoute
   DashboardRoute: typeof DashboardRoute
   EditorRoute: typeof EditorRoute
+  LoginRoute: typeof LoginRoute
   MarketplaceRoute: typeof MarketplaceRoute
   OnboardingRoute: typeof OnboardingRoute
   PartnerRoute: typeof PartnerRoute
@@ -294,6 +307,13 @@ declare module '@tanstack/react-router' {
       path: '/marketplace'
       fullPath: '/marketplace'
       preLoaderRoute: typeof MarketplaceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/editor': {
@@ -364,6 +384,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClientsRoute: ClientsRoute,
   DashboardRoute: DashboardRoute,
   EditorRoute: EditorRoute,
+  LoginRoute: LoginRoute,
   MarketplaceRoute: MarketplaceRoute,
   OnboardingRoute: OnboardingRoute,
   PartnerRoute: PartnerRoute,
