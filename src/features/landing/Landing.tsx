@@ -194,13 +194,26 @@ const MACHINE_NODES = [
 
 function TheMachine() {
   const [active, setActive] = useState(0);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const [inView, setInView] = useState(false);
   useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.15 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!inView) return;
     const t = setInterval(() => setActive((i) => (i + 1) % MACHINE_NODES.length), 2200);
     return () => clearInterval(t);
-  }, []);
+  }, [inView]);
   const current = MACHINE_NODES[active];
   return (
-    <section id="machine" className="relative mx-auto w-full max-w-6xl px-6 py-24">
+    <section ref={sectionRef} id="machine" className="relative mx-auto w-full max-w-6xl px-6 py-24">
       <div className="text-center">
         <div className="font-mono-num text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
           / paste a url. watch it run.
